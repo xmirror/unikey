@@ -113,6 +113,9 @@
 /* Define to 1 if you have the <vfork.h> header file. */
 /* #undef HAVE_VFORK_H */
 
+/* Define to 1 if you have the <wchar.h> header file. */
+#define HAVE_WCHAR_H 1
+
 /* Define to 1 if `fork' works. */
 #define HAVE_WORKING_FORK 1
 
@@ -137,8 +140,16 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.9.1b"
 
+/* Define to 1 if the C compiler supports function prototypes. */
+#define PROTOTYPES 1
+
 /* Define as the return type of signal handlers (`int' or `void'). */
 #define RETSIGTYPE void
+
+/* Define to 1 if the `setvbuf' function takes the buffering type as its
+   second argument and the buffer pointer as the third, as on System V before
+   release 3. */
+/* #undef SETVBUF_REVERSED */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -153,6 +164,9 @@
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
+
+/* Define like PROTOTYPES; this can be used by system headers. */
+#define __PROTOTYPES 1
 
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */

@@ -166,6 +166,10 @@ target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
 noinst_LTLIBRARIES = libIMdkit.la
 
+libIMdkit_la_CFLAGS = \
+    @X_CFLAGS@
+
+
 libIMdkit_la_SOURCES = FrameMgr.c IMValues.c i18nIMProto.c i18nPtHdr.c i18nX.c \
 	IMConn.c i18nAttr.c i18nIc.c IMMethod.c i18nClbk.c i18nMethod.c \
 	i18nUtil.c \
@@ -183,21 +187,30 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 
 libIMdkit_la_LDFLAGS =
 libIMdkit_la_LIBADD =
-am_libIMdkit_la_OBJECTS = FrameMgr.lo IMValues.lo i18nIMProto.lo \
-	i18nPtHdr.lo i18nX.lo IMConn.lo i18nAttr.lo i18nIc.lo \
-	IMMethod.lo i18nClbk.lo i18nMethod.lo i18nUtil.lo
+am_libIMdkit_la_OBJECTS = libIMdkit_la-FrameMgr.lo \
+	libIMdkit_la-IMValues.lo libIMdkit_la-i18nIMProto.lo \
+	libIMdkit_la-i18nPtHdr.lo libIMdkit_la-i18nX.lo \
+	libIMdkit_la-IMConn.lo libIMdkit_la-i18nAttr.lo \
+	libIMdkit_la-i18nIc.lo libIMdkit_la-IMMethod.lo \
+	libIMdkit_la-i18nClbk.lo libIMdkit_la-i18nMethod.lo \
+	libIMdkit_la-i18nUtil.lo
 libIMdkit_la_OBJECTS = $(am_libIMdkit_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/FrameMgr.Plo ./$(DEPDIR)/IMConn.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/IMMethod.Plo ./$(DEPDIR)/IMValues.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/i18nAttr.Plo ./$(DEPDIR)/i18nClbk.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/i18nIMProto.Plo ./$(DEPDIR)/i18nIc.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/i18nMethod.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/i18nPtHdr.Plo ./$(DEPDIR)/i18nUtil.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/i18nX.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/libIMdkit_la-FrameMgr.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-IMConn.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-IMMethod.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-IMValues.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nAttr.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nClbk.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nIMProto.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nIc.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nMethod.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nPtHdr.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nUtil.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libIMdkit_la-i18nX.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -236,18 +249,18 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FrameMgr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMConn.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMMethod.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/IMValues.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nAttr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nClbk.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nIMProto.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nIc.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nMethod.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nPtHdr.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nUtil.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i18nX.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-FrameMgr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-IMConn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-IMMethod.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-IMValues.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nAttr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nClbk.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nIMProto.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nIc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nMethod.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nPtHdr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nUtil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libIMdkit_la-i18nX.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \
@@ -281,6 +294,402 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
+
+libIMdkit_la-FrameMgr.o: FrameMgr.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-FrameMgr.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-FrameMgr.o `test -f 'FrameMgr.c' || echo '$(srcdir)/'`FrameMgr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo" "$(DEPDIR)/libIMdkit_la-FrameMgr.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='FrameMgr.c' object='libIMdkit_la-FrameMgr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-FrameMgr.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-FrameMgr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-FrameMgr.o `test -f 'FrameMgr.c' || echo '$(srcdir)/'`FrameMgr.c
+
+libIMdkit_la-FrameMgr.obj: FrameMgr.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-FrameMgr.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-FrameMgr.obj `if test -f 'FrameMgr.c'; then $(CYGPATH_W) 'FrameMgr.c'; else $(CYGPATH_W) '$(srcdir)/FrameMgr.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo" "$(DEPDIR)/libIMdkit_la-FrameMgr.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='FrameMgr.c' object='libIMdkit_la-FrameMgr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-FrameMgr.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-FrameMgr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-FrameMgr.obj `if test -f 'FrameMgr.c'; then $(CYGPATH_W) 'FrameMgr.c'; else $(CYGPATH_W) '$(srcdir)/FrameMgr.c'; fi`
+
+libIMdkit_la-FrameMgr.lo: FrameMgr.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-FrameMgr.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-FrameMgr.lo `test -f 'FrameMgr.c' || echo '$(srcdir)/'`FrameMgr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo" "$(DEPDIR)/libIMdkit_la-FrameMgr.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-FrameMgr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='FrameMgr.c' object='libIMdkit_la-FrameMgr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-FrameMgr.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-FrameMgr.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-FrameMgr.lo `test -f 'FrameMgr.c' || echo '$(srcdir)/'`FrameMgr.c
+
+libIMdkit_la-IMValues.o: IMValues.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMValues.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMValues.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMValues.o `test -f 'IMValues.c' || echo '$(srcdir)/'`IMValues.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMValues.Tpo" "$(DEPDIR)/libIMdkit_la-IMValues.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMValues.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMValues.c' object='libIMdkit_la-IMValues.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMValues.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMValues.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMValues.o `test -f 'IMValues.c' || echo '$(srcdir)/'`IMValues.c
+
+libIMdkit_la-IMValues.obj: IMValues.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMValues.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMValues.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMValues.obj `if test -f 'IMValues.c'; then $(CYGPATH_W) 'IMValues.c'; else $(CYGPATH_W) '$(srcdir)/IMValues.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMValues.Tpo" "$(DEPDIR)/libIMdkit_la-IMValues.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMValues.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMValues.c' object='libIMdkit_la-IMValues.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMValues.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMValues.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMValues.obj `if test -f 'IMValues.c'; then $(CYGPATH_W) 'IMValues.c'; else $(CYGPATH_W) '$(srcdir)/IMValues.c'; fi`
+
+libIMdkit_la-IMValues.lo: IMValues.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMValues.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMValues.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMValues.lo `test -f 'IMValues.c' || echo '$(srcdir)/'`IMValues.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMValues.Tpo" "$(DEPDIR)/libIMdkit_la-IMValues.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMValues.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMValues.c' object='libIMdkit_la-IMValues.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMValues.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMValues.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMValues.lo `test -f 'IMValues.c' || echo '$(srcdir)/'`IMValues.c
+
+libIMdkit_la-i18nIMProto.o: i18nIMProto.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nIMProto.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nIMProto.o `test -f 'i18nIMProto.c' || echo '$(srcdir)/'`i18nIMProto.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo" "$(DEPDIR)/libIMdkit_la-i18nIMProto.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nIMProto.c' object='libIMdkit_la-i18nIMProto.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nIMProto.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nIMProto.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nIMProto.o `test -f 'i18nIMProto.c' || echo '$(srcdir)/'`i18nIMProto.c
+
+libIMdkit_la-i18nIMProto.obj: i18nIMProto.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nIMProto.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nIMProto.obj `if test -f 'i18nIMProto.c'; then $(CYGPATH_W) 'i18nIMProto.c'; else $(CYGPATH_W) '$(srcdir)/i18nIMProto.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo" "$(DEPDIR)/libIMdkit_la-i18nIMProto.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nIMProto.c' object='libIMdkit_la-i18nIMProto.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nIMProto.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nIMProto.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nIMProto.obj `if test -f 'i18nIMProto.c'; then $(CYGPATH_W) 'i18nIMProto.c'; else $(CYGPATH_W) '$(srcdir)/i18nIMProto.c'; fi`
+
+libIMdkit_la-i18nIMProto.lo: i18nIMProto.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nIMProto.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nIMProto.lo `test -f 'i18nIMProto.c' || echo '$(srcdir)/'`i18nIMProto.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo" "$(DEPDIR)/libIMdkit_la-i18nIMProto.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nIMProto.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nIMProto.c' object='libIMdkit_la-i18nIMProto.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nIMProto.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nIMProto.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nIMProto.lo `test -f 'i18nIMProto.c' || echo '$(srcdir)/'`i18nIMProto.c
+
+libIMdkit_la-i18nPtHdr.o: i18nPtHdr.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nPtHdr.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nPtHdr.o `test -f 'i18nPtHdr.c' || echo '$(srcdir)/'`i18nPtHdr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo" "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nPtHdr.c' object='libIMdkit_la-i18nPtHdr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nPtHdr.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nPtHdr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nPtHdr.o `test -f 'i18nPtHdr.c' || echo '$(srcdir)/'`i18nPtHdr.c
+
+libIMdkit_la-i18nPtHdr.obj: i18nPtHdr.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nPtHdr.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nPtHdr.obj `if test -f 'i18nPtHdr.c'; then $(CYGPATH_W) 'i18nPtHdr.c'; else $(CYGPATH_W) '$(srcdir)/i18nPtHdr.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo" "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nPtHdr.c' object='libIMdkit_la-i18nPtHdr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nPtHdr.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nPtHdr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nPtHdr.obj `if test -f 'i18nPtHdr.c'; then $(CYGPATH_W) 'i18nPtHdr.c'; else $(CYGPATH_W) '$(srcdir)/i18nPtHdr.c'; fi`
+
+libIMdkit_la-i18nPtHdr.lo: i18nPtHdr.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nPtHdr.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nPtHdr.lo `test -f 'i18nPtHdr.c' || echo '$(srcdir)/'`i18nPtHdr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo" "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nPtHdr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nPtHdr.c' object='libIMdkit_la-i18nPtHdr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nPtHdr.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nPtHdr.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nPtHdr.lo `test -f 'i18nPtHdr.c' || echo '$(srcdir)/'`i18nPtHdr.c
+
+libIMdkit_la-i18nX.o: i18nX.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nX.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nX.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nX.o `test -f 'i18nX.c' || echo '$(srcdir)/'`i18nX.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nX.Tpo" "$(DEPDIR)/libIMdkit_la-i18nX.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nX.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nX.c' object='libIMdkit_la-i18nX.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nX.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nX.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nX.o `test -f 'i18nX.c' || echo '$(srcdir)/'`i18nX.c
+
+libIMdkit_la-i18nX.obj: i18nX.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nX.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nX.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nX.obj `if test -f 'i18nX.c'; then $(CYGPATH_W) 'i18nX.c'; else $(CYGPATH_W) '$(srcdir)/i18nX.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nX.Tpo" "$(DEPDIR)/libIMdkit_la-i18nX.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nX.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nX.c' object='libIMdkit_la-i18nX.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nX.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nX.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nX.obj `if test -f 'i18nX.c'; then $(CYGPATH_W) 'i18nX.c'; else $(CYGPATH_W) '$(srcdir)/i18nX.c'; fi`
+
+libIMdkit_la-i18nX.lo: i18nX.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nX.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nX.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nX.lo `test -f 'i18nX.c' || echo '$(srcdir)/'`i18nX.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nX.Tpo" "$(DEPDIR)/libIMdkit_la-i18nX.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nX.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nX.c' object='libIMdkit_la-i18nX.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nX.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nX.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nX.lo `test -f 'i18nX.c' || echo '$(srcdir)/'`i18nX.c
+
+libIMdkit_la-IMConn.o: IMConn.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMConn.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMConn.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMConn.o `test -f 'IMConn.c' || echo '$(srcdir)/'`IMConn.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMConn.Tpo" "$(DEPDIR)/libIMdkit_la-IMConn.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMConn.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMConn.c' object='libIMdkit_la-IMConn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMConn.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMConn.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMConn.o `test -f 'IMConn.c' || echo '$(srcdir)/'`IMConn.c
+
+libIMdkit_la-IMConn.obj: IMConn.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMConn.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMConn.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMConn.obj `if test -f 'IMConn.c'; then $(CYGPATH_W) 'IMConn.c'; else $(CYGPATH_W) '$(srcdir)/IMConn.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMConn.Tpo" "$(DEPDIR)/libIMdkit_la-IMConn.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMConn.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMConn.c' object='libIMdkit_la-IMConn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMConn.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMConn.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMConn.obj `if test -f 'IMConn.c'; then $(CYGPATH_W) 'IMConn.c'; else $(CYGPATH_W) '$(srcdir)/IMConn.c'; fi`
+
+libIMdkit_la-IMConn.lo: IMConn.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMConn.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMConn.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMConn.lo `test -f 'IMConn.c' || echo '$(srcdir)/'`IMConn.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMConn.Tpo" "$(DEPDIR)/libIMdkit_la-IMConn.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMConn.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMConn.c' object='libIMdkit_la-IMConn.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMConn.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMConn.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMConn.lo `test -f 'IMConn.c' || echo '$(srcdir)/'`IMConn.c
+
+libIMdkit_la-i18nAttr.o: i18nAttr.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nAttr.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nAttr.o `test -f 'i18nAttr.c' || echo '$(srcdir)/'`i18nAttr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo" "$(DEPDIR)/libIMdkit_la-i18nAttr.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nAttr.c' object='libIMdkit_la-i18nAttr.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nAttr.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nAttr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nAttr.o `test -f 'i18nAttr.c' || echo '$(srcdir)/'`i18nAttr.c
+
+libIMdkit_la-i18nAttr.obj: i18nAttr.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nAttr.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nAttr.obj `if test -f 'i18nAttr.c'; then $(CYGPATH_W) 'i18nAttr.c'; else $(CYGPATH_W) '$(srcdir)/i18nAttr.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo" "$(DEPDIR)/libIMdkit_la-i18nAttr.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nAttr.c' object='libIMdkit_la-i18nAttr.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nAttr.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nAttr.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nAttr.obj `if test -f 'i18nAttr.c'; then $(CYGPATH_W) 'i18nAttr.c'; else $(CYGPATH_W) '$(srcdir)/i18nAttr.c'; fi`
+
+libIMdkit_la-i18nAttr.lo: i18nAttr.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nAttr.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nAttr.lo `test -f 'i18nAttr.c' || echo '$(srcdir)/'`i18nAttr.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo" "$(DEPDIR)/libIMdkit_la-i18nAttr.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nAttr.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nAttr.c' object='libIMdkit_la-i18nAttr.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nAttr.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nAttr.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nAttr.lo `test -f 'i18nAttr.c' || echo '$(srcdir)/'`i18nAttr.c
+
+libIMdkit_la-i18nIc.o: i18nIc.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nIc.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nIc.o `test -f 'i18nIc.c' || echo '$(srcdir)/'`i18nIc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo" "$(DEPDIR)/libIMdkit_la-i18nIc.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nIc.c' object='libIMdkit_la-i18nIc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nIc.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nIc.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nIc.o `test -f 'i18nIc.c' || echo '$(srcdir)/'`i18nIc.c
+
+libIMdkit_la-i18nIc.obj: i18nIc.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nIc.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nIc.obj `if test -f 'i18nIc.c'; then $(CYGPATH_W) 'i18nIc.c'; else $(CYGPATH_W) '$(srcdir)/i18nIc.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo" "$(DEPDIR)/libIMdkit_la-i18nIc.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nIc.c' object='libIMdkit_la-i18nIc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nIc.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nIc.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nIc.obj `if test -f 'i18nIc.c'; then $(CYGPATH_W) 'i18nIc.c'; else $(CYGPATH_W) '$(srcdir)/i18nIc.c'; fi`
+
+libIMdkit_la-i18nIc.lo: i18nIc.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nIc.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nIc.lo `test -f 'i18nIc.c' || echo '$(srcdir)/'`i18nIc.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo" "$(DEPDIR)/libIMdkit_la-i18nIc.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nIc.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nIc.c' object='libIMdkit_la-i18nIc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nIc.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nIc.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nIc.lo `test -f 'i18nIc.c' || echo '$(srcdir)/'`i18nIc.c
+
+libIMdkit_la-IMMethod.o: IMMethod.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMMethod.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMMethod.o `test -f 'IMMethod.c' || echo '$(srcdir)/'`IMMethod.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo" "$(DEPDIR)/libIMdkit_la-IMMethod.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMMethod.c' object='libIMdkit_la-IMMethod.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMMethod.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMMethod.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMMethod.o `test -f 'IMMethod.c' || echo '$(srcdir)/'`IMMethod.c
+
+libIMdkit_la-IMMethod.obj: IMMethod.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMMethod.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMMethod.obj `if test -f 'IMMethod.c'; then $(CYGPATH_W) 'IMMethod.c'; else $(CYGPATH_W) '$(srcdir)/IMMethod.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo" "$(DEPDIR)/libIMdkit_la-IMMethod.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMMethod.c' object='libIMdkit_la-IMMethod.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMMethod.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMMethod.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMMethod.obj `if test -f 'IMMethod.c'; then $(CYGPATH_W) 'IMMethod.c'; else $(CYGPATH_W) '$(srcdir)/IMMethod.c'; fi`
+
+libIMdkit_la-IMMethod.lo: IMMethod.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-IMMethod.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-IMMethod.lo `test -f 'IMMethod.c' || echo '$(srcdir)/'`IMMethod.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo" "$(DEPDIR)/libIMdkit_la-IMMethod.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-IMMethod.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='IMMethod.c' object='libIMdkit_la-IMMethod.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-IMMethod.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-IMMethod.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-IMMethod.lo `test -f 'IMMethod.c' || echo '$(srcdir)/'`IMMethod.c
+
+libIMdkit_la-i18nClbk.o: i18nClbk.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nClbk.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nClbk.o `test -f 'i18nClbk.c' || echo '$(srcdir)/'`i18nClbk.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo" "$(DEPDIR)/libIMdkit_la-i18nClbk.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nClbk.c' object='libIMdkit_la-i18nClbk.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nClbk.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nClbk.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nClbk.o `test -f 'i18nClbk.c' || echo '$(srcdir)/'`i18nClbk.c
+
+libIMdkit_la-i18nClbk.obj: i18nClbk.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nClbk.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nClbk.obj `if test -f 'i18nClbk.c'; then $(CYGPATH_W) 'i18nClbk.c'; else $(CYGPATH_W) '$(srcdir)/i18nClbk.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo" "$(DEPDIR)/libIMdkit_la-i18nClbk.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nClbk.c' object='libIMdkit_la-i18nClbk.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nClbk.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nClbk.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nClbk.obj `if test -f 'i18nClbk.c'; then $(CYGPATH_W) 'i18nClbk.c'; else $(CYGPATH_W) '$(srcdir)/i18nClbk.c'; fi`
+
+libIMdkit_la-i18nClbk.lo: i18nClbk.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nClbk.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nClbk.lo `test -f 'i18nClbk.c' || echo '$(srcdir)/'`i18nClbk.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo" "$(DEPDIR)/libIMdkit_la-i18nClbk.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nClbk.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nClbk.c' object='libIMdkit_la-i18nClbk.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nClbk.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nClbk.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nClbk.lo `test -f 'i18nClbk.c' || echo '$(srcdir)/'`i18nClbk.c
+
+libIMdkit_la-i18nMethod.o: i18nMethod.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nMethod.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nMethod.o `test -f 'i18nMethod.c' || echo '$(srcdir)/'`i18nMethod.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo" "$(DEPDIR)/libIMdkit_la-i18nMethod.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nMethod.c' object='libIMdkit_la-i18nMethod.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nMethod.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nMethod.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nMethod.o `test -f 'i18nMethod.c' || echo '$(srcdir)/'`i18nMethod.c
+
+libIMdkit_la-i18nMethod.obj: i18nMethod.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nMethod.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nMethod.obj `if test -f 'i18nMethod.c'; then $(CYGPATH_W) 'i18nMethod.c'; else $(CYGPATH_W) '$(srcdir)/i18nMethod.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo" "$(DEPDIR)/libIMdkit_la-i18nMethod.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nMethod.c' object='libIMdkit_la-i18nMethod.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nMethod.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nMethod.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nMethod.obj `if test -f 'i18nMethod.c'; then $(CYGPATH_W) 'i18nMethod.c'; else $(CYGPATH_W) '$(srcdir)/i18nMethod.c'; fi`
+
+libIMdkit_la-i18nMethod.lo: i18nMethod.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nMethod.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nMethod.lo `test -f 'i18nMethod.c' || echo '$(srcdir)/'`i18nMethod.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo" "$(DEPDIR)/libIMdkit_la-i18nMethod.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nMethod.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nMethod.c' object='libIMdkit_la-i18nMethod.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nMethod.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nMethod.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nMethod.lo `test -f 'i18nMethod.c' || echo '$(srcdir)/'`i18nMethod.c
+
+libIMdkit_la-i18nUtil.o: i18nUtil.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nUtil.o -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nUtil.o `test -f 'i18nUtil.c' || echo '$(srcdir)/'`i18nUtil.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo" "$(DEPDIR)/libIMdkit_la-i18nUtil.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nUtil.c' object='libIMdkit_la-i18nUtil.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nUtil.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nUtil.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nUtil.o `test -f 'i18nUtil.c' || echo '$(srcdir)/'`i18nUtil.c
+
+libIMdkit_la-i18nUtil.obj: i18nUtil.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nUtil.obj -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nUtil.obj `if test -f 'i18nUtil.c'; then $(CYGPATH_W) 'i18nUtil.c'; else $(CYGPATH_W) '$(srcdir)/i18nUtil.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo" "$(DEPDIR)/libIMdkit_la-i18nUtil.Po"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nUtil.c' object='libIMdkit_la-i18nUtil.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nUtil.Po' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nUtil.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nUtil.obj `if test -f 'i18nUtil.c'; then $(CYGPATH_W) 'i18nUtil.c'; else $(CYGPATH_W) '$(srcdir)/i18nUtil.c'; fi`
+
+libIMdkit_la-i18nUtil.lo: i18nUtil.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -MT libIMdkit_la-i18nUtil.lo -MD -MP -MF "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo" \
+@am__fastdepCC_TRUE@	  -c -o libIMdkit_la-i18nUtil.lo `test -f 'i18nUtil.c' || echo '$(srcdir)/'`i18nUtil.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo" "$(DEPDIR)/libIMdkit_la-i18nUtil.Plo"; \
+@am__fastdepCC_TRUE@	else rm -f "$(DEPDIR)/libIMdkit_la-i18nUtil.Tpo"; exit 1; \
+@am__fastdepCC_TRUE@	fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='i18nUtil.c' object='libIMdkit_la-i18nUtil.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libIMdkit_la-i18nUtil.Plo' tmpdepfile='$(DEPDIR)/libIMdkit_la-i18nUtil.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libIMdkit_la_CFLAGS) $(CFLAGS) -c -o libIMdkit_la-i18nUtil.lo `test -f 'i18nUtil.c' || echo '$(srcdir)/'`i18nUtil.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

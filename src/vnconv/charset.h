@@ -2,7 +2,7 @@
 VnConv: Vietnamese Encoding Converter Library
 UniKey Project: http://unikey.sourceforge.net
 Copyleft (C) 1998-2002 Pham Kim Long
-Contact: longcz@yahoo.com
+Contact: longp@cslab.felk.cvut.cz
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,9 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __CHARSET_CONVERT_H
 
 #include "vnconv.h"
+#include "byteio.h"
 #include "pattern.h"
 
 #define TOTAL_VNCHARS 213
+#define TOTAL_ALPHA_VNCHARS 186
 
 #if defined(_WIN32)
 typedef unsigned __int32 StdVnChar;
@@ -65,7 +67,8 @@ class VnCharset {
 public:
 	virtual void startInput() {};
 	virtual void startOutput() {};
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead) = 0;
+//	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead) = 0;
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead) = 0;
 
 	//------------------------------------------------------------------------
 	// put a character to the output after converting it
@@ -76,29 +79,32 @@ public:
 	//     maxAvail[in]: max length available.
 	// Returns: next position in output
 	//------------------------------------------------------------------------
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail) = 0;
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen) = 0;
 };
 
+//--------------------------------------------------
 class SingleByteCharset: public VnCharset {
 protected:
 	WORD m_stdMap[256];
 	unsigned char * m_vnChars;
 public:
 	SingleByteCharset(unsigned char * vnChars);
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class UnicodeCharset: public VnCharset {
 protected:
 	DWORD m_vnChars[TOTAL_VNCHARS];
 	UnicodeChar * m_toUnicode;
 public:
 	UnicodeCharset(UnicodeChar *vnChars);
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class DoubleByteCharset: public VnCharset {
 protected:
 	WORD m_stdMap[256];
@@ -106,36 +112,65 @@ protected:
 	WORD * m_toDoubleChar;
 public:
 	DoubleByteCharset(WORD *vnChars);
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class UnicodeUTF8Charset: public UnicodeCharset
 {
 public:
 	UnicodeUTF8Charset(UnicodeChar *vnChars) : UnicodeCharset(vnChars)	{}
 
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class UnicodeRefCharset: public UnicodeCharset
 {
 public:
 	UnicodeRefCharset(UnicodeChar *vnChars) : UnicodeCharset(vnChars)	{}
 
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class UnicodeHexCharset: public UnicodeRefCharset
 {
 public:
 	UnicodeHexCharset(UnicodeChar *vnChars) : UnicodeRefCharset(vnChars) {}
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
+class UnicodeCStringCharset: public UnicodeCharset
+{
+protected:
+	int m_prevIsHex;
+public:
+	UnicodeCStringCharset(UnicodeChar *vnChars) : UnicodeCharset(vnChars) {}
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
+	virtual void startInput();
+};
 
+//--------------------------------------------------
+class WinCP1258Charset: public VnCharset {
+protected:
+	WORD m_stdMap[256];
+	DWORD m_vnChars[TOTAL_VNCHARS*2];
+	WORD *m_toDoubleChar;
+	int m_totalChars;
+
+public:
+	WinCP1258Charset(WORD *compositeChars, WORD *precomposedChars);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
+};
+
+//--------------------------------------------------
 struct UniCompCharInfo {
 	DWORD	compChar;
 	int stdIndex;
@@ -148,10 +183,11 @@ protected:
 	int m_totalChars;
 public:
 	UnicodeCompCharset(UnicodeChar *uniChars, DWORD *uniCompChars);
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class VIQRCharset: public VnCharset {
 protected:
 	DWORD *m_vnChars;
@@ -168,10 +204,11 @@ public:
 	VIQRCharset(DWORD *vnChars);
 	virtual void startInput();
 	virtual void startOutput();
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
+//--------------------------------------------------
 class UTF8VIQRCharset: public VnCharset {
 
 protected:
@@ -182,13 +219,13 @@ public:
 	UTF8VIQRCharset(UnicodeUTF8Charset *pUtf, VIQRCharset *pViqr);
 	virtual void startInput();
 	virtual void startOutput();
-	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead);
-	virtual BYTE *putChar(BYTE *output, StdVnChar stdChar, int & outLen, int maxAvail);
-
+	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
-class CVnCharsetLib {
 
+//--------------------------------------------------
+class CVnCharsetLib {
 protected:
 	SingleByteCharset * m_sgCharsets[CONV_TOTAL_SINGLE_CHARSETS];
 	DoubleByteCharset * m_dbCharsets[CONV_TOTAL_DOUBLE_CHARSETS];
@@ -199,6 +236,8 @@ protected:
 	UnicodeHexCharset * m_pUniHex;
 	VIQRCharset * m_pVIQRCharObj;
 	UTF8VIQRCharset * m_pUVIQRCharObj;
+	WinCP1258Charset * m_pWinCP1258;
+	UnicodeCStringCharset *m_pUniCString;
 
 public:
 	PatternList m_VIQREscPatterns;
@@ -213,8 +252,17 @@ extern WORD DoubleByteTables[][TOTAL_VNCHARS];
 extern UnicodeChar UnicodeTable[TOTAL_VNCHARS];
 extern DWORD VIQRTable[TOTAL_VNCHARS];
 extern DWORD UnicodeComposite[TOTAL_VNCHARS];
+extern WORD WinCP1258[TOTAL_VNCHARS];
+extern WORD WinCP1258Pre[TOTAL_VNCHARS];
 
 extern CVnCharsetLib VnCharsetLibObj;
 extern VnConvOptions VnConvGlobalOptions;
+extern int StdVnNoTone[TOTAL_VNCHARS];
+
+int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output);
+
+StdVnChar StdVnToUpper(StdVnChar ch);
+StdVnChar StdVnToLower(StdVnChar ch);
+StdVnChar StdVnRemoveTone(StdVnChar ch);
 
 #endif

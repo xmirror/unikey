@@ -298,10 +298,10 @@ Bool MyCloseHandler(XIMS ims, IMOpenStruct *call_data)
 Bool MyCreateICHandler(XIMS ims, IMChangeICStruct *call_data)
 {
 #ifdef DEBUG
-    printf("Create IC\n");
+  printf("Create IC\n");
 #endif
-    CreateIC(call_data);
-    return True;
+  CreateIC(call_data);
+  return True;
 }
 
 //-----------------------------------------------------------------
@@ -647,7 +647,7 @@ Bool MyTriggerNotifyHandler(XIMS ims, IMTriggerNotifyStruct *call_data)
     //set x event
     imEv.event.type = KeyPress;
     imEv.event.xkey.display = display;
-    imEv.event.xkey.window = ic->focus_win;
+    imEv.event.xkey.window = (ic->focus_win)? ic->focus_win : ic->client_win;
     imEv.event.xkey.root = RootWindow;
     imEv.event.xkey.subwindow = None;
     imEv.event.xkey.time = CurrentTime;
@@ -813,7 +813,12 @@ void MyXEventHandler(Window im_window, XEvent *event)
       if (event->xproperty.window == RootWindow)
 	handlePropertyChanged(im_window, event);
       break;
-
+      /*
+    case ButtonRelease: //this event occurs in IC focus window
+      fprintf(stderr, "Button Release event...\n");
+      resetState();
+      break;
+      */
     default:
       break;
     }

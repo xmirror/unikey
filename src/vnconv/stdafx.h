@@ -34,10 +34,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
 #if defined(_WIN32)
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 // TODO: reference additional headers your program requires here
+#include <stdio.h>
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.

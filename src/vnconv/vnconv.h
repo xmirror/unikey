@@ -2,7 +2,7 @@
 VnConv: Vietnamese Encoding Converter Library
 UniKey Project: http://unikey.sourceforge.net
 Copyleft (C) 1998-2002 Pham Kim Long
-Contact: longcz@yahoo.com
+Contact: longp@cslab.felk.cvut.cz
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,29 +24,28 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define CONV_CHARSET_UNICODE	0
 #define CONV_CHARSET_UNIUTF8    1
-#define CONV_CHARSET_UNIREF     2
+#define CONV_CHARSET_UNIREF     2  //&#D;
 #define CONV_CHARSET_UNIREF_HEX 3
 #define CONV_CHARSET_UNIDECOMPOSED 4
+#define CONV_CHARSET_WINCP1258	5
+#define CONV_CHARSET_UNI_CSTRING 6
 
 #define CONV_CHARSET_VIQR		10
 #define CONV_CHARSET_UTF8VIQR 11
 
-//1-byte charsets
+
 #define CONV_CHARSET_TCVN3		20
 #define CONV_CHARSET_VPS		21
 #define CONV_CHARSET_VISCII		22
 #define CONV_CHARSET_BKHCM1		23
 #define CONV_CHARSET_VIETWAREF	24
 
-#define CONV_TOTAL_SINGLE_CHARSETS 5
-
-//2-byte charsets
 #define CONV_CHARSET_VNIWIN		40
 #define CONV_CHARSET_BKHCM2		41
 #define CONV_CHARSET_VIETWAREX	42
-#define CONV_CHARSET_WINCP1258	43
 
-#define CONV_TOTAL_DOUBLE_CHARSETS 4
+#define CONV_TOTAL_SINGLE_CHARSETS 5
+#define CONV_TOTAL_DOUBLE_CHARSETS 3
 
 
 #define IS_SINGLE_BYTE_CHARSET(x) (x >= CONV_CHARSET_TCVN3 && x < CONV_CHARSET_TCVN3+CONV_TOTAL_SINGLE_CHARSETS)
@@ -54,8 +53,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef unsigned char BYTE;
 
-int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen);
+#if defined(__cplusplus)
+extern "C" {
+#endif
+  //int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen);
+  int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, 
+		int * pInLen, int * pMaxOutLen);
+
 int VnFileConvert(int inCharset, int outCharset, const char *inFile, const char *outFile);
+
+#if defined(__cplusplus)
+}
+#endif
 
 const char * VnConvErrMsg(int errCode);
 
@@ -66,17 +75,25 @@ enum VnConvError {
 	VNCONV_ERR_INPUT_FILE,
 	VNCONV_ERR_OUTPUT_FILE,
 	VNCONV_OUT_OF_MEMORY,
+	VNCONV_ERR_WRITING,
 	VNCONV_LAST_ERROR
 };
 
-struct CharsetNameId {
+typedef struct _CharsetNameId CharsetNameId;
+
+struct _CharsetNameId {
 	char *name;
 	int id;
 };
 
-struct VnConvOptions {
-	int m_viqrMixed;
-	int m_viqrEsc;
+typedef struct _VnConvOptions VnConvOptions;
+
+struct _VnConvOptions {
+	int viqrMixed;
+	int viqrEsc;
+	int toUpper;
+	int toLower;
+	int removeTone;
 };
 
 void VnConvSetOptions(VnConvOptions *pOptions);
@@ -85,5 +102,6 @@ void VnConvResetOptions(VnConvOptions *pOptions);
 
 extern CharsetNameId CharsetIdMap[];
 extern const int CharsetCount;
+
 
 #endif

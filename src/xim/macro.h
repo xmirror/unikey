@@ -34,7 +34,6 @@ extern "C" {
   int UkLoadMacroTable(const char *fileName);
   void UkUpdateMacroTable(int charsetInUse);
 
-  
 #if defined(__cplusplus)
 }
 #endif

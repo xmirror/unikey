@@ -32,6 +32,8 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "IC.h"
 #include <stdio.h>
 
+extern Display *display;
+
 static IC *ic_list = (IC *)NULL;
 static IC *free_list = (IC *)NULL;
 
@@ -102,12 +104,20 @@ static void StoreIC(IC *rec, IMChangeICStruct *call_data)
 		if (Is (XNInputStyle, ic_attr))
 		    rec->input_style = *(INT32*)ic_attr->value;
 
-		else if (Is (XNClientWindow, ic_attr))
+		else if (Is (XNClientWindow, ic_attr)) {
 		    rec->client_win = *(Window*)ic_attr->value;
-		
-		else if (Is (XNFocusWindow, ic_attr))
+		    //added by pklong
+		    //register ButtonRelease event
+		    //fprintf(stderr, "Client window: Registering mouse event...\n");
+		    //XSelectInput(display, rec->client_win, ButtonReleaseMask);
+		}
+		else if (Is (XNFocusWindow, ic_attr)) {
 		    rec->focus_win = *(Window*)ic_attr->value;
-
+		    //added by pklong
+		    //register ButtonRelease event
+		    //fprintf(stderr, "Registering mouse event...\n");
+		    //XSelectInput(display, rec->focus_win, ButtonReleaseMask);
+		}
 		else 
 		    fprintf(stderr, "Unknown attr: %s\n", ic_attr->name);
 	}
@@ -204,16 +214,16 @@ static void StoreIC(IC *rec, IMChangeICStruct *call_data)
 	
 }
 
-void CreateIC(IMChangeICStruct *call_data)
+IC * CreateIC(IMChangeICStruct *call_data)
 {
     IC *rec;
 
     rec = NewIC();
     if (rec == NULL)
-      return;
+      return NULL;
     StoreIC(rec, call_data);
     call_data->icid = rec->id;
-    return;
+    return rec;
 }
 
 void DestroyIC(IMChangeICStruct *call_data)
@@ -222,14 +232,14 @@ void DestroyIC(IMChangeICStruct *call_data)
     return;
 }
 
-void SetIC(IMChangeICStruct *call_data)
+IC * SetIC(IMChangeICStruct *call_data)
 {
     IC *rec = FindIC(call_data->icid);
 
     if (rec == NULL)
-      return;
+      return NULL;
     StoreIC(rec, call_data);
-    return;
+    return rec;
 }
 
 void GetIC(IMChangeICStruct *call_data)

@@ -153,10 +153,19 @@ int ParseOptFile(const char *fileName, void *optRec, OptItem *optList, int count
 
   bufSize = 256;
   buf = (char *)malloc(bufSize);
-  
+
   while (!feof(f)) {
+  /* FreeBSD doesn't have getline, so don't use this
     if ((len = getline(&buf, &bufSize, f)) == -1)
       break;
+  */
+    if (fgets(buf, bufSize, f) == 0)
+      break;
+
+    len = strlen(buf);
+    if (len == 0)
+      break;
+
     if (buf[len-1] == '\n')
       buf[len-1] = 0;
     if (parseLine(buf, &name, &value)) {

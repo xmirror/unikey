@@ -32,6 +32,8 @@
 #include "../xim/ukopt.h"
 #include "../xim/macro.h"
 #include "../gui/xvnkb.h"
+#include "../vnconv/vnconv.h"
+
 #include "uksync.h"
 
 static const guint16 gtk_compose_ignore[] = {
@@ -813,3 +815,22 @@ int latinToUtf(char *dst, char *src, int inSize, int * pOutSize)
   *pOutSize = outLeft;
   return (outLeft >= 0);
 }
+
+/*
+//---------------------------------------------
+static int readContext(GtkIMContext *context)
+{
+  gchar *buf;
+  gint *index;
+
+  if (!gtk_im_context_get_surrounding(context, &buf, &index))
+    return 0;
+
+  
+  //  VnConvert(CONV_CHARSET_UNIUTF8, CONV_CHARSET_TCVNT3, (BYTE *)start, inLen, 
+  g_free(buf);
+}
+*/
+/*
+int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen);
+*/

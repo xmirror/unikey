@@ -121,16 +121,16 @@ long atom_get_value(Atom key)
   Atom at;
   int af;
   long *s;
-  ulong ni, br;
+  unsigned long ni, br;
 
   if (XGetWindowProperty(
-	display,	RootWindow, key, 
+	display,	RootWindow, key,
 	0, //long offset
 	1, //long length
 	False, //no delete
 	XA_CARDINAL, //request type
 	&at, //actual type
-	&af, //actual format 
+	&af, //actual format
 	&ni, //items returned
 	&br, //bytes remaining
 	(unsigned char **)&s) == Success) {
@@ -147,7 +147,7 @@ long atom_get_value(Atom key)
 //-------------------------------------------------
 long UkSetPropValue(Atom atom, long value)
 {
-  XChangeProperty(display, RootWindow, atom, XA_CARDINAL, 32, 
+  XChangeProperty(display, RootWindow, atom, XA_CARDINAL, 32,
 		  PropModeReplace, 
 		  (unsigned char *)&value, 1);
 }

@@ -25,7 +25,7 @@ SOFTWARE.
     This version tidied and debugged by Steve Underwood May 1999
 
 ******************************************************************/
-
+#include <X11/Xlib.h>
 #include <X11/Xlibint.h>
 #include <stdlib.h>
 #include "FrameMgr.h"

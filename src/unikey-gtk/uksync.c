@@ -128,7 +128,7 @@ long atom_get_value(Atom key)
   Atom at;
   int af;
   long *s;
-  ulong ni, br;
+  unsigned long ni, br;
 
   if (XGetWindowProperty(
 	display,	RootWindow, key, 

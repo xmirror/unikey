@@ -23,7 +23,7 @@ AC_CHECK_LIB([X11], [main])
 AC_PATH_X
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h locale.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -33,8 +33,9 @@ AC_TYPE_PID_T
 # Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_MALLOC
+AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol])
+AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol strtoul])
 
 AC_CONFIG_FILES([Makefile
                  src/IMdkit/Makefile
@@ -42,6 +43,8 @@ AC_CONFIG_FILES([Makefile
                  src/gui/Makefile
                  src/ukengine/Makefile
                  src/unikey-gtk/Makefile
+                 src/vnconv-old/Makefile
                  src/vnconv/Makefile
+                 src/vnconv/byteio/Makefile
                  src/xim/Makefile])
 AC_OUTPUT

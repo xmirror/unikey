@@ -76,8 +76,8 @@ int SyncTranslate(int from, SyncMap *list, int count, int fallback)
 //--------------------------------------------
 int UnikeyToSyncCharset(int uk)
 {
-  return SyncTranslate(uk, 
-		       UkToSyncCharsetList, 
+  return SyncTranslate(uk,
+		       UkToSyncCharsetList,
 		       sizeof(UkToSyncCharsetList)/sizeof(SyncMap),
 		       VKC_UTF8);
 }
@@ -95,8 +95,8 @@ int SyncToUnikeyCharset(int sync)
 //--------------------------------------------
 int UnikeyToSyncMethod(int uk)
 {
-  return SyncTranslate(uk, 
-		       UkToSyncMethodList, 
+  return SyncTranslate(uk,
+		       UkToSyncMethodList,
 		       sizeof(UkToSyncMethodList)/sizeof(SyncMap),
 		       VKM_TELEX);
 }
@@ -120,16 +120,16 @@ long atom_get_value(Atom key)
   Atom at;
   int af;
   long *s;
-  ulong ni, br;
+  unsigned long ni, br;
 
   if (XGetWindowProperty(
-	display,	RootWindow, key, 
+	display,	RootWindow, key,
 	0, //long offset
 	1, //long length
 	False, //no delete
 	XA_CARDINAL, //request type
 	&at, //actual type
-	&af, //actual format 
+	&af, //actual format
 	&ni, //items returned
 	&br, //bytes remaining
 	(unsigned char **)&s) == Success) {
@@ -146,8 +146,8 @@ long atom_get_value(Atom key)
 //-------------------------------------------------
 void UkSetPropValue(Atom atom, long value)
 {
-  XChangeProperty(display, RootWindow, atom, XA_CARDINAL, 32, 
-		  PropModeReplace, 
+  XChangeProperty(display, RootWindow, atom, XA_CARDINAL, 32,
+		  PropModeReplace,
 		  (unsigned char *)&value, 1);
 }
 

@@ -72,9 +72,9 @@ typedef struct _IC {
     struct _IC	*next;
 } IC;
 
-void SetIC(IMChangeICStruct *call_data);
+IC * SetIC(IMChangeICStruct *call_data);
 void GetIC(IMChangeICStruct *call_data);
-void CreateIC(IMChangeICStruct *call_data);
+IC * CreateIC(IMChangeICStruct *call_data);
 void DestroyIC(IMChangeICStruct *call_data);
 IC *FindIC(CARD16 icid);
 

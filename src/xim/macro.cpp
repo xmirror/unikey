@@ -110,7 +110,7 @@ void UkUpdateMacroTable(int charsetInUse)
     ret = VnConvert(CONV_CHARSET_VIQR, outCharset, 
 		    (BYTE *)MacroStore.m_table[i].text,
 		    (BYTE *)p,
-		    inLen, maxOutLen);
+		    &inLen, &maxOutLen);
     if (ret != 0) {
       p -= (len+1);
       offset -= (len+1);
@@ -124,3 +124,4 @@ void UkUpdateMacroTable(int charsetInUse)
   }
   pUkMacro->macroCount = k;
 }
+

@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
-AC_INIT([Unikey X Input Method], [0.9.1b], [longcz@yahoo.com], [x-unikey])
+AC_INIT([Unikey X Input Method], [0.9.1c], [longcz@yahoo.com], [x-unikey])
 AC_CONFIG_SRCDIR([src/xim/xim.c])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_CONFIG_HEADER([config.h])
@@ -34,7 +34,7 @@ AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
 AC_HEADER_STDC
 AC_PATH_X
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -47,8 +47,9 @@ AC_PATH_XTRA
 # Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_MALLOC
+AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol])
+AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol strtoul])
 
 AC_ARG_WITH(unikey-gtk, 
 	AC_HELP_STRING([--with-unikey-gtk],[Include Unikey GTK IM module (Default: excluded)]), 
@@ -117,5 +118,6 @@ AC_CONFIG_FILES([Makefile
   src/IMdkit/Makefile
   src/gui/Makefile
   src/vnconv/Makefile
+  src/vnconv/byteio/Makefile
   src/xim/Makefile])
 AC_OUTPUT

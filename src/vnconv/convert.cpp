@@ -2,7 +2,7 @@
 VnConv: Vietnamese Encoding Converter Library
 UniKey Project: http://unikey.sourceforge.net
 Copyleft (C) 1998-2002 Pham Kim Long
-Contact: longcz@yahoo.com
+Contact: longp@cslab.felk.cvut.cz
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,37 +26,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string.h>
 
 #if defined(_WIN32)
-#include <io.h>
-#include <fcntl.h>
+	#include <io.h>
+	#include <fcntl.h>
 #endif
 
 #include "vnconv.h"
 
 int vnFileStreamConvert(int inCharset, int outCharset, FILE * inf, FILE *outf);
 
-
-int genConvert(VnCharset & incs, VnCharset & outcs, BYTE *input, BYTE *output, int & inLen, int & maxOutLen)
+int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output)
 {
-	int bytes;
 	StdVnChar stdChar;
-	int maxAvail = maxOutLen;
-	int bytesRead;
+	int bytesRead, bytesWritten;
+
 	incs.startInput();
 	outcs.startOutput();
-	do {
-		input = incs.nextInput(input, inLen, stdChar, bytesRead);
-		if (inLen != -1) {
-			inLen -= bytesRead;
-			if (inLen < 0)
-				inLen = 0;
+
+	int ret = 1;
+	while (!input.eos()) {
+		if (incs.nextInput(input, stdChar, bytesRead)) {
+			if (stdChar != INVALID_STD_CHAR) {
+				if (VnCharsetLibObj.m_options.toLower)
+					stdChar = StdVnToLower(stdChar);
+				else if (VnCharsetLibObj.m_options.toUpper)
+					stdChar = StdVnToUpper(stdChar);
+				if (VnCharsetLibObj.m_options.removeTone)
+					stdChar = StdVnRemoveTone(stdChar);
+				ret = outcs.putChar(output, stdChar, bytesWritten);
+			}
 		}
-		if (bytesRead > 0 && stdChar != INVALID_STD_CHAR) {
-			output = outcs.putChar(output, stdChar, bytes, maxAvail);
-			maxAvail -= bytes;
-		}
-	} while ((inLen != -1 || stdChar) && bytesRead>0);
-	maxOutLen -= maxAvail;
-	return (maxAvail >= 0)? 0 : VNCONV_OUT_OF_MEMORY;
+		else break;
+	}
+	return (ret? 0 : VNCONV_OUT_OF_MEMORY);
 }
 
 //----------------------------------------------
@@ -73,23 +74,34 @@ int genConvert(VnCharset & incs, VnCharset & outcs, BYTE *input, BYTE *output, i
 // Returns:  0 if successful
 //           error code: if failed
 //----------------------------------------------
-int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen)
+//int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen)
+
+int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, 
+	      int * pInLen, int * pMaxOutLen)
 {
+	int inLen, maxOutLen;
 	int ret = -1;
+
+	inLen = *pInLen;
+	maxOutLen = *pMaxOutLen;
+
 	if (inLen != -1 && inLen < 0) // invalid inLen
 		return ret;
 
 	VnCharset *pInCharset = VnCharsetLibObj.getVnCharset(inCharset);
 	VnCharset *pOutCharset = VnCharsetLibObj.getVnCharset(outCharset);
+
 	if (!pInCharset || !pOutCharset)
 		return VNCONV_INVALID_CHARSET;
 
-	return  genConvert(*pInCharset, *pOutCharset, input, output, inLen, maxOutLen);
+	StringBIStream is(input, inLen);
+	StringBOStream os(output, maxOutLen);
+
+	ret = genConvert(*pInCharset, *pOutCharset, is, os);
+	*pMaxOutLen = os.getOutBytes();
+	*pInLen = is.left();
+	return ret;
 }
-
-
-char Ibuf[4096];
-char Obuf[4096*8];
 
 //---------------------------------------
 // Arguments:
@@ -192,7 +204,6 @@ end:
 	return ret;
 }
 
-
 //------------------------------------------------
 // Returns:
 //     0: successful
@@ -200,23 +211,24 @@ end:
 //---------------------------------------
 int vnFileStreamConvert(int inCharset, int outCharset, FILE * inf, FILE *outf)
 {
-	int count, ret, maxOutLen;
-	ret = 0;
+	int ret = 0;
+
+	VnCharset *pInCharset = VnCharsetLibObj.getVnCharset(inCharset);
+	VnCharset *pOutCharset = VnCharsetLibObj.getVnCharset(outCharset);
+
+	if (!pInCharset || !pOutCharset)
+		return VNCONV_INVALID_CHARSET;
+
 	if (outCharset == CONV_CHARSET_UNICODE) {
 		WORD sign = 0xFEFF;
 		fwrite(&sign, sizeof(WORD), 1, outf);
 	}
-	while (!feof(inf)) {
-		count = fread(Ibuf, 1, sizeof(Ibuf), inf);
-		maxOutLen = sizeof(Obuf);
-		ret = VnConvert(inCharset, outCharset, (BYTE *)Ibuf, (BYTE *)Obuf, count, maxOutLen);
-		if (ret == 0) {
-			fwrite(Obuf, maxOutLen, 1, outf);
-			if (count > 0 && maxOutLen > 0)
-				fseek(inf, -count, SEEK_CUR);
-		}
-		else break;
-	}
-	return ret;
-}
 
+	FileBIStream is;
+	FileBOStream os;
+
+	is.attach(inf);
+	os.attach(outf);
+
+	return genConvert(*pInCharset, *pOutCharset, is, os);
+}
