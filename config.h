@@ -149,6 +149,11 @@
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
 
+/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif
+
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
 
@@ -166,5 +171,3 @@
 
 /* Define as `fork' if `vfork' does not work. */
 /* #undef vfork */
-
-#define _GNU_SOURCE
