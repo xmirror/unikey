@@ -305,8 +305,25 @@ Create a symbolic link in ~/.kde/AutoStart
 
 $ ln -s /usr/local/bin/unikey ~/.kde/AutoStart
 
+6.5 How to fresh-restart unikey (pls, correct my English :-)
+------------------------------------------------------------
 
-6.5 If some application does not work with unikey
+As pointed out in 4.2, when you close Unikey, it still remains in
+memory. This would be sufficient in most cases. However, in some
+special cases if you want to launch a fresh-start of unikey, follow
+these steps:
+
+- run: kill `pidof unikey`
+- Change the config file if you wish. 
+- run unikey again.
+
+Note: 
+- restarting unikey this way may cause some applications to crash.
+- I can see only 1 reason to do this is when you want to change XimFlow
+between Dynamic and Static.
+
+
+6.6 If some application does not work with unikey
 ------------------------------------------------
 Try the following steps:
 
@@ -315,6 +332,8 @@ Try the following steps:
 - Edit config file, change "XimFlow" option from Static to Dynamic or
 vice versa (if it was Dynamic).
 
+- run unikey again.
+
 - reset your application.
 
 If it still does not work, try further:
@@ -322,7 +341,5 @@ If it still does not work, try further:
 - Edit config file, change "CommitMethod" option from Send to Forward or
 vice versa (if it was Forward).
  
-
-
-
+See 6.5 for cautions.
 

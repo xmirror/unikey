@@ -316,12 +316,16 @@ void MyXEventHandler(Window im_window, XEvent *event)
 
   case VisibilityNotify:
     {
+      if (event->xvisibility.state != VisibilityUnobscured)
+	XRaiseWindow(display, im_window);
+      /*
       static int count = 10;
       if (event->xvisibility.state != VisibilityUnobscured && count > 0) {
 	count--;
 	//	fprintf(stderr, "Visibility count: %d\n", count);
 	XRaiseWindow(display, im_window);
       }
+      */
     }
     break;
   default:
@@ -485,9 +489,6 @@ int main(int argc, char **argv)
   UkSetPropValue(ASuspend, 0);
   UkSuspend = 0;
 
-  signalSetup();
-  ChildPid = childProcess();
-
   /* get screen size from display structure macro */
   ScreenNum = DefaultScreen(display);
   displayWidth = DisplayWidth(display, ScreenNum);
@@ -553,6 +554,9 @@ int main(int argc, char **argv)
   UkSetPropValue(AGUIPosX, MainWinX);
   UkSetPropValue(AGUIPosY, MainWinY);
 
+  signalSetup();
+  ChildPid = childProcess();
+
   UkLoopContinue = 1;
   while (UkLoopContinue) {
     XEvent event;
@@ -588,12 +592,15 @@ void getGC(Window win, GC *gc, XFontStruct *font)
 //--------------------------------------------------------------
 void loadFont(XFontStruct ** font)
 {
-  //  char *fontname = "9x15";
-  char *fontname = "-adobe-helvetica-bold-r-normal-*-12-120-*-*-*-*-*-*";
+  char *fontname = "-*-helvetica-bold-r-normal-*-12-120-*-*-*-*-*-*";
+  char *failsafeFont = "7x13";
   /* Load font and get font information structure. */
   if ((*font = XLoadQueryFont(display,fontname)) == NULL) {
-    fprintf( stderr, "%s: Cannot open font\n", progname);
-    exit( -1 );
+    //load failsafe font
+    if ((*font = XLoadQueryFont(display,failsafeFont)) == NULL) {
+      fprintf( stderr, "%s: Cannot open font\n", progname);
+      exit( -1 );
+    }
   }
 }
 
