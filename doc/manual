@@ -1,0 +1,328 @@
+Unikey Input Method for X-Window
+Copyright (C) 2004 Pham Kim Long
+Contact:
+   longcz@yahoo.com
+   UniKey project: http://unikey.sf.net
+
+======================================================================
+About this manual
+
+This is a very brief manual. Sorry only English version is available
+at the moment. I just don't like writing Vietnamese in VIQR. More
+detailed documents in Vietnamese will be available later in HTML
+format. Your contribution to documentation are always welcome.
+
+----------------------------------------------------------------------
+About x-unikey package
+
+This package contains the following components:
+- ukxim: Unikey XIM (X Input Method) server
+- unikey: GUI for ukxim and unikey-gtk
+- unikey-gtk: GTK vietnamese input method module
+
+In most cases you only need unikey and ukxim to type Vietnamese in
+applications (including GTK applications).
+
+unikey-gtk can be used only with in GTK applications. This program is
+provided as an experiment and for use in special cases.
+----------------------------------------------------------------------
+
+----------------
+1. Requirements
+----------------
+
+- The system must have either en_US.UTF-8 or vi_VN.UTF-8 locale
+installed
+
+- XMODIFIERS environment variable must be set to use unikey as X input
+method, i.e. XMODIFIERS="@im=unikey".
+
+- If you want to use unicode charset, LANG variable must be set as
+follows (preferably in ~/.bash_profile or ~/.bashrc)
+
+export LANG=en_US.UTF-8
+
+or
+
+export LANG=vi_VN.UTF-8
+
+------------
+2. Features
+------------
+
+Unikey provides:
+- TELEX, VNI, VIQR, VIQR* input methods.
+- UNICODE (UTF-8), TCVN, VNI, VIQR charsets.
+- Support for macro (auto text)
+
+----------------------
+3. Start using Unikey
+----------------------
+
+- Put these lines into ~/.bash_profile or ~/.bashrc:
+
+export XMODIFIERS="@im=unikey"
+export GTK_IM_MODULE="xim"
+
+- Re-login
+
+- Run unikey
+
+$ unikey
+
+- Run applications and start using unikey!
+
+See 4.2 on how to close unikey
+
+------------
+4. Usage
+------------
+
+4.1 Change settings
+-------------------------
+
+4.1.1 Keyboard shortcuts
+
+The following shortcuts are provided to change Unikey's settings:
+
+  CTRL-SHIFT: switch on/off
+
+  ALT-SHIFT-F1: Change to UNICODE charset
+  ALT-SHIFT-F2: VIQR charset
+  ALT-SHIFT-F3: TCVN charset
+  ALT-SHIFT-F4: VNI charset
+
+  ALT-SHIFT-F5: Change to TELEX input method
+  ALT-SHIFT-F6: VNI input method
+  ALT-SHIFT-F7: VIQR input method
+  ALT-SHIFT-F8: VIQR* input method
+
+4.1.2 Using Unikey window
+
+The settings can also be changed by clicking the Unikey icon:
+
+- Left-click: Switch on/off
+- Right-click: rotate through charsets
+- Control + Right-click: rotate through input methods
+- Control-Alt + Left-click: Quit Unikey (See 4.6 Cautions!!!)
+
+4.1.3 Reloading settings
+-------------------------
+Settings in a configuration file can be reloaded by one of 2 ways:
+  [ALT-SHIFT] + Left Click unikey icon
+or
+  $ kill -s USR1 `pidof ukxim`
+
+
+4.2 Closing unikey
+-------------------------
+Control-Alt + Left-click
+
+Once Unikey has been started, you should not close it. Some (badly XIM
+implemented) applications that have established connection with Unikey
+may crash if you close it. Xterm, Mozilla Firebird are known to have
+this problem with XIM server.
+
+Don't close unikey if all you want is to reload your settings
+from the config file. See 4.1.3 on how to reload settings.
+
+[UPDATED from 0.9.1]
+
+To prevent applications from crashing when unikey is closed, from
+version 0.9.1 you can only hide unikey window and disable the XIM
+server.
+
+If you press [Control-Alt + Left-click], unikey window will disappear
+and the unikey XIM server is disabled, but unikey and ukxim processes
+still remain in the memory. Everything will work exactly as if unikey
+has never been loaded. To start using unikey again, just run unikey
+again. If you really want to get rid of unikey from memory (although I
+see no reason to so so), run:
+
+$ kill `pidof unikey`
+
+
+4.3 Command line options:
+-------------------------
+
+4.3.1 unikey:
+
+Command line: 
+  unikey [OPTIONS]
+
+Options:
+  -h, -help        Print help and exit
+  -v, -version     Show version and exit
+  -display <name>  Display name to connect to
+  -xim <ukxim>     Path to Unikey XIM server (ukxim)
+  -config <file>   Specify configuration file (default: ~/.unikeyrc)
+  -macro <file>    Load macro file
+
+Examples:
+  $ unikey
+      Unikey will search for ukxim in the default search path
+  $ unikey -xim /usr/local/bin/ukxim -macro ~/ukmacro
+      Explicitly specifies ukxim, and loads ukmacro
+
+4.3.2 ukxim:
+(See 6.2 on how you can run ukxim independently)
+
+Command line: 
+  ukxim [OPTIONS]
+
+Options:
+  -h, -help        Print help and exit
+  -v, -version     Show version and exit
+  -display <name>  Display name to connect to
+  -xvnkb-sync      Enable synchronization with xvnkb GUI
+  -config <file>   Specify configuration file (default: ~/.unikeyrc)
+  -macro <file>    Load macro file
+
+Examples:
+  $ ukxim &
+      Runs ukxim with default options
+  $ unikey -macro ~/ukmacro &
+      Runs ukxim with ukmacro file loaded from home directory
+
+
+4.4 Configuration file
+------------------------
+Initial settings for Unikey can be put into a configuration file. Upon
+starting, unikey looks for .unikeyrc in your home directory. If this
+file does not exist, unikey will create it with default options.
+
+You can explicitly specify configuration file on command line (see
+4.3)
+
+See the sample unikeyrc file in this directory for syntax of
+configuration file.
+
+
+4.5 Macro (auto-text)
+------------------------
+Macro feature lets you type frequently used words quickly. E.g.: "vn"
+for "Vie^.t Nam", "cntt" for "Co^ng nghe^. tho^ng tin".
+
+Write macros in a file, then specify it in unikey command line, or in
+configuration file.
+
+The syntax for macro file is shown in the sample file ukmacro in this
+directory.
+
+Note: Macro file uses VIQR encoding charset.
+
+4.6 Cautions!!!
+----------------
+
+4.6.1 
+
+Once Unikey has been started, you should not close it. Some (badly XIM
+implemented) applications that have established connection with Unikey
+may crash if you close it. Xterm, Mozilla Firebird are known to have
+this problem with XIM server.
+
+Don't close unikey if you simply want unikey to reload your settings
+in config file. Use the keyboard shortcut (see 4.1.3) to reload config
+file. Or you can reload config file "the professional way" as follows
+:)
+
+$ kill -s USR1 `pidof ukxim`
+
+4.6.2
+
+When using unikey, other Vietnamese input programs (such as xnvkb)
+should be disabled/deactivated. (Just disable, not necessarily to
+uninstall it).
+
+---------------------
+5. GTK applications
+---------------------
+
+GTK applications can either use unikey XIM (ukxim) or unikey-gtk for
+Vietnamese input. To use XIM by default, set this variable in
+~/.bash_profile:
+
+export GTK_IM_MODULE=xim
+
+To use unikey GTK module by default:
+
+export GTK_IM_MODULE=unikey
+
+To change between these two modes: right-click the input box and
+select the desired input method ("Unikey" or "X Input Method" menu
+item).
+
+Notes: These two modes work almost the same in GTK applications
+:-). In the future unikey-gtk may have more special features.
+
+-----------------
+6. Miscellaneous
+-----------------
+
+6.1 Using xterm with unikey
+------------------------------
+If in the configuration file you set "CommitMethod=Forward" and unikey
+works fine with xterm, then you don't have to read this section.
+
+If xterm does not work with "CommitMethod=Forward" then set
+"CommitMethod=Send" in the config file. You also have to change change
+xterm settings by putting this line in ~/.Xresources:
+
+xterm*allowSendEvents: 1
+
+Then run:
+$ xrdb -load ~/.Xresources
+
+Reason: By default xterm does not accept synthetic messages sent by
+other applications.
+
+6.2 Synchronizing ukxim with xvnkb GUI
+----------------------------------
+
+ukxim has been designed to to work with xvnkb GUI. Run these commands:
+
+$ ukxim -xvnkb-sync &
+$ xvnkb
+
+In this mode, you MUST disable xvnkb core. (unset LD_PRELOAD, or
+remove the line that loads xvnkb core in /etc/ld.preload)
+
+(Many thanks to Dao Hai Lam and Nguyen Thai Ngoc Duy for this feature)
+
+
+6.3 Auto-start Unikey when GNOME starts
+------------------------------------------------
+In Debian, put this line to ~/.gnomerc
+
+unikey
+
+Note: This may not work in other distributions
+
+
+6.4 Auto-start Unikey when KDE starts
+------------------------------------------------
+Create a symbolic link in ~/.kde/AutoStart
+
+$ ln -s /usr/local/bin/unikey ~/.kde/AutoStart
+
+
+6.5 If some application does not work with unikey
+------------------------------------------------
+Try the following steps:
+
+- run: kill `pidof unikey`
+
+- Edit config file, change "XimFlow" option from Static to Dynamic or
+vice versa (if it was Dynamic).
+
+- reset your application.
+
+If it still does not work, try further:
+- run: kill `pidof unikey`
+- Edit config file, change "CommitMethod" option from Send to Forward or
+vice versa (if it was Forward).
+ 
+
+
+
+

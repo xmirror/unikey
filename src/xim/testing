@@ -1,0 +1,11 @@
+xterm:
+ forward pause: not bouncing back
+ forward backspace: bounce back once, then accepted
+ send pause: ignored by xterm (not reived by XIM)
+ send backspace: ignored by xterm (not reived by XIM)
+
+gedit:
+ send pause, send backspace: processed as normal
+ forward backspace: not bounce back, but accepted
+
+serveridk

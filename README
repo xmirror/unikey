@@ -1,0 +1,12 @@
+Unikey Input Method for X-Window
+Copyright (C) 2004 Pham Kim Long
+================================
+
+This package contains following components:
+- ukxim: Unikey XIM (X Input Method) server
+- unikey: GUI for ukxim and unikey-gtk
+- unikey-gtk: GTK vietnamese input method module
+
+To install: see INSTALL
+Manual: see doc/manual
+

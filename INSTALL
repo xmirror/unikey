@@ -1,0 +1,43 @@
+Unikey Input Method for X-Window
+Copyright (C) 2004 Pham Kim Long
+Contact:
+   longcz@yahoo.com
+   UniKey project: http://unikey.sf.net
+
+================================================
+
+This package contains the following components:
+- ukxim: Unikey XIM (X Input Method) server
+- unikey: GUI for ukxim and unikey-gtk
+- unikey-gtk: GTK vietnamese input method module
+
+------------------------------------------------
+1. Build process
+
+1.a Build default components:
+
+$ ./configure
+$ make
+
+1.b Build Unikey XIM and unikey-gtk
+
+$ ./configure --with-unikey-gtk
+$ make
+
+* SUSE users should provide "configure" with the path to gtk configuration directory.
+In SUSE 9.0 it is "/etc/opt/gnome/gtk-2.0". For example:
+
+$ ./configure --with-unikey-gtk --with-gtk-sysconfdir=/etc/opt/gnome/gtk-2.0
+
+--------
+2. System install:
+You must login as root to install this program.
+
+$ make install
+
+To install stripped version (smaller size).
+
+$ make install-strip
+
+----------
+3. Usage: See doc/manual

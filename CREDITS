@@ -1,0 +1,13 @@
+I would like to thank:
+
+- Hidetoshi Tajima: Without his IMdkit, x-unikey would never come to existence.
+
+- msongd (Tung), for his work with yavim. It's his idea of using IMkit
+that provided a kick-start for this project.
+
+- Dao Hai Lam, for his pioneering work with xvnkb. Many X programming
+techniques in xvnkb has been learned and used in writing unikey GUI.
+
+- Nguyen Thai Ngoc Duy for his work in synchronizing unikey-gtk with
+xvnkb GUI.
+

@@ -1,0 +1,32 @@
+# Unikey XIM config file
+
+# Initial state: On|Off
+InitState = On
+
+# Input methods: TELEX|VNI|VIQR|VIQR*
+Input = TELEX
+
+# Output charsets: UNICODE|TCVN|VNI|VIQR
+Charset = UNICODE
+
+# FreeStyle: Yes|No
+# "Yes" means you can type hook, breve marks at the end of words
+# TELEX users should use "No", VNI users should use "Yes"
+FreeStyle = No
+
+# ToneManual: Yes|No
+# You should set this to "No" to let Unikey determine position for tone marks.
+ToneManual = No
+
+# ModernStyle: Yes|No
+# "Yes" means "hoa', khoe?" style, "No" means "ho'a, kho?e" style
+ModernStyle = No
+
+# Macrofile: path to macro file
+# To enable macro, uncomment the following line and specify the path to your macro file
+#MacroFile = ~/ukmacro
+
+# XvnkbSync: Yes|No
+# Set to "Yes" to synchronize unikey-gtk with xvnkb GUI
+# This applies only to unikey-gtk module, not XIM server (ukxim)
+XvnkbSync = No

@@ -1,0 +1,71 @@
+# Unikey XIM config file
+
+# AutoSave: Yes|No
+# If AutoSave=Yes, unikey will save options on exit
+# Be careful when editing this file while unikey is running with AutoSave enabled
+#   Upon exit unikey will overwrite your settings. To avoid that, tell unikey
+#   to reload config file when you finish editing. See unikey manual
+# AutoSave is useful if you want unikey to remember its window position
+AutoSave = Yes
+
+# Initial state: On|Off
+InitState = ON
+
+# Input methods: TELEX|VNI|VIQR|VIQR*
+Input = TELEX
+
+# Output charsets: UNICODE|TCVN|VNI|VIQR
+Charset = UNICODE
+
+# FreeStyle: Yes|No
+# "Yes" means you can type hook, breve marks at the end of words
+# TELEX users should use "No", VNI users should use "Yes"
+FreeStyle = No
+
+# ToneManual: Yes|No
+# You should set this to "No" to let Unikey determine position for tone marks.
+ToneManual = No
+
+# ModernStyle: Yes|No
+# "Yes" means "hoa', khoe?" style, "No" means "ho'a, kho?e" style
+ModernStyle = No
+
+# XvnkbSync: Yes|No
+# Set to "Yes" to synchronize unikey-gtk with xvnkb GUI
+# This applies only to unikey-gtk module, not XIM server (ukxim)
+# To synchronize ukxim with xvnkb GUI, see doc/manual
+XvnkbSync = No
+
+# Bell: Yes|No
+# Turn on/off bell notification when key shortcuts are pressed
+Bell = Yes
+
+# CommitMethod: Send|Forward|Mixed. Default: Send
+#   Use XSendEvent or XIM forward key event to commit string
+# Both methods will work with most applications.
+# Some application with high-level security may
+#   block XSendEvent, so CommitMethod must be set to "Forward"
+# Some versions of xterm are known to work only if CommitMethod=Send
+#   see doc/manual for information on xterm
+# I recommend "Send" first. If it does not work, try "Forward"
+CommitMethod = Send
+
+# XimFlow = Static|Dynamic. Default: Static
+# You should always use Static. If something does not work,
+#   then try Dynamic. Rxvt-unicode is known to work only with Dynamic mode.
+# Before changing this option, make sure unikey is not loaded in memory.
+XimFlow = Static
+
+# Macrofile: path to macro file
+# To enable macro, specify the path to your macro file.
+# For example: MacroFile = ~/ukmacro
+#MacroFile = ~/ukmacro
+
+# PosX: X Position of unikey window
+# set a minus value to let unikey use the default position
+PosX = 1200
+
+# PosY: Y Position of unikey window
+# set a minus value to let unikey use the default position
+PosY = 998
+

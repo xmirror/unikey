@@ -1,0 +1,6 @@
+# GTK+ Input Method Modules file
+# Automatically generated file, do not edit
+#
+"/home/pklong/projects/unikey-gtk/src/im-vn.la" 
+"unikey" "Vietnamese Input Method (UniKey)" "gtk20" "/usr/local/share/locale" "vi" 
+

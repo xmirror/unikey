@@ -1,0 +1,5 @@
+pattern.lo pattern.o: pattern.cpp stdafx.h pattern.h
+
+stdafx.h:
+
+pattern.h:

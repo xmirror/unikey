@@ -1,0 +1,31 @@
+macro.lo macro.o: ../xim/macro.cpp /usr/include/string.h \
+  /usr/include/features.h /usr/include/sys/cdefs.h \
+  /usr/include/gnu/stubs.h \
+  /usr/lib/gcc-lib/i486-linux/3.3.2/include/stddef.h \
+  /usr/include/xlocale.h ../xim/macro.h ../ukengine/ukengine.h \
+  ../ukengine/unikey.h ../ukengine/keycons.h ../vnconv/vnconv.h \
+  ../xim/mactab.h
+
+/usr/include/string.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/lib/gcc-lib/i486-linux/3.3.2/include/stddef.h:
+
+/usr/include/xlocale.h:
+
+../xim/macro.h:
+
+../ukengine/ukengine.h:
+
+../ukengine/unikey.h:
+
+../ukengine/keycons.h:
+
+../vnconv/vnconv.h:
+
+../xim/mactab.h:

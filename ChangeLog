@@ -1,0 +1,31 @@
+4.2.2004: Quick fix for 0.9.1
+  - Added dynamic XIM flow mode so rxvt-unicode can work with unikey. 
+  (option: XimFlow in config File).
+2.2.2004:  0.9.1
+  Unikey can only be stopped by using "kill" command.
+    [CTRL-ALT-Left click] will make unikey window disappear and disable
+    unikey XIM server, but they still remain in memory.
+  unikey-gtk will not be built by default. Must use configure --with-unikey-gtk
+
+1.2.2004:
+  More options: AutoSave, save window positions, commitMethod
+  Use [ALT-SHIFT-Left click] for reloading config file (instead of ALT-SHIFT-F9)
+
+31.1.2004:
+  Fixed buil problem: autoheader was run by make, which also called autoconf.
+    The problem was because config.h.in timestamp was not updated.
+  Fixed bug in unikey-gtk: reload config file caused gtk apps to crash.
+  Added option "Bell" to turn on/off bell notification.
+  
+30.1.2004:
+  First version of unikey XIM package.
+  
+7.1.2004: 
+  - changed install script. im-vn.so will be installed in
+    the same place as other input modules (/usr/lib/gtk2.0/)
+  - more options:
+6.1.2004: version 1.0
+3.1.2004: 
+  Start creating configure.ac
+31.12.2003:
+  Unikey-gtk Project started

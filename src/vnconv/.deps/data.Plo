@@ -1,0 +1,9 @@
+data.lo data.o: data.cpp stdafx.h charset.h vnconv.h pattern.h
+
+stdafx.h:
+
+charset.h:
+
+vnconv.h:
+
+pattern.h:
