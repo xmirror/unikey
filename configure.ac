@@ -104,6 +104,12 @@ fi
 
 AM_CONDITIONAL([COND_UNIKEY_GTK], [test "X$unikey_gtk" = "Xyes"])
 
+AH_VERBATIM([_GNU_SOURCE],
+[/* Enable GNU extensions on systems that have them.  */
+#ifndef _GNU_SOURCE
+# define _GNU_SOURCE
+#endif])
+
 AC_CONFIG_FILES([Makefile 
   src/Makefile 
   src/ukengine/Makefile

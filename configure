@@ -25181,6 +25181,9 @@ else
 fi
 
 
+
+
+
                                                                                 ac_config_files="$ac_config_files Makefile src/Makefile src/ukengine/Makefile src/unikey-gtk/Makefile src/IMdkit/Makefile src/gui/Makefile src/vnconv/Makefile src/xim/Makefile"
 
 cat >confcache <<\_ACEOF
