@@ -149,8 +149,8 @@ void testParse(UkXimOpt *options)
 int UkParseOptFile(const char *fileName, UkXimOpt *options)
 {
   int ret;
-  ret = ParseOptFile(fileName, options, UkXimOptList, sizeof(UkXimOptList)/sizeof(OptItem));
   char *expName;
+  ret = ParseOptFile(fileName, options, UkXimOptList, sizeof(UkXimOptList)/sizeof(OptItem));
   if (ParseExpandFileName(options->macroFile, &expName)) {
     free(options->macroFile);
     options->macroFile = expName;

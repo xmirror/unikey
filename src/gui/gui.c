@@ -283,8 +283,8 @@ void MyXEventHandler(Window im_window, XEvent *event)
 
   case MotionNotify:
     if (dragging) {
-      moved = 1;
       XMotionEvent *mev = (XMotionEvent *)event;
+      moved = 1;
       MainWinX = mev->x_root - dragX;
       MainWinY = mev->y_root - dragY;
 
