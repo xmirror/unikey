@@ -23,7 +23,7 @@ AC_CHECK_LIB([X11], [main])
 AC_PATH_X
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h wchar.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h locale.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST

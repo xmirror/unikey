@@ -34,7 +34,7 @@ AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
 AC_HEADER_STDC
 AC_PATH_X
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h wchar.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
