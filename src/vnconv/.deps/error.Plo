@@ -1,5 +1,0 @@
-error.lo error.o: error.cpp stdafx.h vnconv.h
-
-stdafx.h:
-
-vnconv.h:
