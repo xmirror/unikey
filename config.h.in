@@ -166,4 +166,5 @@
 /* Define as `fork' if `vfork' does not work. */
 #undef vfork
 
+//use some GNU extension
 #define _GNU_SOURCE

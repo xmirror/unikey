@@ -1,6 +1,7 @@
 4.2.2004: Quick fix for 0.9.1
   - Added dynamic XIM flow mode so rxvt-unicode can work with unikey. 
   (option: XimFlow in config File).
+  - fixed some bugs (???)
 2.2.2004:  0.9.1
   Unikey can only be stopped by using "kill" command.
     [CTRL-ALT-Left click] will make unikey window disappear and disable
