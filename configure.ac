@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
-AC_INIT([Unikey X Input Method], [0.9.1], [longcz@yahoo.com], [x-unikey])
+AC_INIT([Unikey X Input Method], [0.9.1b], [longcz@yahoo.com], [x-unikey])
 AC_CONFIG_SRCDIR([src/xim/xim.c])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_CONFIG_HEADER([config.h])

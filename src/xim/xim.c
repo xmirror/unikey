@@ -52,6 +52,10 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Boston, MA 02111-1307, USA.
  */
 
+#if HAVE_CONFIG_H
+#  include <config.h>
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <signal.h>
 #include <X11/Xlocale.h>
@@ -914,8 +918,13 @@ void initXIM(Window im_window, const char *imname)
 void usage()
 {
   char *usageText = 
-    "\nUnikey XIM - Vietnamese input method for X Window. Version 0.9.1\n"
-    "UniKey project: http://unikey.sourceforge.net\n"
+    "\nUnikey XIM - Vietnamese input method for X Window. Version "
+#ifdef PACKAGE_VERSION
+    PACKAGE_VERSION
+#else
+    "0.9.1"
+#endif
+    "\nUniKey project: http://unikey.sourceforge.net\n"
     "Copyright (C) 1998-2004 Pham Kim Long\n"
     "---------------------------------------------------------------\n"
     "Command line: \n"
@@ -941,7 +950,13 @@ void showVersion()
 {
   char *versionText = 
     "\nUnikey XIM - Vietnamese input method for X Window\n"
-    "Version 0.9.1\n";
+    "Version "
+#ifdef PACKAGE_VERSION
+    PACKAGE_VERSION
+#else
+    "0.9.1"
+#endif
+    "\n";
   puts(versionText);
 }
 
