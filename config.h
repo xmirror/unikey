@@ -92,6 +92,9 @@
 /* Define to 1 if you have the `strtol' function. */
 #define HAVE_STRTOL 1
 
+/* Define to 1 if you have the `strtoul' function. */
+#define HAVE_STRTOUL 1
+
 /* Define to 1 if you have the <sys/param.h> header file. */
 #define HAVE_SYS_PARAM_H 1
 
@@ -132,13 +135,13 @@
 #define PACKAGE_NAME "Unikey X Input Method"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Unikey X Input Method 0.9.1b"
+#define PACKAGE_STRING "Unikey X Input Method 0.9.1c"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "x-unikey"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.9.1b"
+#define PACKAGE_VERSION "0.9.1c"
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
@@ -155,7 +158,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.9.1b"
+#define VERSION "0.9.1c"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
