@@ -171,6 +171,7 @@ void UnikeyBackspacePress()
   UkEngine.process(BACK_CHAR);
   UnikeyBufChars = UkEngine.keysPushed;
   UnikeyBackspaces = UkEngine.backs;
+  //  printf("Backspaces: %d\n",UnikeyBackspaces);
 }
 
 ////////////////////////////////////

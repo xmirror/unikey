@@ -98,6 +98,7 @@ static unsigned int ReturnKeycode;
 static char ReturnChar;
 
 static Bool PendingCommit = False;
+static Bool DataCommit = False;
 static Bool UkMacroLoaded = False;
 static Bool UkTriggering = False;
 
@@ -431,6 +432,31 @@ void forwardBackspaces(XIMS ims, IMForwardEventStruct *call_data, int times)
 }
 
 //-----------------------------------------------
+void sendBackspaces(XIMS ims, IMForwardEventStruct *call_data, int times) 
+{
+  XKeyEvent *fwdKev;
+  IMForwardEventStruct fwdEv;
+  int i;
+
+  fwdEv = *((IMForwardEventStruct *)call_data);
+  fwdKev = (XKeyEvent *)&fwdEv.event;
+
+  fwdKev->keycode = BsKeycode;
+  for (i=0; i<UnikeyBackspaces; i++) {
+    fwdKev->serial++;
+    fwdKev->time++;
+    fwdKev->type = KeyPress;
+    XSendEvent(display, fwdKev->window, False, KeyPressMask, (XEvent *)fwdKev);
+
+    fwdKev->serial++;
+    fwdKev->time++;
+    fwdKev->type = KeyRelease;
+    XSendEvent(display, fwdKev->window, False, KeyReleaseMask, (XEvent *)fwdKev);
+  }
+
+}
+
+//-----------------------------------------------
 void sendCommit(XEvent *srcEv) 
 {
   XKeyEvent ev;
@@ -525,7 +551,14 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
     if (!PendingCommit) {
       UnikeyBackspacePress();
       if (UnikeyBackspaces > 0) {
-	forwardBackspaces(ims, call_data, UnikeyBackspaces);
+	if (GlobalOpt.commitMethod == UkForwardCommit)
+	  forwardBackspaces(ims, call_data, UnikeyBackspaces);
+	else {
+	  sendBackspaces(ims, call_data, UnikeyBackspaces);
+	  sendCommit(&call_data->event);
+	  PendingCommit = True;
+	  DataCommit = False;
+	}
 	return;
       }
     }
@@ -542,8 +575,11 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
     fprintf(stderr, "pause received\n");
 #endif
     if (PendingCommit) {
-      PendingCommit = 0;
-      commitBuf(ims, call_data);
+      PendingCommit = False;
+      if (DataCommit) {
+	commitBuf(ims, call_data);
+	DataCommit = False;
+      }
 #ifdef DEBUG
       fprintf(stderr, "commited\n");
 #endif
@@ -562,21 +598,25 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
 	UnikeyPutChar((unsigned char)strbuf[0]);
       else {
 	UnikeyFilter((unsigned char)strbuf[0]);
-	if (UnikeyBufChars > 0 || UnikeyBackspaces > 0) {
-	  if (UnikeyBackspaces > 0)
+	if (UnikeyBackspaces > 0) {
+	  if (GlobalOpt.commitMethod == UkForwardCommit) {
 	    forwardBackspaces(ims, call_data, UnikeyBackspaces);
-
-	  if (UnikeyBufChars > 0) {
-	    if (UnikeyBackspaces == 0  || GlobalOpt.commitMethod == UkForwardCommit)
+	    if (UnikeyBufChars > 0)
 	      commitBuf(ims, call_data);
-	    else {
-	      sendCommit(&call_data->event);
-	      PendingCommit = 1;
-	    }
 	  }
-	  
+	  else {
+	    sendBackspaces(ims, call_data, UnikeyBackspaces);
+	    sendCommit(&call_data->event);
+	    PendingCommit = True;
+	    DataCommit = (UnikeyBufChars > 0);
+	  }
 	  return;
 	}
+
+	if (UnikeyBufChars > 0) {
+	  commitBuf(ims, call_data);
+	  return;
+	}  
       }
       if (UkTriggering) {
 	strbuf[1] = 0;
@@ -1145,7 +1185,8 @@ void setRootPropMask()
 void resetState()
 {
   UnikeyResetBuf();
-  PendingCommit = 0;
+  PendingCommit = False;
+  DataCommit = False;
 }
 
 //----------------------------------------------------

@@ -34,6 +34,7 @@ im_vn_la_LIBADD = @GTK_LIBS@ ../ukengine/libUnikey.la ../vnconv/libvnconv.la
 install-data-hook:
 	gtk-query-immodules-2.0 \
 	> @gtk_sysconfdir@/gtk.immodules
+
 ##	$(moduledir)/im-vn.la \
 ##	@GTK_PREFIX@/lib/gtk-2.0/@GTK_VERSION@/immodules/*.la \
 

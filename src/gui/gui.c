@@ -59,7 +59,7 @@ static char *DisplayName = NULL;
 GC MainGC;
 XFontStruct *FontInfo;
 unsigned int MainWinWidth = 80;
-unsigned int MainWinHeight = 26;
+unsigned int MainWinHeight = 24;
 unsigned int displayWidth, displayHeight;
 int MainWinX, MainWinY;
 
@@ -620,6 +620,8 @@ void drawMainWindow(Window win, GC gc, XFontStruct *fontInfo,
 
   XSetForeground(display, gc, WhitePixel(display, ScreenNum));
   XFillRectangle(display, win, gc, 0, 0, winWidth, winHeight);
+
+  //  XSetLineAttributes(display, gc, 2, LineSolid, CapNotLast, JoinMiter);
   XSetForeground(display, gc, BlueXColor); //BlackPixel(display, ScreenNum));
   XDrawRectangle(display, win, gc, 0, 0, winWidth-1, winHeight-1);
   XDrawRectangle(display, win, gc, 3, 3, winWidth-7, winHeight-7);

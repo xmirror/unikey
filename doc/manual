@@ -58,6 +58,10 @@ Unikey provides:
 ----------------------
 3. Start using Unikey
 ----------------------
+After installing Unikey, please log out and login again. Then
+run "unikey", you should be able to use Unikey right away
+without having to do anything else. If that's not the case,
+try following steps:
 
 - Put these lines into ~/.bash_profile or ~/.bashrc:
 

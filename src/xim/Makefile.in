@@ -180,6 +180,10 @@ ukxim_CFLAGS = \
 
 ukxim_LDADD = ../IMdkit/libIMdkit.la ../ukengine/libUnikey.la ../vnconv/libvnconv.la
 ukxim_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11
+
+EXTRA_DIST = install.sed uninstall.sed
+
+sysbash = /etc/profile
 subdir = src/xim
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -654,6 +658,8 @@ info: info-am
 info-am:
 
 install-data-am:
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 
 install-exec-am: install-binPROGRAMS
 
@@ -682,6 +688,8 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic clean-libtool ctags distclean distclean-compile \
@@ -695,6 +703,12 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-info-am
 
+install-data-hook:
+	sed -f uninstall.sed $(sysbash) | sed -f install.sed > tmpfile
+	mv tmpfile $(sysbash)
+
+uninstall-hook:
+	sed -f uninstall.sed $(sysbash) > tmpfile && mv tmpfile $(sysbash)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

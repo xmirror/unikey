@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
-AC_INIT([Unikey X Input Method], [0.9.1c], [longcz@yahoo.com], [x-unikey])
+AC_INIT([Unikey X Input Method], [0.9.1d], [longcz@yahoo.com], [x-unikey])
 AC_CONFIG_SRCDIR([src/xim/xim.c])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_CONFIG_HEADER([config.h])
@@ -17,6 +17,7 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 #### customization
+
 AC_MSG_CHECKING([for some Win32 platform])
 case "$host" in
   *-*-mingw*|*-*-cygwin*)

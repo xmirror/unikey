@@ -1,3 +1,9 @@
+12.4.2004:
+  Fixed bugs when pressing backspaces in xterm (e.g. in VIQR dda~, then backspace)
+  Install script now sets necessary variables in /etc/profile
+21.3.2004:
+  Change shorcuts from ALT-SHIFT to CTRL-ALT for charset switching
+  to avoid conflicts with IceWM
 4.2.2004: Quick fix for 0.9.1
   - Added dynamic XIM flow mode so rxvt-unicode can work with unikey. 
   (option: XimFlow in config File).
