@@ -507,7 +507,6 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
   IMForwardEventStruct forward_ev;
 
   int count;
-  fprintf(stderr, "Processing key...\n");
 
   forward_ev = *((IMForwardEventStruct *)call_data);
   memset(strbuf, 0, STRBUFLEN);
@@ -549,7 +548,7 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
     return; //break;
   }
     
-  if (count > 0) {
+  if (count > 0 && (kev->state & (ControlMask | Mod1Mask)) == 0) {
     if (count == 1) {
       //      fprintf(stderr, "ch: %c %d\n", strbuf[0], strbuf[0]);
       UnikeySetCapsState(kev->state & ShiftMask, kev->state & LockMask);
