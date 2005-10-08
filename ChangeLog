@@ -1,3 +1,51 @@
+1.10.2005:
+  + Fixed bug in GTK module with latest Evolution 
+   (not possible to type chars with 2 decorators: a^', o+`...)
+  + Fixed bug not remembering correctly charset,input method preferences.
+  + Enabled BKHCM2 charset (for use with Thu+ pha'p fonts)
+  
+27.7.2005:
+    Switch key is changed back to Ctrl-Shift. (enhanced: switch key has effect
+    only when Ctrl or Shift is relesead and there has been no key pressed
+    since Ctrl-Shift combination is pressed, similar to UniKey for Windows).
+    
+    Ctrl-Shift-F9 is another way to switch mode, in case Ctrl-Shift does
+    not work (e.g. in xterm)
+
+    Added more vowel-consonant pairs for better spell-checking.
+
+23.7.2005:
+    Fix macro bug (did not take tone in matching key text).
+    Put back FreeStyle option
+    Fix bug: {{ -> 'U+'{, instead of {
+    Fix bug: W->u+ when capslock is on. (TELEX)
+    
+11.6.2005: 1.0 beta
+  - Fixed bug: memory error when reloadidng config file
+  - New features:
+	+ Implemented polite "always on top" (docking).
+	+ New engine with smart processing of key strokes: recoginize non-vn sequences
+	+ Spell checking
+	+ Customization of input method
+	+ Support restore key strokes
+	+ Autmatic change tone position when needed
+	+ Smart process of putting hooks in uo combination
+	+ Default location for config files: ~/.unikey/
+  - Removed options:
+	+ FreeMarking: now always enabled.
+	+ ToneManual: not much of use
+	
+4.8.2004:
+  - Fixed problem of missing .so extension (for im-vn). Updated auto-scripts.
+  - Added --with-libdir to specify a custom location for install GTK IM module.
+  - More deault locales: fr_BE, fr_CA, de_DE, ja_JP, cs_CZ, ru_RU.
+  - Added option GtkImAlone, if set to Yes gtk unikey module will be enabled
+  even when unikey (GUI) is not running.
+1.8.2004:
+  Version 0.9.2.
+  Added option -locales. This can also be set in in ~/.unikeyrc.
+  By default unikey supports en_US,vi_VN,fr_FR,C locales.
+  (previous versions don't support fr_FR).
 12.4.2004:
   Fixed bugs when pressing backspaces in xterm (e.g. in VIQR dda~, then backspace)
   Install script now sets necessary variables in /etc/profile

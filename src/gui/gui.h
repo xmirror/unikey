@@ -1,8 +1,8 @@
 // -*- coding:unix -*-
 /* Unikey Vietnamese Input Method
- * Copyright (C) 2004 Pham Kim Long
+ * Copyright (C) 2000-2005 Pham Kim Long
  * Contact:
- *   longcz@yahoo.com
+ *   unikey@gmail.com
  *   UniKey project: http://unikey.sf.net
  *
  * This library is free software; you can redistribute it and/or
@@ -35,8 +35,7 @@ enum {
   UNIKEY_OFF_INPUT,
   UNIKEY_TELEX_INPUT,
   UNIKEY_VNI_INPUT,
-  UNIKEY_VIQR_INPUT,
-  UNIKEY_VIQR_STAR_INPUT
+  UNIKEY_VIQR_INPUT
 };
 
 #endif

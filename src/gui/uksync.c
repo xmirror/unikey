@@ -1,9 +1,9 @@
 // -*- coding:unix -*-
 /* Unikey Vietnamese Input Method
- * Copyright (C) 2004 Pham Kim Long
+ * Copyright (C) 2000-2005 Pham Kim Long
  * Contact:
- *   longcz@yahoo.com
- *   UniKey project: http://unikey.sf.net
+ *   unikey@gmail.com
+ *   UniKey project: http://unikey.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,27 +39,32 @@ SyncMap UkToSyncCharsetList[] ={
   {UNIKEY_UTF8, VKC_UTF8},
   {UNIKEY_VIQR, VKC_VIQR},
   {UNIKEY_TCVN, VKC_TCVN},
-  {UNIKEY_VNI, VKC_VNI}
+  {UNIKEY_VNI, VKC_VNI},
+  {UNIKEY_BKHCM2, VKC_BKHCM2}
 };
 
 SyncMap SyncToUkCharsetList[] = {
   {VKC_UTF8, UNIKEY_UTF8},
   {VKC_VIQR, UNIKEY_VIQR},
   {VKC_TCVN, UNIKEY_TCVN},
-  {VKC_VNI, UNIKEY_VNI}};
+  {VKC_VNI, UNIKEY_VNI},
+  {VKC_BKHCM2, UNIKEY_BKHCM2}
+};
 
 SyncMap UkToSyncMethodList[] ={
   {UNIKEY_TELEX_INPUT, VKM_TELEX},
   {UNIKEY_VNI_INPUT, VKM_VNI},
   {UNIKEY_VIQR_INPUT, VKM_VIQR},
-  {UNIKEY_VIQR_STAR_INPUT, VKM_VIQR}
+  {UNIKEY_USER_INPUT, VKM_USER}
 };
 
 SyncMap SyncToUkMethodList[] ={
   {VKM_OFF, UNIKEY_TELEX_INPUT},
   {VKM_TELEX, UNIKEY_TELEX_INPUT},
   {VKM_VNI, UNIKEY_VNI_INPUT},
-  {VKM_VIQR, UNIKEY_VIQR_INPUT}};
+  {VKM_VIQR, UNIKEY_VIQR_INPUT},
+  {VKM_USER, UNIKEY_USER_INPUT}
+};
 
 
 //--------------------------------------------
@@ -157,7 +162,7 @@ long UkGetPropValue(Atom atom, long defValue)
   long v = atom_get_value(atom);
   if (v == -1) {
     v = defValue;
-    UkSetPropValue(atom, v);
+    //    UkSetPropValue(atom, v);
   }
   return v;
 }

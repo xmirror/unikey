@@ -1,9 +1,9 @@
 // -*- coding:unix -*-
 /* Unikey Vietnamese Input Method
- * Copyright (C) 2004 Pham Kim Long
+ * Copyright (C) 2000-2005 Pham Kim Long
  * Contact:
- *   longcz@yahoo.com
- *   UniKey project: http://unikey.sf.net
+ *   unikey@gmail.com
+ *   UniKey project: http://unikey.org
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,18 +28,16 @@ enum {
   UNIKEY_UTF8,
   UNIKEY_VIQR,
   UNIKEY_TCVN,
-  UNIKEY_VNI
+  UNIKEY_VNI,
+  UNIKEY_BKHCM2
 };
 
 enum {
   UNIKEY_TELEX_INPUT,
   UNIKEY_VNI_INPUT,
   UNIKEY_VIQR_INPUT,
-  UNIKEY_VIQR_STAR_INPUT
+  UNIKEY_USER_INPUT
 };
-
-#define UKP_VIQR_STAR_CORE "UK_VIQR_STAR_CORE"
-#define UKP_VIQR_STAR_GUI "UK_VIQR_STAR_GUI"
 
 int UnikeyToSyncCharset(int uk);
 int SyncToUnikeyCharset(int sync);

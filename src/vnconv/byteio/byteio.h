@@ -3,24 +3,27 @@
 
 
 //#include "vnconv.h"
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
+#include <stdio.h>
+
+typedef unsigned char UKBYTE;
+typedef unsigned short UKWORD;
 
 //----------------------------------------------------
 class ByteStream {
-
+ public:
+  virtual ~ByteStream(){};
 };
 
 //----------------------------------------------------
 class ByteInStream: public ByteStream
 {
 public:
-	virtual int getNext(BYTE &b) = 0;
-	virtual int peekNext(BYTE &b) = 0;
-	virtual int unget(BYTE b) = 0;
+	virtual int getNext(UKBYTE &b) = 0;
+	virtual int peekNext(UKBYTE &b) = 0;
+	virtual int unget(UKBYTE b) = 0;
 
-	virtual int getNextW(WORD &w) = 0;
-	virtual int peekNextW(WORD &w) = 0;
+	virtual int getNextW(UKWORD &w) = 0;
+	virtual int peekNextW(UKWORD &w) = 0;
 
 	virtual int bookmark() //no support for bookmark by default
 	{
@@ -40,8 +43,8 @@ public:
 class ByteOutStream: public ByteStream
 {
 public:
-	virtual int putB(BYTE b) = 0;
-	virtual int putW(WORD w) = 0;
+	virtual int putB(UKBYTE b) = 0;
+	virtual int putW(UKWORD w) = 0;
 	virtual int puts(const char *s, int size = -1) = 0; // write an 8-bit string
 	virtual int isOK() = 0;// get current stream state
 };
@@ -51,25 +54,25 @@ class StringBIStream : public ByteInStream
 {
 protected:
 	int m_eos;
-	BYTE *m_data, *m_current;
+	UKBYTE *m_data, *m_current;
 	int m_len, m_left;
 
 	struct {
 		int eos;
-		BYTE *data, *current;
+		UKBYTE *data, *current;
 		int len, left;
 	} m_bookmark;
 
 	int m_didBookmark;
 		
 public:
-	StringBIStream(BYTE *data, int len);
-	virtual int getNext(BYTE &b);
-	virtual int peekNext(BYTE &b);
-	virtual int unget(BYTE b);
+	StringBIStream(UKBYTE *data, int len);
+	virtual int getNext(UKBYTE &b);
+	virtual int peekNext(UKBYTE &b);
+	virtual int unget(UKBYTE b);
 
-	virtual int getNextW(WORD &w);
-	virtual int peekNextW(WORD &w);
+	virtual int getNextW(UKWORD &w);
+	virtual int peekNextW(UKWORD &w);
 	virtual int eos(); //end of stream
 	virtual int close();
 
@@ -98,7 +101,7 @@ protected:
 
 	//some systems don't have wide char IO functions
 	//we have to use this variables to implement that
-	BYTE m_readByte; 
+	UKBYTE m_readByte; 
 	int m_readAhead;
 	int m_lastIsAhead;
 
@@ -111,12 +114,12 @@ public:
 	void attach(FILE *f);
 	virtual int close();
 
-	virtual int getNext(BYTE &b);
-	virtual int peekNext(BYTE &b);
-	virtual int unget(BYTE b);
+	virtual int getNext(UKBYTE &b);
+	virtual int peekNext(UKBYTE &b);
+	virtual int unget(UKBYTE b);
 
-	virtual int getNextW(WORD &w);
-	virtual int peekNextW(WORD &w);
+	virtual int getNextW(UKWORD &w);
+	virtual int peekNextW(UKWORD &w);
 	virtual int eos(); //end of stream
 
 	virtual int bookmark();
@@ -130,14 +133,14 @@ public:
 class StringBOStream : public ByteOutStream
 {
 protected:
-	BYTE *m_buf, *m_current;
+	UKBYTE *m_buf, *m_current;
 	int m_out;
 	int m_len;
 	int m_bad;
 public:
-	StringBOStream(BYTE *buf, int len);
-	virtual int putB(BYTE b);
-	virtual int putW(WORD w);
+	StringBOStream(UKBYTE *buf, int len);
+	virtual int putB(UKBYTE b);
+	virtual int putW(UKWORD w);
 	virtual int puts(const char *s, int size = -1);
 	virtual int isOK(); // get current stream state
 
@@ -170,8 +173,8 @@ public:
 	void attach(FILE *);
 	virtual int close();
 
-	virtual int putB(BYTE b);
-	virtual int putW(WORD w);
+	virtual int putB(UKBYTE b);
+	virtual int putW(UKWORD w);
 	virtual int puts(const char *s, int size = -1);
 	virtual int isOK(); // get current stream state
 	virtual ~FileBOStream();

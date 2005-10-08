@@ -23,11 +23,12 @@ im_vn_la_SOURCES = 	\
 	imvn.c \
 	uksync.c uksync.h \
 	nls.h \
+	dummy.cpp \
 	../gui/xvnkb.h \
 	../xim/optparse.c ../xim/optparse.h \
-	../xim/ukopt.c ../xim/ukopt.h \
-	../xim/macro.cpp ../xim/macro.h \
-	../xim/mactab.cpp ../xim/mactab.h
+	../xim/ukopt.c ../xim/ukopt.h
+##	../ukengine/macro.cpp ../ukengine/macro.h \
+##	../ukengine/mactab.cpp ../ukengine/mactab.h
 
 im_vn_la_LIBADD = @GTK_LIBS@ ../ukengine/libUnikey.la ../vnconv/libvnconv.la
 

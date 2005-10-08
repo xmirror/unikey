@@ -55,7 +55,8 @@ typedef enum {
   VKM_OFF,
   VKM_VNI,
   VKM_TELEX,
-  VKM_VIQR
+  VKM_VIQR,
+  VKM_USER
 } vk_methods;
 
 typedef enum {
@@ -64,7 +65,8 @@ typedef enum {
   VKC_VIQR,
   VKC_VISCII,
   VKC_VPS,
-  VKC_UTF8
+  VKC_UTF8,
+  VKC_BKHCM2
 } vk_charsets;
 
 
@@ -73,6 +75,6 @@ typedef enum {
 #define UKP_GUI_POS_Y "UK_GUI_Y_POSITION"
 
 //suspendNotify atom
-#define UKP_SUSPEND "UK_SUSPEND_MODE"
+#define UKP_GUI_VISIBLE "UK_GUI_VISIBLE"
 
 #endif

@@ -128,6 +128,7 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -161,6 +162,7 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sys_libdir = @sys_libdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
@@ -179,9 +181,9 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = README $(srcdir)/Makefile.in $(srcdir)/configure AUTHORS \
-	COPYING ChangeLog INSTALL Makefile.am NEWS aclocal.m4 compile \
-	config.guess config.h.in config.sub configure configure.ac \
-	depcomp install-sh ltmain.sh missing mkinstalldirs
+	COPYING ChangeLog INSTALL Makefile.am NEWS TODO aclocal.m4 \
+	compile config.guess config.h.in config.sub configure \
+	configure.ac depcomp install-sh ltmain.sh missing mkinstalldirs
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

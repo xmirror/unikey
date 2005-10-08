@@ -28,6 +28,7 @@
 #include "../gui/xvnkb.h"
 #include "uksync.h"
 #include "keycons.h"
+#include "vnconv.h"
 
 Display *display;
 Window RootWindow;
@@ -38,30 +39,35 @@ typedef struct {
 } SyncMap;
 
 SyncMap UkToSyncCharsetList[] ={
-  {UNICODE_CHARSET, VKC_UTF8},
-  {VIQR_CHARSET, VKC_VIQR},
-  {TCVN3_CHARSET, VKC_TCVN},
-  {VNI_CHARSET, VKC_VNI}
+  {CONV_CHARSET_UNIUTF8, VKC_UTF8},
+  {CONV_CHARSET_VIQR, VKC_VIQR},
+  {CONV_CHARSET_TCVN3, VKC_TCVN},
+  {CONV_CHARSET_VNIWIN, VKC_VNI},
+  {CONV_CHARSET_BKHCM2, VKC_BKHCM2}
 };
 
 SyncMap SyncToUkCharsetList[] = {
-  {VKC_UTF8, UNICODE_CHARSET},
-  {VKC_VIQR, VIQR_CHARSET},
-  {VKC_TCVN, TCVN3_CHARSET},
-  {VKC_VNI, VNI_CHARSET}};
+  {VKC_UTF8, CONV_CHARSET_UNIUTF8},
+  {VKC_VIQR, CONV_CHARSET_VIQR},
+  {VKC_TCVN, CONV_CHARSET_TCVN3},
+  {VKC_VNI, CONV_CHARSET_VNIWIN},
+  {VKC_BKHCM2, CONV_CHARSET_BKHCM2}
+};
 
 SyncMap UkToSyncMethodList[] ={
-  {TELEX_INPUT, VKM_TELEX},
-  {VNI_INPUT, VKM_VNI},
-  {VIQR_INPUT, VKM_VIQR},
-  {VIQR_STAR_INPUT, VKM_VIQR}
+  {UkTelex, VKM_TELEX},
+  {UkVni, VKM_VNI},
+  {UkViqr, VKM_VIQR},
+  {UkUsrIM, VKM_USER}
 };
 
 SyncMap SyncToUkMethodList[] ={
-  {VKM_OFF, TELEX_INPUT},
-  {VKM_TELEX, TELEX_INPUT},
-  {VKM_VNI, VNI_INPUT},
-  {VKM_VIQR, VIQR_INPUT}};
+  {VKM_OFF, UkTelex},
+  {VKM_TELEX, UkTelex},
+  {VKM_VNI, UkVni},
+  {VKM_VIQR, UkViqr},
+  {VKM_USER, UkUsrIM}
+};
 
 
 void UkInitSync(Display *dpy, Window root)
@@ -97,7 +103,7 @@ int SyncToUnikeyCharset(int sync)
   return SyncTranslate(sync,
 		       SyncToUkCharsetList,
 		       sizeof(SyncToUkCharsetList)/sizeof(SyncMap),
-		       UNICODE_CHARSET);
+		       CONV_CHARSET_UNIUTF8);
 }
 
 //--------------------------------------------
@@ -115,7 +121,7 @@ int SyncToUnikeyMethod(int sync)
   return SyncTranslate(sync,
 		       SyncToUkMethodList,
 		       sizeof(SyncToUkMethodList)/sizeof(SyncMap),
-		       TELEX_INPUT);
+		       UkTelex);
 }
 
 
@@ -165,7 +171,7 @@ long UkGetPropValue(Atom atom, long defValue)
   long v = atom_get_value(atom);
   if (v == -1) {
     v = defValue;
-    UkSetPropValue(atom, v);
+    //    UkSetPropValue(atom, v);
   }
   return v;
 }

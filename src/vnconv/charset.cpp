@@ -40,11 +40,41 @@ DoubleByteCharset *DbCharsets[CONV_TOTAL_DOUBLE_CHARSETS];
 CVnCharsetLib VnCharsetLibObj;
 
 //-------------------------------------------
+int VnInternalCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead)
+{
+  //  UnicodeChar uniCh;
+  UKWORD *pWord = (UKWORD *)&stdChar;
+  if (!is.getNextW(*pWord)) {
+    bytesRead = 0;
+    return 0;
+  }
+  bytesRead = sizeof(UKWORD);
+
+  pWord++;
+
+  if (!is.getNextW(*pWord))
+    return 0;
+  bytesRead += sizeof(pWord);
+
+  return 1;
+}
+
+//-------------------------------------------
+int VnInternalCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen)
+{
+  outLen = sizeof(StdVnChar);
+  UKWORD *pWord = (UKWORD *)&stdChar;
+  os.putW(*pWord);
+  pWord++;
+  return os.putW(*pWord);
+}
+
+//-------------------------------------------
 SingleByteCharset::SingleByteCharset(unsigned char * vnChars)
 {
 	int i;
 	m_vnChars = vnChars;
-	memset(m_stdMap, 0, 256*sizeof(WORD));
+	memset(m_stdMap, 0, 256*sizeof(UKWORD));
 	for (i=0; i<TOTAL_VNCHARS; i++) {
 		if (vnChars[i] != 0 && (i==TOTAL_VNCHARS-1 || vnChars[i] != vnChars[i+1]))
 			m_stdMap[vnChars[i]] = i + 1;
@@ -89,7 +119,7 @@ int SingleByteCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 		}
 		else {
 			outLen = 1;
-			ret = os.putB((BYTE)stdChar);
+			ret = os.putB((UKBYTE)stdChar);
 		}
 	}
 	return ret;
@@ -98,19 +128,19 @@ int SingleByteCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 //-------------------------------------------
 int wideCharCompare(const void *ele1, const void *ele2)
 {
-	WORD ch1 = LOWORD(*((DWORD *)ele1));
-	WORD ch2 = LOWORD(*((DWORD *)ele2));
+	UKWORD ch1 = LOWORD(*((UKDWORD *)ele1));
+	UKWORD ch2 = LOWORD(*((UKDWORD *)ele2));
 	return (ch1 == ch2)? 0 : ((ch1 > ch2)? 1 : -1);
 }
 
 //-------------------------------------------
 UnicodeCharset::UnicodeCharset(UnicodeChar *vnChars)
 {
-	DWORD i;
+	UKDWORD i;
 	m_toUnicode = vnChars;
 	for (i=0; i<TOTAL_VNCHARS; i++)
 		m_vnChars[i] = (i << 16) + vnChars[i]; // high word is used for index
-	qsort(m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+	qsort(m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 }
 
 //-------------------------------------------
@@ -122,8 +152,8 @@ int UnicodeCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & byte
 		return 0;
 	}
 	bytesRead = sizeof(UnicodeChar);
-	DWORD key = uniCh;
-	DWORD *pChar = (DWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+	UKDWORD key = uniCh;
+	UKDWORD *pChar = (UKDWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 	if (pChar)
 		stdChar = VnStdCharOffset + HIWORD(*pChar);
 	else
@@ -146,12 +176,12 @@ int UnicodeCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen)
 //-------------------------------------------
 int uniCompInfoCompare(const void *ele1, const void *ele2)
 {
-	DWORD ch1 = ((UniCompCharInfo *)ele1)->compChar;
-	DWORD ch2 = ((UniCompCharInfo *)ele2)->compChar;
+	UKDWORD ch1 = ((UniCompCharInfo *)ele1)->compChar;
+	UKDWORD ch2 = ((UniCompCharInfo *)ele2)->compChar;
 	return (ch1 == ch2)? 0 : ((ch1 > ch2)? 1 : -1);
 }
 
-UnicodeCompCharset::UnicodeCompCharset(UnicodeChar *uniChars, DWORD *uniCompChars)
+UnicodeCompCharset::UnicodeCompCharset(UnicodeChar *uniChars, UKDWORD *uniCompChars)
 {
   int i,k;
 	m_uniCompChars = uniCompChars;
@@ -179,7 +209,7 @@ int UnicodeCompCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & 
 	// read first char
 
 	UniCompCharInfo key;
-	WORD w;
+	UKWORD w;
 	if (!is.getNextW(w)) {
 		bytesRead = 0;
 		return 0;
@@ -194,7 +224,7 @@ int UnicodeCompCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & 
 	else {
 		stdChar = pInfo->stdIndex + VnStdCharOffset;
 		if (is.peekNextW(w)) {
-			DWORD hi = w;
+			UKDWORD hi = w;
 			if (hi > 0) {
 				key.compChar += hi << 16;
 				pInfo = (UniCompCharInfo *)bsearch(&key, m_info, m_totalChars,
@@ -215,9 +245,9 @@ int UnicodeCompCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & out
 {
 	int ret;
 	if (stdChar	>= VnStdCharOffset) {
-		DWORD uniCompCh = m_uniCompChars[stdChar-VnStdCharOffset];
-		WORD lo = LOWORD(uniCompCh);
-		WORD hi = HIWORD(uniCompCh);
+		UKDWORD uniCompCh = m_uniCompChars[stdChar-VnStdCharOffset];
+		UKWORD lo = LOWORD(uniCompCh);
+		UKWORD hi = HIWORD(uniCompCh);
 		outLen = 2;
 		ret = os.putW(lo);
 		if (hi > 0) {
@@ -227,7 +257,7 @@ int UnicodeCompCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & out
 	}
 	else {
 		outLen = 2;
-		ret = os.putW((WORD)stdChar);
+		ret = os.putW((UKWORD)stdChar);
 	}
 	return ret;
 }
@@ -237,8 +267,8 @@ int UnicodeCompCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & out
 ////////////////////////////////
 int UnicodeUTF8Charset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead)
 {
-	WORD w1, w2, w3;
-	BYTE first, second, third;
+	UKWORD w1, w2, w3;
+	UKBYTE first, second, third;
 	UnicodeChar uniCh;
 
 	bytesRead = 0;
@@ -291,8 +321,8 @@ int UnicodeUTF8Charset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & 
 	}
 
 	// translate to StdVnChar
-	DWORD key = uniCh;
-	DWORD *pChar = (DWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+	UKDWORD key = uniCh;
+	UKDWORD *pChar = (UKDWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 	if (pChar)
 		stdChar = VnStdCharOffset + HIWORD(*pChar);
 	else stdChar = uniCh;
@@ -307,16 +337,16 @@ int UnicodeUTF8Charset::putChar(ByteOutStream & os, StdVnChar stdChar, int & out
 	int ret;
 	if (uChar < 0x0080) {
 		outLen = 1;
-		ret = os.putB((BYTE)uChar);
+		ret = os.putB((UKBYTE)uChar);
 	} else if (uChar < 0x0800) {
 		outLen = 2;
-		os.putB(0xC0 | (BYTE)(uChar >> 6));
-		ret = os.putB(0x80 | (BYTE)(uChar & 0x003F));
+		os.putB(0xC0 | (UKBYTE)(uChar >> 6));
+		ret = os.putB(0x80 | (UKBYTE)(uChar & 0x003F));
 	} else {
 		outLen = 3;
-		os.putB(0xE0 | (BYTE)(uChar >> 12));
-		os.putB(0x80 | (BYTE)((uChar >> 6) & 0x003F));
-		ret = os.putB(0x80 | (BYTE)(uChar & 0x003F));
+		os.putB(0xE0 | (UKBYTE)(uChar >> 12));
+		os.putB(0x80 | (UKBYTE)((uChar >> 6) & 0x003F));
+		ret = os.putB(0x80 | (UKBYTE)(uChar & 0x003F));
 	}
 	return ret;
 }
@@ -353,7 +383,7 @@ int UnicodeRefCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & b
 			if (!is.eos()) {
 				is.peekNext(ch);
 				if (ch != 'x' && ch != 'X') {
-					WORD code = 0;
+					UKWORD code = 0;
 					int digits = 0;
 					while (is.peekNext(ch) && isdigit(ch) && digits < 5) {
 						is.getNext(ch);
@@ -370,7 +400,7 @@ int UnicodeRefCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & b
 				else {
 					is.getNext(ch);
 					bytesRead++;
-					WORD code = 0;
+					UKWORD code = 0;
 					int digits = 0;
 					while (is.peekNext(ch) && isxdigit(ch) && digits < 4) {
 						is.getNext(ch);
@@ -389,8 +419,8 @@ int UnicodeRefCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & b
 	}
 
 	// translate to StdVnChar
-	DWORD key = uniCh;
-	DWORD *pChar = (DWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+	UKDWORD key = uniCh;
+	UKDWORD *pChar = (UKDWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 	if (pChar)
 		stdChar = VnStdCharOffset + HIWORD(*pChar);
 	else stdChar = uniCh;
@@ -406,12 +436,12 @@ int UnicodeRefCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 	int ret;
 	if (uChar < 128) {
 		outLen = 1;
-		ret = os.putB((BYTE)uChar);
+		ret = os.putB((UKBYTE)uChar);
 	}
 	else {
 		outLen = 2;
-		os.putB((BYTE)'&');
-		os.putB((BYTE)'#');
+		os.putB((UKBYTE)'&');
+		os.putB((UKBYTE)'#');
 
 		int i, digit, prev, base;
 		prev = 0;
@@ -426,7 +456,7 @@ int UnicodeRefCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 			uChar %= base;
 			base /= 10;
 		}
-		ret = os.putB((BYTE)';');
+		ret = os.putB((UKBYTE)';');
 		outLen++;
 	}
 	return ret;
@@ -442,7 +472,7 @@ int UnicodeHexCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 	int ret;
 	if (uChar < 256) {
 		outLen = 1;
-		ret = os.putB((BYTE)uChar);
+		ret = os.putB((UKBYTE)uChar);
 	}
 	else {
 		outLen = 3;
@@ -459,7 +489,7 @@ int UnicodeHexCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 			if (digit > 0 || prev) {
 				prev = 1;
 				outLen++;
-				os.putB((BYTE)HEX_DIGIT(digit));
+				os.putB((UKBYTE)HEX_DIGIT(digit));
 			}
 			shifts -= 4;
 		}
@@ -492,7 +522,7 @@ int UnicodeCStringCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int
 		if (is.peekNext(ch) && (ch=='x' || ch=='X')) {
 			is.getNext(ch);
 			bytesRead++;
-			WORD code = 0;
+			UKWORD code = 0;
 			int digits = 0;
 			while (is.peekNext(ch) && isxdigit(ch) && digits < 4) {
 				is.getNext(ch);
@@ -505,8 +535,8 @@ int UnicodeCStringCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int
 	}
 
 	// translate to StdVnChar
-	DWORD key = uniCh;
-	DWORD *pChar = (DWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+	UKDWORD key = uniCh;
+	UKDWORD *pChar = (UKDWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 	if (pChar)
 		stdChar = VnStdCharOffset + HIWORD(*pChar);
 	else stdChar = uniCh;
@@ -521,7 +551,7 @@ int UnicodeCStringCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & 
 	int ret;
 	if (uChar < 256 && (!isxdigit(uChar) || !m_prevIsHex)) {
 		outLen = 1;
-		ret = os.putB((BYTE)uChar);
+		ret = os.putB((UKBYTE)uChar);
 	}
 	else {
 		outLen = 2;
@@ -537,7 +567,7 @@ int UnicodeCStringCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & 
 			if (digit > 0 || prev) {
 				prev = 1;
 				outLen++;
-				os.putB((BYTE)HEX_DIGIT(digit));
+				os.putB((UKBYTE)HEX_DIGIT(digit));
 			}
 			shifts -= 4;
 		}
@@ -550,10 +580,10 @@ int UnicodeCStringCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & 
 /////////////////////////////////
 // Double-byte charsets        //
 /////////////////////////////////
-DoubleByteCharset::DoubleByteCharset(WORD *vnChars)
+DoubleByteCharset::DoubleByteCharset(UKWORD *vnChars)
 {
 	m_toDoubleChar = vnChars;
-	memset(m_stdMap, 0, 256*sizeof(WORD));
+	memset(m_stdMap, 0, 256*sizeof(UKWORD));
 	for (int i=0; i<TOTAL_VNCHARS; i++) {
 		if (vnChars[i] >> 8) // a 2-byte character
 			m_stdMap[vnChars[i] >> 8] = 0xFFFF; //INVALID_STD_CHAR;
@@ -561,7 +591,7 @@ DoubleByteCharset::DoubleByteCharset(WORD *vnChars)
 			m_stdMap[vnChars[i]] = i+1;
 		m_vnChars[i] = (i << 16) + vnChars[i]; // high word is used for StdChar index
 	}
-	qsort(m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+	qsort(m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 }
 
 //---------------------------------------------
@@ -581,11 +611,11 @@ int DoubleByteCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & b
 		stdChar = INVALID_STD_CHAR;
 	else {
 		stdChar += VnStdCharOffset - 1;
-		BYTE hi;
+		UKBYTE hi;
 		if (is.peekNext(hi) && hi > 0) {
 			//test if a double-byte character is encountered
-			DWORD key = MAKEWORD(ch,hi);
-			DWORD *pChar = (DWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(DWORD), wideCharCompare);
+			UKDWORD key = MAKEWORD(ch,hi);
+			UKDWORD *pChar = (UKDWORD *)bsearch(&key, m_vnChars, TOTAL_VNCHARS, sizeof(UKDWORD), wideCharCompare);
 			if (pChar) {
 				stdChar = VnStdCharOffset + HIWORD(*pChar);
 				bytesRead = 2;
@@ -601,12 +631,12 @@ int DoubleByteCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 {
 	int ret;
 	if (stdChar	>= VnStdCharOffset) {
-		WORD wCh = m_toDoubleChar[stdChar-VnStdCharOffset];
+		UKWORD wCh = m_toDoubleChar[stdChar-VnStdCharOffset];
 
 		if (wCh & 0xFF00) {
 			outLen = 2;
-			os.putB((BYTE)(wCh & 0x00FF));
-			ret = os.putB((BYTE)(wCh >> 8));
+			os.putB((UKBYTE)(wCh & 0x00FF));
+			ret = os.putB((UKBYTE)(wCh >> 8));
 		}
 		else {
 			unsigned char b = (unsigned char)wCh;
@@ -617,21 +647,21 @@ int DoubleByteCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 		}
 /*
 		outLen = 1;
-		ret = os.putB((BYTE)(wCh & 0x00FF));
+		ret = os.putB((UKBYTE)(wCh & 0x00FF));
 		if (wCh & 0xFF00) {
 			outLen = 2;
-			ret = os.putB((BYTE)(wCh >> 8));
+			ret = os.putB((UKBYTE)(wCh >> 8));
 		}
 */
 	}
 	else {
 		if (stdChar > 255 || m_stdMap[stdChar]) {
 			outLen = 1;
-			ret = os.putB((BYTE)PadChar);
+			ret = os.putB((UKBYTE)PadChar);
 		}
 		else {
 			outLen = 1;
-			ret = os.putB((BYTE)stdChar);
+			ret = os.putB((UKBYTE)stdChar);
 		}
 	}
 	return ret;
@@ -655,11 +685,11 @@ char *VIQREscapes[] = {
 
 const int VIQREscCount = sizeof(VIQREscapes) / sizeof(char*);
 
-VIQRCharset::VIQRCharset(DWORD *vnChars)
+VIQRCharset::VIQRCharset(UKDWORD *vnChars)
 {
-	memset(m_stdMap, 0, 256*sizeof(WORD));
+	memset(m_stdMap, 0, 256*sizeof(UKWORD));
 	int i;
-	DWORD dw;
+	UKDWORD dw;
 	m_vnChars = vnChars;
 	for (i=0; i<TOTAL_VNCHARS; i++) {
 		dw = m_vnChars[i];
@@ -796,37 +826,49 @@ void VIQRCharset::startOutput()
 	m_escapeRoof = 0;
 	m_escapeHook = 0;
 	m_escapeTone = 0;
+	m_noOutEsc = 0;
+	VnCharsetLibObj.m_VIQROutEscPatterns.reset();
 }
 
 //---------------------------------------------------
 int VIQRCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen)
 {
 	int ret;
+	UKBYTE b;
 	if (stdChar >= VnStdCharOffset) {
 		outLen = 1;
-		DWORD dw = m_vnChars[stdChar-VnStdCharOffset];
+		UKDWORD dw = m_vnChars[stdChar-VnStdCharOffset];
 
 		unsigned char first = (unsigned char)dw;
 		unsigned char firstUpper = toupper(first);
 
-		ret = os.putB((BYTE)dw);
+		b = (UKBYTE)dw;
+		ret = os.putB(b);
+		if (VnCharsetLibObj.m_VIQROutEscPatterns.foundAtNextChar(b) != -1)
+		  m_noOutEsc = 1;
+
+		if (m_noOutEsc && (b==' ' || b=='\t' || b=='\r' || b=='\n'))
+		  m_noOutEsc = 0;
 
 		if (dw & 0x0000FF00) {
 			// second byte is present
-			unsigned char second = (BYTE)(dw >> 8);
+			unsigned char second = (UKBYTE)(dw >> 8);
 			outLen++;
 			ret = os.putB(second);
 
 			if (dw & 0x00FF0000) {
 				//third byte is present
 				outLen++;
-				ret = os.putB((BYTE)(dw >> 16));
+				ret = os.putB((UKBYTE)(dw >> 16));
 				m_escapeTone = 0;
 			}
 			else {
-				WORD index = m_stdMap[second];
+				UKWORD index = m_stdMap[second];
 				m_escapeTone = (index == 12 || index == 24 || index == 26);
 			}
+
+                        VnCharsetLibObj.m_VIQROutEscPatterns.reset();
+
 			m_escapeBowl = 0;
 			m_escapeHook = 0;
 			m_escapeRoof = 0;
@@ -841,12 +883,14 @@ int VIQRCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen)
 	else {
 		if (stdChar > 255) {
 			outLen = 1;
-			ret = os.putB((BYTE)PadChar);
+			ret = os.putB((UKBYTE)PadChar);
+                        if (VnCharsetLibObj.m_VIQROutEscPatterns.foundAtNextChar((UKBYTE)PadChar) != -1)
+			  m_noOutEsc = 1;
 		}
 		else {
 			outLen = 1;
-			WORD index = m_stdMap[stdChar];
-			if (!VnCharsetLibObj.m_options.viqrMixed && 
+			UKWORD index = m_stdMap[stdChar];
+			if (!VnCharsetLibObj.m_options.viqrMixed && !m_noOutEsc &&
 				   (stdChar=='\\' || 
 					(index > 0 && index <= 10 && m_escapeTone) ||
 					(index == 12 && m_escapeRoof) ||
@@ -856,8 +900,15 @@ int VIQRCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen)
 				// tone mark, needs an escape character
 				outLen++;
 				ret = os.putB('\\');
+				if (VnCharsetLibObj.m_VIQROutEscPatterns.foundAtNextChar('\\') != -1)
+				  m_noOutEsc = 1;
 			}
-			ret = os.putB((BYTE)stdChar);
+			b = (UKBYTE)stdChar;
+			ret = os.putB(b);
+			if (VnCharsetLibObj.m_VIQROutEscPatterns.foundAtNextChar(b) != -1)
+			  m_noOutEsc = 1;
+			if (m_noOutEsc && (b==' ' || b=='\t' || b=='\r' || b=='\n'))
+			  m_noOutEsc = 0;
 		}
 		// reset escape marks
 		m_escapeBowl = 0;
@@ -896,7 +947,7 @@ void UTF8VIQRCharset::startOutput()
 //-----------------------------------------
 int UTF8VIQRCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead)
 {
-	BYTE ch;
+	UKBYTE ch;
 
 	if (!is.peekNext(ch))
 		return 0;
@@ -947,6 +998,7 @@ CVnCharsetLib::CVnCharsetLib()
 	m_pVIQRCharObj = NULL;
 	m_pUVIQRCharObj = NULL;
 	m_pWinCP1258 = NULL;
+	m_pVnIntCharset = NULL;
 
 	int i;
 	for (i = 0; i < CONV_TOTAL_SINGLE_CHARSETS; i++)
@@ -957,6 +1009,7 @@ CVnCharsetLib::CVnCharsetLib()
 
 	VnConvResetOptions(&m_options);
 	m_VIQREscPatterns.init(VIQREscapes, VIQREscCount);
+	m_VIQROutEscPatterns.init(VIQREscapes, VIQREscCount);
 }
 
 
@@ -979,6 +1032,8 @@ CVnCharsetLib::~CVnCharsetLib()
 		delete m_pWinCP1258;
 	if (m_pUniCString)
 		delete m_pUniCString;
+	if (m_pVnIntCharset)
+		delete m_pVnIntCharset;
 
 	int i;
 	for (i = 0; i < CONV_TOTAL_SINGLE_CHARSETS; i++)
@@ -1031,6 +1086,11 @@ VnCharset * CVnCharsetLib::getVnCharset(int charsetIdx)
 		if (m_pVIQRCharObj == NULL)
 			m_pVIQRCharObj = new VIQRCharset(VIQRTable);
 		return m_pVIQRCharObj;
+
+	case CONV_CHARSET_VNSTANDARD:
+		if (m_pVnIntCharset == NULL)
+			m_pVnIntCharset = new VnInternalCharset();
+		return m_pVnIntCharset;
 
 	case CONV_CHARSET_UTF8VIQR:
 	  if (m_pUVIQRCharObj == NULL) {
@@ -1087,11 +1147,11 @@ void VnConvResetOptions(VnConvOptions *pOptions)
 /////////////////////////////////////////////
 // Class WinCP1258Charset
 /////////////////////////////////////////////
-WinCP1258Charset::WinCP1258Charset(WORD *compositeChars, WORD *precomposedChars)
+WinCP1258Charset::WinCP1258Charset(UKWORD *compositeChars, UKWORD *precomposedChars)
 {
   int i,k;
 	m_toDoubleChar = compositeChars;
-	memset(m_stdMap, 0, 256*sizeof(WORD));
+	memset(m_stdMap, 0, 256*sizeof(UKWORD));
 
 	// encode composite chars
 	for (i=0; i<TOTAL_VNCHARS; i++) {
@@ -1118,7 +1178,7 @@ WinCP1258Charset::WinCP1258Charset(WORD *compositeChars, WORD *precomposedChars)
 			i++;
 		}
 
-	qsort(m_vnChars, m_totalChars, sizeof(DWORD), wideCharCompare);
+	qsort(m_vnChars, m_totalChars, sizeof(UKDWORD), wideCharCompare);
 }
 
 
@@ -1142,11 +1202,11 @@ int WinCP1258Charset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & by
 		stdChar = INVALID_STD_CHAR;
 	else {
 		stdChar += VnStdCharOffset - 1;
-		BYTE hi;
+		UKBYTE hi;
 		if (is.peekNext(hi) && hi > 0) {
 			//test if a double-byte character is encountered
-			DWORD key = MAKEWORD(ch,hi);
-			DWORD *pChar = (DWORD *)bsearch(&key, m_vnChars, m_totalChars, sizeof(DWORD), wideCharCompare);
+			UKDWORD key = MAKEWORD(ch,hi);
+			UKDWORD *pChar = (UKDWORD *)bsearch(&key, m_vnChars, m_totalChars, sizeof(UKDWORD), wideCharCompare);
 			if (pChar) {
 				stdChar = VnStdCharOffset + HIWORD(*pChar);
 				bytesRead = 2;
@@ -1164,12 +1224,12 @@ int WinCP1258Charset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLe
 {
 	int ret;
 	if (stdChar	>= VnStdCharOffset) {
-		WORD wCh = m_toDoubleChar[stdChar-VnStdCharOffset];
+		UKWORD wCh = m_toDoubleChar[stdChar-VnStdCharOffset];
 
 		if (wCh & 0xFF00) {
 			outLen = 2;
-			os.putB((BYTE)(wCh & 0x00FF));
-			ret = os.putB((BYTE)(wCh >> 8));
+			os.putB((UKBYTE)(wCh & 0x00FF));
+			ret = os.putB((UKBYTE)(wCh >> 8));
 		}
 		else {
 			unsigned char b = (unsigned char)wCh;
@@ -1182,11 +1242,11 @@ int WinCP1258Charset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLe
 	else {
 		if (stdChar > 255 || m_stdMap[stdChar]) {
 			outLen = 1;
-			ret = os.putB((BYTE)PadChar);
+			ret = os.putB((UKBYTE)PadChar);
 		}
 		else {
 			outLen = 1;
-			ret = os.putB((BYTE)stdChar);
+			ret = os.putB((UKBYTE)stdChar);
 		}
 	}
 	return ret;

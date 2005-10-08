@@ -1,8 +1,8 @@
 // -*- coding:unix -*-
 /* Unikey Vietnamese Input Method
- * Copyright (C) 2004 Pham Kim Long
+ * Copyright (C) 2000-2005 Pham Kim Long
  * Contact:
- *   longcz@yahoo.com
+ *   unikey@gmail.com
  *   UniKey project: http://unikey.sf.net
  *
  * This library is free software; you can redistribute it and/or
@@ -35,6 +35,7 @@
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
 #include <string.h>
+#include <time.h>
 #include "xvnkb.h"
 #include "uksync.h"
 #include "guiopt.h"
@@ -45,16 +46,20 @@
 Display *display;
 Window MainWindow, RootWindow;
 Atom ProgAtom;
+Atom _NET_WM_WINDOW_TYPE, _NET_WM_WINDOW_TYPE_DOCK;
+Atom ARaiseWindow;
 
 int UkLoopContinue = 1;
-int UkSuspend = 0;
+int UkGUIVisible = 1;
 
 static int ScreenNum;
 static char *progname; /* name this program was invoked by */
 static char XimPath[256];
 static char *MacroFile = 0;
 static char *ConfigFile = 0;
+static char *XimLocales = 0;
 static char *DisplayName = NULL;
+static time_t StartTime;
 
 GC MainGC;
 XFontStruct *FontInfo;
@@ -85,15 +90,15 @@ void propertyChanged();
 void getSyncAtoms();
 void getInitSettings();
 
-long atom_get_value(Atom key);
+//long atom_get_value(Atom key);
 void setRootPropMask();
 void fixUnikeyToSyncMethod(int method);
 void fixSyncToUnikeyMethod();
 
 // sync atoms
-Atom AIMCharset, AIMUsing, AIMMethod, AIMViqrStarGui, AIMViqrStarCore;
+Atom AIMCharset, AIMUsing, AIMMethod;
 Atom AGUIPosX, AGUIPosY;
-Atom ASuspend;
+Atom AGUIVisible;
 
 UkGuiOpt GlobalOpt;
 
@@ -121,22 +126,17 @@ char * UkModeList[] = {
   "UTF8",
   "VIQR",
   "TCVN",
-  "VNI"
+  "VNI",
+  "BK2"
 };
 
 char * UkMethodList[] = {
   "TX",
   "VI",
   "VR",
-  "VR*"
+  "UD"
 };
 
-/*
-typedef struct {
-  char *text;
-  int mode;
-} UkMode;
-*/
 
 char *UkOffText = "OFF";
 
@@ -200,27 +200,26 @@ void handlePropertyChanged(Window win, XEvent *event)
   }
   else if (pev->atom == AIMMethod) {
     fixSyncToUnikeyMethod();
-    /*
-    v = UkGetPropValue(pev->atom, VKM_OFF);
-    UnikeyOn = (v != VKM_OFF);
-    if (UnikeyOn)
-      UkActiveMethod = SyncToUnikeyMethod(v);
-    */
+    XRaiseWindow(display, win);
     redraw = 1;
   }
   else if (pev->atom == AIMUsing) {
     //don't need this
   }
-  else if (pev->atom == ASuspend) {
+  else if (pev->atom == AGUIVisible) {
     v = UkGetPropValue(pev->atom, 0);
     if (v) {
-      UkSuspend = 1;
-      XUnmapWindow(display, MainWindow);
-    }
-    else {
-      UkSuspend = 0;
+      UkGUIVisible = 1;
       XMapWindow(display, MainWindow);
     }
+    else {
+      UkGUIVisible = 0;
+      XUnmapWindow(display, MainWindow);
+    }
+  }
+  else if (pev->atom == ARaiseWindow) {
+    //printf("Raise window\n"); //DEBUG
+    XRaiseWindow(display, win);    
   }
 
   if (redraw)
@@ -243,11 +242,10 @@ void MyXEventHandler(Window im_window, XEvent *event)
       {
 	XButtonEvent *bev = (XButtonEvent *)event;
 	if ((bev->state & ControlMask) && (bev->state & Mod1Mask)) {
-	  //UkLoopContinue = 0;
-	  UkSetPropValue(ASuspend, 1);
+	  UkSetPropValue(AGUIVisible, 0);
 	  break;
 	}
-	if ((bev->state & ShiftMask) && (bev->state & Mod1Mask)) {
+	if ((bev->state & ShiftMask) && (bev->state & ControlMask)) {
 	  reloadXimConfig();
 	  break;
 	}
@@ -316,8 +314,12 @@ void MyXEventHandler(Window im_window, XEvent *event)
 
   case VisibilityNotify:
     {
-      if (event->xvisibility.state != VisibilityUnobscured)
-	XRaiseWindow(display, im_window);
+      if (event->xvisibility.state != VisibilityUnobscured) {
+	time_t current = time(0);
+	if (current - StartTime < 3*60)
+	  XRaiseWindow(display, im_window);
+      }
+
       /*
       static int count = 10;
       if (event->xvisibility.state != VisibilityUnobscured && count > 0) {
@@ -344,18 +346,21 @@ void usage()
 #else
     "0.9.1"
 #endif
-    "\nUniKey project: http://unikey.sourceforge.net\n"
-    "Copyright (C) 1998-2004 Pham Kim Long\n"
+    "\nUniKey project: http://unikey.org\n"
+    "Copyright (C) 2000-2005 Pham Kim Long\n"
     "---------------------------------------------------------------\n"
     "Command line: \n"
     "  unikey [OPTIONS]\n\n"
     "Options:\n"
-    "  -h, -help        Print this help and exit\n"
-    "  -v, -version     Show version and exit\n"
-    "  -display <name>  Display name to connect to\n"
-    "  -xim <ukxim>     Path to Unikey XIM server (ukxim)\n"
-    "  -config <file>   Specify configuration file (default: ~/.unikeyrc)\n"
-    "  -macro <file>    Load macro file\n"
+    "  -h, -help           Print this help and exit\n"
+    "  -v, -version        Show version and exit\n"
+    "  -display <name>     Display name to connect to\n"
+    "  -xim <ukxim>        Path to Unikey XIM server (ukxim)\n"
+    "  -config <file>      Specify configuration file (default: ~/.unikey/option)\n"
+    "  -macro <file>       Load macro file\n"
+    "  -l, -locales <list> Locales accepted by unikey.\n"
+    "                      Default: \"C,en_US,vi_VN,fr_FR,fr_BE,\n"
+    "                                fr_CA,de_DE,ja_JP,cs_CZ,ru_RU\")\n"
     "\nExamples:\n"
     "  $ unikey\n"
     "      Unikey will search for ukxim in the default search path\n"
@@ -421,6 +426,9 @@ int main(int argc, char **argv)
     else if (!strcmp(argv[i], "-config")) {
       ConfigFile = argv[++i];
     }
+    else if (!strcmp(argv[i], "-locales") || !strcmp(argv[i], "-l")) {
+      XimLocales = argv[++i];
+    }
     else if (!strcmp(argv[i], "-help") || !strcmp(argv[i], "-h")) {
       usage();
       exit(0);
@@ -469,25 +477,28 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-
+  StartTime = time(0);
   RootWindow = DefaultRootWindow(display);
   setRootPropMask();
   getSyncAtoms();
 
   if (!singleLaunch()) {
-    //check if previous instance is suspended
-    if (UkGetPropValue(ASuspend, 0)) {
+    //check if previous instance is hidden
+    if (!UkGetPropValue(AGUIVisible, 0)) {
       //wake up
-      UkSetPropValue(ASuspend, 0);
+      UkSetPropValue(AGUIVisible, 1);
       XFlush(display);
     }
-    else 
+    else {
+      UkSetPropValue(ARaiseWindow, 1);
+      XFlush(display);
       fputs("An instance of unikey has already started!\n", stderr);
+    }
     exit(1);
   }
 
-  UkSetPropValue(ASuspend, 0);
-  UkSuspend = 0;
+  UkSetPropValue(AGUIVisible, 1);
+  UkGUIVisible = 1;
 
   /* get screen size from display structure macro */
   ScreenNum = DefaultScreen(display);
@@ -539,6 +550,9 @@ int main(int argc, char **argv)
 		   argv, argc, sizeHints, wmHints, 
 		   classHints);
 
+  XChangeProperty(display, MainWindow, 
+		  _NET_WM_WINDOW_TYPE, XA_ATOM, 32, PropModeReplace, 
+		  (unsigned char *)&_NET_WM_WINDOW_TYPE_DOCK, 1);
 
   //  XStoreName(display, im_window, "Unikey");
   XSetTransientForHint(display, MainWindow, MainWindow);
@@ -550,7 +564,6 @@ int main(int argc, char **argv)
   getInitSettings();
 
   XMapWindow(display, MainWindow);
-
   UkSetPropValue(AGUIPosX, MainWinX);
   UkSetPropValue(AGUIPosY, MainWinY);
 
@@ -665,19 +678,13 @@ void freeXResources()
 void fixSyncToUnikeyMethod()
 {
   long v;
-
   v = UkGetPropValue(AIMMethod, VKM_TELEX);
   UnikeyOn = (v != VKM_OFF);
 
-  if (UnikeyOn) {
-    UkActiveMethod = SyncToUnikeyMethod((int)v);
-    if (UkActiveMethod == UNIKEY_VIQR_INPUT) {
-      v = UkGetPropValue(AIMViqrStarGui, 0);
-      if (v != 0)
-	UkActiveMethod = UNIKEY_VIQR_STAR_INPUT;
-      UkSetPropValue(AIMViqrStarGui, 0);
-    }
+  if (!UnikeyOn) {
+    v = UkGetPropValue(AIMUsing, VKM_TELEX);
   }
+  UkActiveMethod = SyncToUnikeyMethod((int)v);
 }
 
 //--------------------------------------------------
@@ -687,32 +694,26 @@ void fixSyncToUnikeyMethod()
 void fixUnikeyToSyncMethod(int method)
 {
   long v;
-
-  if (method == UNIKEY_VIQR_STAR_INPUT) {
-    UkSetPropValue(AIMViqrStarGui, 1);
-    UkSetPropValue(AIMViqrStarCore, 1);
-  }
-
   v = UnikeyToSyncMethod(method);
-  UkSetPropValue(AIMMethod, v);
   UkSetPropValue(AIMUsing, v);
+  UkSetPropValue(AIMMethod, v);
 }
 
 //--------------------------------------------
 void getSyncAtoms()
 {
-  ASuspend = XInternAtom(display, UKP_SUSPEND, False);
+  AGUIVisible = XInternAtom(display, UKP_GUI_VISIBLE, False);
 
   AIMCharset = XInternAtom(display, UKP_CHARSET, False);
   AIMMethod = XInternAtom(display, UKP_METHOD, False);
   AIMUsing = XInternAtom(display, UKP_USING, False);
 
-  AIMViqrStarCore = XInternAtom(display, UKP_VIQR_STAR_CORE, False);
-  AIMViqrStarGui = XInternAtom(display, UKP_VIQR_STAR_GUI, False);
-
   AGUIPosX = XInternAtom(display, UKP_GUI_POS_X, False);
   AGUIPosY = XInternAtom(display, UKP_GUI_POS_Y, False);
 
+  _NET_WM_WINDOW_TYPE = XInternAtom(display, "_NET_WM_WINDOW_TYPE", False);
+  _NET_WM_WINDOW_TYPE_DOCK = XInternAtom(display, "_NET_WM_WINDOW_TYPE_DOCK", False);
+  ARaiseWindow = XInternAtom(display, "_UNIKEY_RAISE_WINDOW", False);
 }
 
 //--------------------------------------------
@@ -731,12 +732,6 @@ void getInitSettings()
 
   UkActiveMethod = SyncToUnikeyMethod((int)v);
 
-  if (UkActiveMethod == UNIKEY_VIQR_INPUT) {
-    v = UkGetPropValue(AIMViqrStarGui, 0);
-    if (v != 0)
-      UkActiveMethod = UNIKEY_VIQR_STAR_INPUT;
-    UkSetPropValue(AIMViqrStarGui, 0);
-  }
 }
 
 //--------------------------------------------------
@@ -779,11 +774,9 @@ pid_t childProcess()
     argc = 0;
     argv[argc++] = "ukxim";
     argv[argc++] = "-report";
+    argv[argc++] = "-watch-gui";
 
-    if (UkSuspend)
-      argv[argc++] = "-suspend";
-
-    if (MacroFile) {
+     if (MacroFile) {
       argv[argc++] = "-macro";
       argv[argc++] = MacroFile;
     }
@@ -791,6 +784,11 @@ pid_t childProcess()
     if (ConfigFile) {
       argv[argc++] = "-config";
       argv[argc++] = ConfigFile;
+    }
+
+    if (XimLocales) {
+      argv[argc++] = "-locales";
+      argv[argc++] = XimLocales;
     }
 
     if (DisplayName) {

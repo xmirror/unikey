@@ -29,7 +29,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ******************************************************************/
 
 /* Unikey Vietnamese Input Method
- * Copyright (C) 2004 Pham Kim Long
+ * Copyright (C) 2004-2005 Pham Kim Long
  * Contact:
  *   longcz@yahoo.com
  *   UniKey project: http://unikey.sf.net
@@ -57,6 +57,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
+//#include <unistd.h>
 #include <signal.h>
 #include <X11/Xlocale.h>
 #include <X11/Xlib.h>
@@ -65,14 +66,14 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "IMdkit.h"
 #include "Xi18n.h"
 #include "IC.h"
+#include "vnconv.h"
 #include "unikey.h"
 #include "uksync.h"
 #include "../gui/xvnkb.h"
-#include "macro.h"
+//#include "macro.h"
 #include "ukopt.h"
 
 #define DEFAULT_IMNAME "unikey"
-#define DEFAULT_LOCALE "en_US,vi_VN,C"
 #define PROG_NAME "Unikey XIM"
 
 //#define DEBUG
@@ -86,8 +87,8 @@ Atom ProgAtom;
 XIMS UnikeyIms;
 
 Window MainWindow = None;
-Atom AIMCharset, AIMUsing, AIMMethod, AIMViqrStarGui, AIMViqrStarCore;
-Atom ASuspend;
+Atom AIMCharset, AIMUsing, AIMMethod;
+Atom AGUIVisible;
 Atom AGUIPosX, AGUIPosY;
 
 static unsigned int BsKeycode;
@@ -98,27 +99,33 @@ static unsigned int ReturnKeycode;
 static char ReturnChar;
 
 static Bool PendingCommit = False;
+static Bool PostponeKeyEv = False;
+static int PostponeCount = 0;
 static Bool DataCommit = False;
-static Bool UkMacroLoaded = False;
 static Bool UkTriggering = False;
 
 void getSyncAtoms(Bool xvnkbSync);
 void setRootPropMask();
 void resetState();
 Bool singleLaunch();
-void fixUnikeyToSyncMethod(int method);
+void fixUnikeyToSyncMethod(UkInputMethod method);
 void fixSyncToUnikeyMethod();
 
 //-----------------------------------------------------------------
 UkXimOpt GlobalOpt;
 
 int UkLoopContinue = 1;
-int UkSuspend = 0;
+int UkWatchGUI = 0;
+int UkGUIVisible = 0;
 char *ConfigFile = NULL;
 char *MacroFile = NULL;
+char *XimLocales = NULL; //locales option from command line
+char *DefaultXimLocales = "C,en_US,vi_VN,fr_FR,fr_BE,fr_CA,de_DE,ja_JP,cs_CZ,ru_RU";
+
 //int AllocMacforFile = 0;
 
 void reloadConfig(int signum);
+void restoreKeys(XIMS ims, IMForwardEventStruct *call_data);
 void signalSetup();
 int saveOptFile();
 void cleanup();
@@ -129,7 +136,7 @@ int myXErrorHandler(Display *dpy, XErrorEvent *event);
 /* flags for debugging */
 Bool use_tcp = False;		/* Using TCP/IP Transport or not */
 Bool use_local = False;		/* Using Unix domain Tranport or not */
-long filter_mask = KeyPressMask;
+long filter_mask = KeyPressMask | KeyReleaseMask;
 
 
 /* Supported Inputstyles */
@@ -196,14 +203,15 @@ static XIMTriggerKey Trigger_Keys[] = {
   {XK_y, 0, ControlMask | Mod1Mask},
   {XK_Z, 0, ControlMask | Mod1Mask},
   {XK_z, 0, ControlMask | Mod1Mask},
-  {XK_Shift_L, 0, ControlMask},
-  {XK_Shift_R, 0, ControlMask},
+  //  {XK_Shift_L, 0, ControlMask},
+  //  {XK_Shift_R, 0, ControlMask},
   {XK_Shift_L, ControlMask, ControlMask},
   {XK_Shift_R, ControlMask, ControlMask},
-  {XK_Shift_L, 0, Mod1Mask},
-  {XK_Shift_R, 0, Mod1Mask},
+  //  {XK_Shift_L, 0, Mod1Mask},
+  //  {XK_Shift_R, 0, Mod1Mask},
   {XK_Shift_L, Mod1Mask, Mod1Mask},
-  {XK_Shift_R, Mod1Mask, Mod1Mask}
+  {XK_Shift_R, Mod1Mask, Mod1Mask},
+  {0L, 0L, 0L}
 };
 
 /* Forward Keys List */
@@ -223,8 +231,10 @@ enum ShortcutNames {
   SC_TELEX_INPUT,
   SC_VNI_INPUT,
   SC_VIQR_INPUT,
-  SC_VIQR_STAR_INPUT,
-  SC_RELOAD_CONFIG
+  SC_RELOAD_CONFIG,
+  SC_RESTORE_KEYS,
+  SC_DISABLE_CHECK,
+  SC_USER_INPUT
 };
 
 typedef struct
@@ -237,6 +247,23 @@ typedef struct
 
 /* Shortcut List */
 static ShortcutInfo ShortcutList[] = {
+  //{XK_Shift_L, Mod1Mask, Mod1Mask, SC_SWITCH},
+  //{XK_Shift_R, Mod1Mask, Mod1Mask, SC_SWITCH},
+  {XK_F1, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_UNICODE_CHARSET},
+  {XK_F2, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_VIQR_CHARSET},
+  {XK_F3, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_TCVN_CHARSET},
+  {XK_F4, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_VNI_CHARSET},
+  {XK_F5, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_TELEX_INPUT},
+  {XK_F6, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_VNI_INPUT},
+  {XK_F7, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_VIQR_INPUT},
+  {XK_F8, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_USER_INPUT},
+  {XK_F9, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_SWITCH},
+  {XK_Escape, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_RESTORE_KEYS},
+  {XK_Z, ControlMask|ShiftMask, ControlMask|ShiftMask, SC_DISABLE_CHECK}
+};
+
+/*
+static ShortcutInfo ShortcutList[] = {
   {XK_Shift_L, ControlMask, ControlMask, SC_SWITCH},
   {XK_F1, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_UNICODE_CHARSET},
   {XK_F2, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_VIQR_CHARSET},
@@ -244,10 +271,10 @@ static ShortcutInfo ShortcutList[] = {
   {XK_F4, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_VNI_CHARSET},
   {XK_F5, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_TELEX_INPUT},
   {XK_F6, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_VNI_INPUT},
-  {XK_F7, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_VIQR_INPUT},
-  {XK_F8, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_VIQR_STAR_INPUT}
+  {XK_F7, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_VIQR_INPUT}
   //  {XK_F9, Mod1Mask|ShiftMask, Mod1Mask|ShiftMask, SC_RELOAD_CONFIG}
 };
+*/
 
 static XIMEncoding SupportedEncodings[] = {
   "COMPOUND_TEXT",
@@ -340,6 +367,44 @@ Bool IsKey(XIMS ims, IMForwardEventStruct *call_data, XIMTriggerKey *trigger)
 }
 
 //-----------------------------------------------------------------
+Bool isSwitchKey(XIMS ims, IMForwardEventStruct *call_data)
+{
+  char strbuf[STRBUFLEN];
+  KeySym keysym;
+  static int pendingSwitch = 0;
+  
+  XKeyEvent *kev = (XKeyEvent*)&call_data->event;
+  if (kev->type != KeyPress && kev->type != KeyRelease)
+    return False;
+
+  memset(strbuf, 0, STRBUFLEN);
+
+  XLookupString(kev, strbuf, STRBUFLEN, &keysym, NULL);
+
+  if (keysym == XK_Shift_L || keysym == XK_Shift_R ||
+      keysym == XK_Control_L || keysym == XK_Control_R) {
+    if (kev->type == KeyRelease ) {
+      if (pendingSwitch) {
+	pendingSwitch = 0;
+	if (GlobalOpt.enabled)
+	  UkSetPropValue(AIMMethod, VKM_OFF);
+	else
+	  fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
+	return True;
+      }
+    }
+    else {
+      if (((keysym == XK_Shift_L || keysym == XK_Shift_R) && (kev->state & ControlMask)) ||
+	  ((keysym == XK_Control_L || keysym == XK_Control_R) && (kev->state & ShiftMask))) {
+	pendingSwitch = 1;
+      }
+    }
+  }
+  else pendingSwitch = 0;
+  return False;
+}
+
+//-----------------------------------------------------------------
 Bool isShortcut(XIMS ims, IMForwardEventStruct *call_data)
 {
   char strbuf[STRBUFLEN];
@@ -348,8 +413,12 @@ Bool isShortcut(XIMS ims, IMForwardEventStruct *call_data)
   int modifier;
   int modifier_mask;
   long v;
+  int bellAction = 1;
   
   XKeyEvent *kev;
+
+  if (call_data->event.type != KeyPress)
+    return False;
 
   memset(strbuf, 0, STRBUFLEN);
   kev = (XKeyEvent*)&call_data->event;
@@ -370,39 +439,47 @@ Bool isShortcut(XIMS ims, IMForwardEventStruct *call_data)
 	  fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
 	break;
       case SC_UNICODE_CHARSET:
-	v = UnikeyToSyncCharset(UNICODE_CHARSET);
+	v = UnikeyToSyncCharset(CONV_CHARSET_UNIUTF8);
 	UkSetPropValue(AIMCharset, v);
 	break;
       case SC_VIQR_CHARSET:
-	v = UnikeyToSyncCharset(VIQR_CHARSET);
+	v = UnikeyToSyncCharset(CONV_CHARSET_VIQR);
 	UkSetPropValue(AIMCharset, v);
 	break;
       case SC_TCVN_CHARSET:
-	v = UnikeyToSyncCharset(TCVN3_CHARSET);
+	v = UnikeyToSyncCharset(CONV_CHARSET_TCVN3);
 	UkSetPropValue(AIMCharset, v);
 	break;
       case SC_VNI_CHARSET:
-	v = UnikeyToSyncCharset(VNI_CHARSET);
+	v = UnikeyToSyncCharset(CONV_CHARSET_VNIWIN);
 	UkSetPropValue(AIMCharset, v);
 	break;
       case SC_TELEX_INPUT:
-	fixUnikeyToSyncMethod(TELEX_INPUT);
+	fixUnikeyToSyncMethod(UkTelex);
 	break;
       case SC_VNI_INPUT:
-	fixUnikeyToSyncMethod(VNI_INPUT);
+	fixUnikeyToSyncMethod(UkVni);
 	break;
       case SC_VIQR_INPUT:
-	fixUnikeyToSyncMethod(VIQR_INPUT);
+	fixUnikeyToSyncMethod(UkViqr);
 	break;
-      case SC_VIQR_STAR_INPUT:
-	fixUnikeyToSyncMethod(VIQR_STAR_INPUT);
+      case SC_USER_INPUT:
+	fixUnikeyToSyncMethod(UkUsrIM);
 	break;
       case SC_RELOAD_CONFIG:
 	reloadConfig(SIGUSR1);
 	break;
+      case SC_RESTORE_KEYS:
+	restoreKeys(ims, call_data);
+	bellAction = 0;
+	break;
+      case SC_DISABLE_CHECK:
+	UnikeySetSingleMode();
+	bellAction = 0;
+	break;
       }
 
-      if (GlobalOpt.bellNotify)
+      if (bellAction && GlobalOpt.bellNotify)
 	XBell(ims->core.display, 0);
 
       return True;
@@ -447,11 +524,12 @@ void sendBackspaces(XIMS ims, IMForwardEventStruct *call_data, int times)
     fwdKev->time++;
     fwdKev->type = KeyPress;
     XSendEvent(display, fwdKev->window, False, KeyPressMask, (XEvent *)fwdKev);
-
+    /*
     fwdKev->serial++;
     fwdKev->time++;
     fwdKev->type = KeyRelease;
     XSendEvent(display, fwdKev->window, False, KeyReleaseMask, (XEvent *)fwdKev);
+    */
   }
 
 }
@@ -473,7 +551,7 @@ void sendCommit(XEvent *srcEv)
   ev.time++;
   XSendEvent(display, ev.window, False, KeyReleaseMask, (XEvent *)&ev);
 
-  XSync(display, False);
+  //  XSync(display, False);
 }
 
 //-----------------------------------------------
@@ -498,16 +576,16 @@ void commitBuf(XIMS ims, IMForwardEventStruct *call_data)
 
   char *utfBuf;
 
-  if (GlobalOpt.charset != UNICODE_CHARSET) {
+  if (GlobalOpt.charset != CONV_CHARSET_UNIUTF8) {
     int outLeft = sizeof(buf);
-    if (!latinToUtf(buf, UnikeyAnsiBuf, UnikeyBufChars, &outLeft))
+    if (!latinToUtf(buf, UnikeyBuf, UnikeyBufChars, &outLeft))
       return; //not enough memory
     buf[sizeof(buf)-outLeft] = 0;
     utfBuf = buf;
   }
   else {
-    UnikeyAnsiBuf[UnikeyBufChars] = 0;
-    utfBuf = UnikeyAnsiBuf;
+    UnikeyBuf[UnikeyBufChars] = 0;
+    utfBuf = UnikeyBuf;
   }
 
   dpy = ims->core.display;
@@ -535,7 +613,6 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
   KeySym keysym;
   XKeyEvent *kev;
   IMForwardEventStruct forward_ev;
-
   int count;
 
   forward_ev = *((IMForwardEventStruct *)call_data);
@@ -551,14 +628,25 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
     if (!PendingCommit) {
       UnikeyBackspacePress();
       if (UnikeyBackspaces > 0) {
-	if (GlobalOpt.commitMethod == UkForwardCommit)
+	if (GlobalOpt.commitMethod == UkForwardCommit) {
 	  forwardBackspaces(ims, call_data, UnikeyBackspaces);
+	  if (UnikeyBufChars > 0)
+	    commitBuf(ims, call_data);
+	}
 	else {
 	  sendBackspaces(ims, call_data, UnikeyBackspaces);
 	  sendCommit(&call_data->event);
 	  PendingCommit = True;
-	  DataCommit = False;
+	  PostponeKeyEv = True;
+	  PostponeCount = 0;
+	  DataCommit = (UnikeyBufChars > 0);
 	}
+	XSync(display, False);
+	return;
+      }
+      if (UnikeyBufChars > 0) {
+	commitBuf(ims, call_data);
+	XSync(display, False);
 	return;
       }
     }
@@ -578,17 +666,31 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
       PendingCommit = False;
       if (DataCommit) {
 	commitBuf(ims, call_data);
+	sendCommit(&call_data->event);
+	//XSync(display, False);
 	DataCommit = False;
+      }
+      else {
+	sendCommit(&call_data->event);
+	//XSync(display, False);
       }
 #ifdef DEBUG
       fprintf(stderr, "commited\n");
 #endif
       return;
     }
+    PostponeKeyEv = False;
     return; //break;
   }
     
   if (count > 0 && (kev->state & (ControlMask | Mod1Mask)) == 0) {
+    if (PostponeKeyEv && PostponeCount < 50) {
+      //postpone this event
+      PostponeCount++;
+      //printf("OOPS OUT OF ORDER\n");//DEBUG
+      XSendEvent(display, kev->window, False, KeyPressMask, (XEvent *)kev);
+      return;
+    }
     if (count == 1) {
       //      fprintf(stderr, "ch: %c %d\n", strbuf[0], strbuf[0]);
       UnikeySetCapsState(kev->state & ShiftMask, kev->state & LockMask);
@@ -608,19 +710,24 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
 	    sendBackspaces(ims, call_data, UnikeyBackspaces);
 	    sendCommit(&call_data->event);
 	    PendingCommit = True;
+	    PostponeKeyEv = True;
+	    PostponeCount = 0;
 	    DataCommit = (UnikeyBufChars > 0);
 	  }
+	  //XSync(display, False);
 	  return;
 	}
 
 	if (UnikeyBufChars > 0) {
 	  commitBuf(ims, call_data);
+	  //XSync(display, False);
 	  return;
 	}  
       }
       if (UkTriggering) {
 	strbuf[1] = 0;
 	commitString(ims, call_data, strbuf);
+	//XSync(display, False);
 	return;
       }
     }
@@ -643,15 +750,15 @@ Bool MyForwardEventHandler(XIMS ims, IMForwardEventStruct *call_data)
 {
   IMForwardEventStruct forward_ev;
 
-  if (UkSuspend)
+  if (UkWatchGUI && !UkGUIVisible)
     goto forwardEv;
+
+  if (isSwitchKey(ims, call_data) || isShortcut(ims, call_data))
+    return True;
 
   /* Lookup KeyPress Events only */
   if (call_data->event.type != KeyPress)
-    return True;
-
-  if (isShortcut(ims, call_data))
-    return True;
+    goto forwardEv;
   
   if (!GlobalOpt.enabled)
     goto forwardEv;
@@ -699,7 +806,7 @@ Bool MyTriggerNotifyHandler(XIMS ims, IMTriggerNotifyStruct *call_data)
     imEv.event.xkey.keycode = XKeysymToKeycode(display, Trigger_Keys[keyIndex].keysym);
     imEv.event.xkey.same_screen = True;
 
-    if (!UkSuspend && GlobalOpt.enabled) {
+    if ((!UkWatchGUI || UkGUIVisible) && GlobalOpt.enabled) {
       //let this key go through normal processing
       UkTriggering = True;
       MyForwardEventHandler(ims, &imEv);
@@ -710,7 +817,7 @@ Bool MyTriggerNotifyHandler(XIMS ims, IMTriggerNotifyStruct *call_data)
       KeySym keysym;
       int count;
 
-      if (!UkSuspend) {
+      if (!UkWatchGUI || UkGUIVisible) {
 	if (isShortcut(ims, &imEv))
 	  return True;
       }
@@ -801,8 +908,8 @@ void handlePropertyChanged(Window win, XEvent *event)
     v = UkGetPropValue(pev->atom, VKC_UTF8);
     GlobalOpt.charset = SyncToUnikeyCharset(v);
     UnikeySetOutputCharset(GlobalOpt.charset);
-    if (UkMacroLoaded)
-      UkUpdateMacroTable(GlobalOpt.charset);
+    //    if (UkMacroLoaded)
+    //      UkUpdateMacroTable(GlobalOpt.charset);
   }
   else if (pev->atom == AIMMethod) {
     fixSyncToUnikeyMethod();
@@ -818,10 +925,10 @@ void handlePropertyChanged(Window win, XEvent *event)
   else if (pev->atom == AGUIPosY) {
     GlobalOpt.posY = UkGetPropValue(AGUIPosY, -1);
   }
-  else if (pev->atom == ASuspend) {
-    UkSuspend = UkGetPropValue(ASuspend, 0);
+  else if (pev->atom == AGUIVisible) {
+    UkGUIVisible = UkGetPropValue(AGUIVisible, 0);
     resetState();
-    if (UkSuspend) {
+    if (!UkGUIVisible) {
       if (GlobalOpt.autoSave)
 	saveOptFile();
     }
@@ -934,7 +1041,8 @@ void initXIM(Window im_window, const char *imname)
 		       IMModifiers, "Xi18n",
 		       IMServerWindow, im_window,
 		       IMServerName, imname,
-		       IMLocale, DEFAULT_LOCALE,
+		       IMLocale, 
+		       GlobalOpt.ximLocales,
 		       IMServerTransport, transport,
 		       IMInputStyles, input_styles,
 		       NULL);
@@ -981,6 +1089,10 @@ void usage()
     "  -xvnkb-sync      Enable synchronization with xvnkb GUI\n"
     "  -config <file>   Specify configuration file (default: ~/.unikeyrc)\n"
     "  -macro <file>    Load macro file\n"
+    "  -l, -locales <list> Locales accepted by unikey.\n"
+    "                      Default: \"C,en_US,vi_VN,fr_FR,fr_BE,\n"
+    "                                fr_CA,de_DE,ja_JP,cs_CZ,ru_RU\")\n"
+
     "\nExamples:\n"
     "  $ ukxim &\n"
     "      Runs ukxim with default options\n"
@@ -1023,8 +1135,8 @@ int main(int argc, char **argv)
       else if (!strcmp(argv[i], "-report")) {
 	report = True;
       }
-      else if (!strcmp(argv[i], "-suspend")) {
-	UkSuspend = 1;
+      else if (!strcmp(argv[i], "-watch-gui")) {
+	UkWatchGUI = 1;
       }
       else if (!strcmp(argv[i], "-macro")) {
 	//GlobalOpt.macroFile = strdup(argv[++i]);
@@ -1032,6 +1144,9 @@ int main(int argc, char **argv)
       }
       else if (!strcmp(argv[i], "-config")) {
 	ConfigFile = argv[++i];
+      }
+      else if (!strcmp(argv[i], "-locales")) {
+	XimLocales = argv[++i];
       }
       else if (!strcmp(argv[i], "-xvnkb-sync")) {
 	xvnkbSync = True;
@@ -1095,6 +1210,8 @@ int main(int argc, char **argv)
     XSetTransientForHint(display, MainWindow, MainWindow);
 
     getSyncAtoms(xvnkbSync);
+    UkGUIVisible = UkGetPropValue(AGUIVisible, 0);
+
     initUnikey();
     reloadConfig(SIGUSR1);
 
@@ -1130,7 +1247,7 @@ void getSyncAtoms(Bool xvnkbSync)
 {
   long v;
 
-  ASuspend = XInternAtom(display, UKP_SUSPEND, False);
+  AGUIVisible = XInternAtom(display, UKP_GUI_VISIBLE, False);
 
   if (xvnkbSync) {
     AIMCharset = XInternAtom(display, VKP_CHARSET, False);
@@ -1143,8 +1260,6 @@ void getSyncAtoms(Bool xvnkbSync)
     AIMUsing = XInternAtom(display, UKP_USING, False);
   }
 
-  AIMViqrStarCore = XInternAtom(display, UKP_VIQR_STAR_CORE, False);
-  AIMViqrStarGui = XInternAtom(display, UKP_VIQR_STAR_GUI, False);
 
   AGUIPosX = XInternAtom(display, UKP_GUI_POS_X, False);
   AGUIPosY = XInternAtom(display, UKP_GUI_POS_Y, False);
@@ -1160,13 +1275,6 @@ void getSyncAtoms(Bool xvnkbSync)
     v = UkGetPropValue(AIMUsing, VKM_TELEX);
 
   GlobalOpt.inputMethod = SyncToUnikeyMethod((int)v);
-
-  if (GlobalOpt.inputMethod == VIQR_INPUT) {
-    v = UkGetPropValue(AIMViqrStarCore, 0);
-    if (v != 0)
-      GlobalOpt.inputMethod = VIQR_STAR_INPUT;
-    UkSetPropValue(AIMViqrStarCore, 0);
-  }
 }
 
 //--------------------------------------------------
@@ -1186,6 +1294,8 @@ void resetState()
 {
   UnikeyResetBuf();
   PendingCommit = False;
+  PostponeKeyEv = False;
+  PostponeCount = 0;
   DataCommit = False;
 }
 
@@ -1217,12 +1327,6 @@ void fixSyncToUnikeyMethod()
 
   if (GlobalOpt.enabled) {
     GlobalOpt.inputMethod = SyncToUnikeyMethod((int)v);
-    if (GlobalOpt.inputMethod == VIQR_INPUT) {
-      v = UkGetPropValue(AIMViqrStarCore, 0);
-      if (v != 0)
-	GlobalOpt.inputMethod = VIQR_STAR_INPUT;
-      UkSetPropValue(AIMViqrStarCore, 0);
-    }
   }
 }
 
@@ -1230,18 +1334,13 @@ void fixSyncToUnikeyMethod()
 // this is a work-around of the difference between
 // xvnkb and unikey in using viqr method
 //--------------------------------------------------
-void fixUnikeyToSyncMethod(int method)
+void fixUnikeyToSyncMethod(UkInputMethod method)
 {
   long v;
 
-  if (method == VIQR_STAR_INPUT) {
-    UkSetPropValue(AIMViqrStarGui, 1);
-    UkSetPropValue(AIMViqrStarCore, 1);
-  }
-
   v = UnikeyToSyncMethod(method);
-  UkSetPropValue(AIMMethod, v);
   UkSetPropValue(AIMUsing, v);
+  UkSetPropValue(AIMMethod, v);
 }
 
 //----------------------------------------------------
@@ -1301,13 +1400,18 @@ void reloadConfig(int signum)
     GlobalOpt.macroFile = 0;
   }
 
+  if (GlobalOpt.ximLocales) {
+    free(GlobalOpt.ximLocales);
+    GlobalOpt.ximLocales = 0;
+  }
+
   if (ConfigFile != NULL) {
     if (UkParseOptFile(ConfigFile, &GlobalOpt)) {
       // fprintf(stderr, "Config loaded\n");
     }
   }
 
-  UkCleanupMacro();
+  //  UkCleanupMacro();
   fname = 0;
   if (MacroFile)
     fname = MacroFile;
@@ -1315,18 +1419,21 @@ void reloadConfig(int signum)
     fname = GlobalOpt.macroFile;
 
   if (fname) {
-    if (UkLoadMacroTable(fname)) {
+    if (UnikeyLoadMacroTable(fname)) {
       //      fputs("\nMacro file loaded!\n", stderr);
-      UkSetupMacro();
-      UkMacroLoaded = True;
+      //      UkSetupMacro();
+      //UkMacroLoaded = True;
       GlobalOpt.uk.macroEnabled = 1;
     }
     else {
-      UkMacroLoaded = False;
+      //UkMacroLoaded = False;
       GlobalOpt.uk.macroEnabled = 0;
       fprintf(stderr, "\nFailed to load macro file: %s!\n", fname);
     }
   }
+
+  if (GlobalOpt.usrKeyMapFile)
+    UnikeyLoadUserKeyMap(GlobalOpt.usrKeyMapFile);
   
   UnikeySetOptions(&GlobalOpt.uk);
 
@@ -1334,9 +1441,17 @@ void reloadConfig(int signum)
   v = UnikeyToSyncCharset(GlobalOpt.charset);
   UkSetPropValue(AIMCharset, v);
   fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
-
-  if (!GlobalOpt.enabled)
+  if (!GlobalOpt.enabled) {
     UkSetPropValue(AIMMethod, VKM_OFF);
+  }
+
+  if (XimLocales) {
+    if (GlobalOpt.ximLocales)
+      free(GlobalOpt.ximLocales);
+    GlobalOpt.ximLocales = strdup(XimLocales);
+  }
+  else if (GlobalOpt.ximLocales == NULL)
+    GlobalOpt.ximLocales = strdup(DefaultXimLocales);
 
   XFlush(display);
 }
@@ -1381,4 +1496,33 @@ void cleanup()
   XDestroyWindow(display, MainWindow);
   XFlush(display);
   XCloseDisplay(display);
+}
+
+//----------------------------------------------------
+void restoreKeys(XIMS ims, IMForwardEventStruct *call_data)
+{
+  XKeyEvent *kev = (XKeyEvent*)&call_data->event;
+  UnikeyRestoreKeyStrokes();
+  kev->state = kev->state & ~ControlMask; //clear Control-key mask
+
+  if (UnikeyBackspaces > 0) {
+    if (GlobalOpt.commitMethod == UkForwardCommit) {
+      forwardBackspaces(ims, call_data, UnikeyBackspaces);
+      if (UnikeyBufChars > 0)
+	commitBuf(ims, call_data);
+    }
+    else {
+      sendBackspaces(ims, call_data, UnikeyBackspaces);
+      sendCommit(&call_data->event);
+      PendingCommit = True;
+      PostponeKeyEv = True;
+      PostponeCount = 0;
+      DataCommit = (UnikeyBufChars > 0);
+    }
+    //XSync(display, False);
+    return;
+  }
+
+  if (UnikeyBufChars > 0)
+    commitBuf(ims, call_data);
 }

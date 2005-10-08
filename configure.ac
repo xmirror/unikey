@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
-AC_INIT([Unikey X Input Method], [0.9.1d], [longcz@yahoo.com], [x-unikey])
+AC_INIT([Unikey X Input Method], [1.0.3], [unikey@gmail.com], [x-unikey])
 AC_CONFIG_SRCDIR([src/xim/xim.c])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_CONFIG_HEADER([config.h])
@@ -11,10 +11,11 @@ AC_PROG_LIBTOOL
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
+#AC_PROG_RANLIB
 
 #### customization
 
@@ -33,9 +34,10 @@ AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
 
 # Checks for header files.
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 AC_PATH_X
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h string.h sys/param.h unistd.h time.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -50,7 +52,7 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol strtoul])
+AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol strtoul mkdir])
 
 AC_ARG_WITH(unikey-gtk, 
 	AC_HELP_STRING([--with-unikey-gtk],[Include Unikey GTK IM module (Default: excluded)]), 
@@ -62,6 +64,12 @@ AC_ARG_WITH(gtk-sysconfdir,
 		[GTK sysconfdir [[default=/etc/gtk-2.0]]]), 
 	gtk_sysconfdir=$with_gtk_sysconfdir, [gtk_sysconfdir=/etc/gtk-2.0])
 AC_SUBST(gtk_sysconfdir)
+
+AC_ARG_WITH(libdir, 
+	AC_HELP_STRING([--with-libdir=PATH],
+		[System lib dir to install gtk module. [[automatic]]]), 
+	sys_libdir=$with_libdir, [sys_libdir=""])
+AC_SUBST(sys_libdir)
 
 if test "X$unikey_gtk" = "Xyes" ; then
 	PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.2.0)
@@ -76,11 +84,15 @@ if test "X$unikey_gtk" = "Xyes" ; then
 		AC_MSG_RESULT([$GTK_PREFIX])
 		AC_SUBST(GTK_PREFIX)
 
-	AC_MSG_CHECKING([gtk libdir])
-		GTK_LIBDIR=`pkg-config gtk+-2.0 --variable=libdir`
-		AC_MSG_RESULT([$GTK_LIBDIR])
-		AC_SUBST(GTK_LIBDIR)
-
+	if test "X$sys_libdir" = "X" ; then
+	    AC_MSG_CHECKING([gtk libdir])
+	    GTK_LIBDIR=`pkg-config gtk+-2.0 --variable=libdir`
+	    AC_MSG_RESULT([$GTK_LIBDIR])
+	else
+	    GTK_LIBDIR=$sys_libdir
+	fi
+	AC_SUBST(GTK_LIBDIR)
+	    
 	AC_MSG_CHECKING(whether make is GNU Make)
 	STRIP_BEGIN=
 	STRIP_END=

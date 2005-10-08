@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONV_CHARSET_UNIDECOMPOSED 4
 #define CONV_CHARSET_WINCP1258	5
 #define CONV_CHARSET_UNI_CSTRING 6
+#define CONV_CHARSET_VNSTANDARD 7
+
 
 #define CONV_CHARSET_VIQR		10
 #define CONV_CHARSET_UTF8VIQR 11
@@ -39,25 +41,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONV_CHARSET_VISCII		22
 #define CONV_CHARSET_BKHCM1		23
 #define CONV_CHARSET_VIETWAREF	24
+#define CONV_CHARSET_ISC        25
 
 #define CONV_CHARSET_VNIWIN		40
 #define CONV_CHARSET_BKHCM2		41
 #define CONV_CHARSET_VIETWAREX	42
+#define CONV_CHARSET_VNIMAC		43
 
-#define CONV_TOTAL_SINGLE_CHARSETS 5
-#define CONV_TOTAL_DOUBLE_CHARSETS 3
+#define CONV_TOTAL_SINGLE_CHARSETS 6
+#define CONV_TOTAL_DOUBLE_CHARSETS 4
 
 
 #define IS_SINGLE_BYTE_CHARSET(x) (x >= CONV_CHARSET_TCVN3 && x < CONV_CHARSET_TCVN3+CONV_TOTAL_SINGLE_CHARSETS)
 #define IS_DOUBLE_BYTE_CHARSET(x) (x >= CONV_CHARSET_VNIWIN && x < CONV_CHARSET_VNIWIN+CONV_TOTAL_DOUBLE_CHARSETS)
 
-typedef unsigned char BYTE;
+typedef unsigned char UKBYTE;
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
-  //int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen);
-  int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, 
+  //int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, int & inLen, int & maxOutLen);
+  int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
 		int * pInLen, int * pMaxOutLen);
 
 int VnFileConvert(int inCharset, int outCharset, const char *inFile, const char *outFile);

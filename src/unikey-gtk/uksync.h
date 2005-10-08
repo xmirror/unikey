@@ -27,9 +27,6 @@
 
 #include <X11/Xlib.h>
 
-#define UKP_VIQR_STAR_CORE "UK_VIQR_STAR_CORE"
-#define UKP_VIQR_STAR_GUI "UK_VIQR_STAR_GUI"
-
 void UkInitSync(Display *dpy, Window root);
 
 int UnikeyToSyncCharset(int uk);

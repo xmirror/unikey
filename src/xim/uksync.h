@@ -24,16 +24,12 @@
 #ifndef __UNIKEY_SYNC_H
 #define __UNIKEY_SYNC_H
 
-#define UKP_VIQR_STAR_CORE "UK_VIQR_STAR_CORE"
-#define UKP_VIQR_STAR_GUI "UK_VIQR_STAR_GUI"
-
-
 int UnikeyToSyncCharset(int uk);
 int SyncToUnikeyCharset(int sync);
 int UnikeyToSyncMethod(int uk);
 int SyncToUnikeyMethod(int sync);
 
-long UkSetPropValue(Atom atom, long value);
+void UkSetPropValue(Atom atom, long value);
 long UkGetPropValue(Atom atom, long defValue);
 
 #endif

@@ -89,7 +89,6 @@ static int parseLine(char *line, char **name, char **value)
 int parseValue(OptItem *info, void *rec, const char *strValue)
 {
   char *addr = ((char *)rec)+info->offset;
-
   switch (info->type) {
   case BoolOpt:
     {
@@ -111,9 +110,12 @@ int parseValue(OptItem *info, void *rec, const char *strValue)
     }
     break;
   case StrOpt:
-    if (*addr)
-      free(addr);
-    *(char **)addr = strdup(strValue);
+    {
+      char **ppStr = (char **)addr;
+      if (*ppStr)
+	free(*ppStr);
+      *ppStr = strdup(strValue);
+    }
     break;
   case LookupOpt:
     {
@@ -169,7 +171,6 @@ int ParseOptFile(const char *fileName, void *optRec, OptItem *optList, int count
     if (buf[len-1] == '\n')
       buf[len-1] = 0;
     if (parseLine(buf, &name, &value)) {
-      //      printf("Name: %s - Value: %s.\n", name, value);
       for (i=0; i<count; i++) {
 	if (strcasecmp(optList[i].name, name) == 0) {
 	  parseValue(&optList[i], optRec, value);

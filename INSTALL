@@ -11,6 +11,10 @@ This package contains the following components:
 - unikey: GUI for ukxim and unikey-gtk
 - unikey-gtk: GTK vietnamese input method module
 
+You need only ukxim and unikey to type Vietnamese.
+unikey-gtk is provided for the covenience of GTK
+users.
+
 ------------------------------------------------
 1. Build process
 
@@ -19,15 +23,21 @@ This package contains the following components:
 $ ./configure
 $ make
 
-1.b Build Unikey XIM and unikey-gtk
+1.b Or build Unikey XIM and unikey-gtk
 
 $ ./configure --with-unikey-gtk
 $ make
 
-* SUSE users should provide "configure" with the path to gtk configuration directory.
+
+** SUSE users should provide "configure" with the path to gtk configuration directory.
 In SUSE 9.0 it is "/etc/opt/gnome/gtk-2.0". For example:
 
 $ ./configure --with-unikey-gtk --with-gtk-sysconfdir=/etc/opt/gnome/gtk-2.0
+
+** By default, "make install" will install unikey-gtk to deault location
+for GTK IM modules (under /usr/lib). If you want to install to a
+different location (e.g. when building RPM, deb packages),
+use --with-libdir argument.
 
 --------
 2. System install:

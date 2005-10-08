@@ -59,8 +59,14 @@
 /* Define to 1 if you have the `memset' function. */
 #define HAVE_MEMSET 1
 
+/* Define to 1 if you have the `mkdir' function. */
+#define HAVE_MKDIR 1
+
 /* Define to 1 if you have the `setlocale' function. */
 #define HAVE_SETLOCALE 1
+
+/* Define to 1 if stdbool.h conforms to C99. */
+#define HAVE_STDBOOL_H 1
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #define HAVE_STDDEF_H 1
@@ -107,6 +113,9 @@
 /* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
 #define HAVE_SYS_WAIT_H 1
 
+/* Define to 1 if you have the <time.h> header file. */
+#define HAVE_TIME_H 1
+
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
 
@@ -122,23 +131,26 @@
 /* Define to 1 if `vfork' works. */
 #define HAVE_WORKING_VFORK 1
 
+/* Define to 1 if the system has the type `_Bool'. */
+#define HAVE__BOOL 1
+
 /* Name of package */
 #define PACKAGE "x-unikey"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "longcz@yahoo.com"
+#define PACKAGE_BUGREPORT "unikey@gmail.com"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "Unikey X Input Method"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Unikey X Input Method 0.9.1d"
+#define PACKAGE_STRING "Unikey X Input Method 1.0.3"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "x-unikey"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.9.1d"
+#define PACKAGE_VERSION "1.0.3"
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
@@ -155,7 +167,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.9.1d"
+#define VERSION "1.0.3"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __CHARSET_CONVERT_H
 #define __CHARSET_CONVERT_H
 
+#include <stdint.h>
 #include "vnconv.h"
 #include "byteio.h"
 #include "pattern.h"
@@ -32,32 +33,33 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #if defined(_WIN32)
 typedef unsigned __int32 StdVnChar;
 #else
-typedef unsigned int StdVnChar; //the size should be more specific
+//typedef unsigned int StdVnChar; //the size should be more specific
+typedef uint32_t StdVnChar;
 #endif
 
-typedef unsigned short UnicodeChar;
-typedef unsigned short WORD;
+//typedef unsigned short UnicodeChar;
+//typedef unsigned short UKWORD;
+typedef uint16_t UnicodeChar;
+typedef uint16_t UKWORD;
 
-#if !defined(_WIN32)
-
-typedef unsigned int DWORD; //the size should be more specific
-
-#endif
+//typedef unsigned int UKDWORD; //the size should be more specific
+typedef uint32_t UKDWORD;
 
 #ifndef LOWORD
-#define LOWORD(l)           ((WORD)(l))
+#define LOWORD(l)           ((UKWORD)(l))
 #endif
 
 #ifndef HIWORD
-#define HIWORD(l)           ((WORD)(((DWORD)(l) >> 16) & 0xFFFF))
+#define HIWORD(l)           ((UKWORD)(((UKDWORD)(l) >> 16) & 0xFFFF))
 #endif
 
 #ifndef MAKEWORD
-#define MAKEWORD(a, b)      ((WORD)(((BYTE)(a)) | ((WORD)((BYTE)(b))) << 8))
+#define MAKEWORD(a, b)      ((UKWORD)(((UKBYTE)(a)) | ((UKWORD)((UKBYTE)(b))) << 8))
 #endif
 
 const StdVnChar VnStdCharOffset = 0x10000;
 const StdVnChar INVALID_STD_CHAR = 0xFFFFFFFF;
+//const unsigned char PadChar = '?'; //? is used for VIQR charset
 const unsigned char PadChar = '#';
 const unsigned char PadStartQuote = '\"';
 const unsigned char PadEndQuote = '\"';
@@ -67,7 +69,7 @@ class VnCharset {
 public:
 	virtual void startInput() {};
 	virtual void startOutput() {};
-//	virtual BYTE *nextInput(BYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead) = 0;
+//	virtual UKBYTE *nextInput(UKBYTE *input, int inLen, StdVnChar & stdChar, int & bytesRead) = 0;
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead) = 0;
 
 	//------------------------------------------------------------------------
@@ -80,12 +82,13 @@ public:
 	// Returns: next position in output
 	//------------------------------------------------------------------------
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen) = 0;
+	virtual ~VnCharset() {}
 };
 
 //--------------------------------------------------
 class SingleByteCharset: public VnCharset {
 protected:
-	WORD m_stdMap[256];
+	UKWORD m_stdMap[256];
 	unsigned char * m_vnChars;
 public:
 	SingleByteCharset(unsigned char * vnChars);
@@ -94,9 +97,17 @@ public:
 };
 
 //--------------------------------------------------
+class VnInternalCharset: public VnCharset {
+public:
+  VnInternalCharset() {};
+  virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
+  virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
+};
+
+//--------------------------------------------------
 class UnicodeCharset: public VnCharset {
 protected:
-	DWORD m_vnChars[TOTAL_VNCHARS];
+	UKDWORD m_vnChars[TOTAL_VNCHARS];
 	UnicodeChar * m_toUnicode;
 public:
 	UnicodeCharset(UnicodeChar *vnChars);
@@ -107,11 +118,11 @@ public:
 //--------------------------------------------------
 class DoubleByteCharset: public VnCharset {
 protected:
-	WORD m_stdMap[256];
-	DWORD m_vnChars[TOTAL_VNCHARS];
-	WORD * m_toDoubleChar;
+	UKWORD m_stdMap[256];
+	UKDWORD m_vnChars[TOTAL_VNCHARS];
+	UKWORD * m_toDoubleChar;
 public:
-	DoubleByteCharset(WORD *vnChars);
+	DoubleByteCharset(UKWORD *vnChars);
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
@@ -159,30 +170,30 @@ public:
 //--------------------------------------------------
 class WinCP1258Charset: public VnCharset {
 protected:
-	WORD m_stdMap[256];
-	DWORD m_vnChars[TOTAL_VNCHARS*2];
-	WORD *m_toDoubleChar;
+	UKWORD m_stdMap[256];
+	UKDWORD m_vnChars[TOTAL_VNCHARS*2];
+	UKWORD *m_toDoubleChar;
 	int m_totalChars;
 
 public:
-	WinCP1258Charset(WORD *compositeChars, WORD *precomposedChars);
+	WinCP1258Charset(UKWORD *compositeChars, UKWORD *precomposedChars);
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
 
 //--------------------------------------------------
 struct UniCompCharInfo {
-	DWORD	compChar;
+	UKDWORD	compChar;
 	int stdIndex;
 };
 
 class UnicodeCompCharset: public VnCharset {
 protected:
 	UniCompCharInfo m_info[TOTAL_VNCHARS*2];
-	DWORD *m_uniCompChars;
+	UKDWORD *m_uniCompChars;
 	int m_totalChars;
 public:
-	UnicodeCompCharset(UnicodeChar *uniChars, DWORD *uniCompChars);
+	UnicodeCompCharset(UnicodeChar *uniChars, UKDWORD *uniCompChars);
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
 };
@@ -190,8 +201,8 @@ public:
 //--------------------------------------------------
 class VIQRCharset: public VnCharset {
 protected:
-	DWORD *m_vnChars;
-	WORD m_stdMap[256];
+	UKDWORD *m_vnChars;
+	UKWORD m_stdMap[256];
 	int m_atWordBeginning;
 	int m_escapeBowl;
 	int m_escapeRoof;
@@ -199,9 +210,10 @@ protected:
 	int m_escapeTone;
 	int m_gotTone;
 	int m_escAll;
+	int m_noOutEsc;
 public:
 	int m_suspicious;
-	VIQRCharset(DWORD *vnChars);
+	VIQRCharset(UKDWORD *vnChars);
 	virtual void startInput();
 	virtual void startOutput();
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
@@ -238,9 +250,10 @@ protected:
 	UTF8VIQRCharset * m_pUVIQRCharObj;
 	WinCP1258Charset * m_pWinCP1258;
 	UnicodeCStringCharset *m_pUniCString;
+	VnInternalCharset *m_pVnIntCharset;
 
 public:
-	PatternList m_VIQREscPatterns;
+	PatternList m_VIQREscPatterns, m_VIQROutEscPatterns;
 	VnConvOptions m_options;
 	CVnCharsetLib();
 	~CVnCharsetLib();
@@ -248,12 +261,12 @@ public:
 };
 
 extern unsigned char SingleByteTables[][TOTAL_VNCHARS];
-extern WORD DoubleByteTables[][TOTAL_VNCHARS];
+extern UKWORD DoubleByteTables[][TOTAL_VNCHARS];
 extern UnicodeChar UnicodeTable[TOTAL_VNCHARS];
-extern DWORD VIQRTable[TOTAL_VNCHARS];
-extern DWORD UnicodeComposite[TOTAL_VNCHARS];
-extern WORD WinCP1258[TOTAL_VNCHARS];
-extern WORD WinCP1258Pre[TOTAL_VNCHARS];
+extern UKDWORD VIQRTable[TOTAL_VNCHARS];
+extern UKDWORD UnicodeComposite[TOTAL_VNCHARS];
+extern UKWORD WinCP1258[TOTAL_VNCHARS];
+extern UKWORD WinCP1258Pre[TOTAL_VNCHARS];
 
 extern CVnCharsetLib VnCharsetLibObj;
 extern VnConvOptions VnConvGlobalOptions;

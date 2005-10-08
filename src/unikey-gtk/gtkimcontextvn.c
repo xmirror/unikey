@@ -30,7 +30,6 @@
 #include "gtkimcontextvn.h"
 #include "unikey.h"
 #include "../xim/ukopt.h"
-#include "../xim/macro.h"
 #include "../gui/xvnkb.h"
 #include "../vnconv/vnconv.h"
 
@@ -63,8 +62,10 @@ enum ShortcutNames {
   SC_TELEX_INPUT,
   SC_VNI_INPUT,
   SC_VIQR_INPUT,
-  SC_VIQR_STAR_INPUT,
-  SC_RELOAD_CONFIG
+  SC_USER_INPUT,
+  SC_RELOAD_CONFIG,
+  SC_RESTORE_KEYS,
+  SC_DISABLE_CHECK
 };
 
 typedef struct
@@ -77,23 +78,27 @@ typedef struct
 
 /* Shortcut List */
 static ShortcutInfo ShortcutList[] = {
-  {GDK_Shift_L, GDK_CONTROL_MASK, GDK_CONTROL_MASK, SC_SWITCH},
-  {GDK_F1, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_UNICODE_CHARSET},
-  {GDK_F2, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_VIQR_CHARSET},
-  {GDK_F3, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_TCVN_CHARSET},
-  {GDK_F4, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_VNI_CHARSET},
-  {GDK_F5, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_TELEX_INPUT},
-  {GDK_F6, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_VNI_INPUT},
-  {GDK_F7, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_VIQR_INPUT},
-  {GDK_F8, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_VIQR_STAR_INPUT},
-  {GDK_F9, GDK_MOD1_MASK|GDK_SHIFT_MASK, GDK_MOD1_MASK|GDK_SHIFT_MASK, SC_RELOAD_CONFIG}
+  {GDK_Shift_L, GDK_MOD1_MASK, GDK_MOD1_MASK, SC_SWITCH},
+  {GDK_F1, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_UNICODE_CHARSET},
+  {GDK_F2, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_VIQR_CHARSET},
+  {GDK_F3, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_TCVN_CHARSET},
+  {GDK_F4, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_VNI_CHARSET},
+  {GDK_F5, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_TELEX_INPUT},
+  {GDK_F6, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_VNI_INPUT},
+  {GDK_F7, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_VIQR_INPUT},
+  {GDK_F8, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_USER_INPUT},
+  {GDK_F9, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_SWITCH},
+  {GDK_Escape, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_RESTORE_KEYS},
+  {GDK_Z, GDK_CONTROL_MASK|GDK_SHIFT_MASK, GDK_CONTROL_MASK|GDK_SHIFT_MASK, SC_DISABLE_CHECK}
+  //  {GDK_Alt_L, GDK_CONTROL_MASK, GDK_CONTROL_MASK, SC_DISABLE_CHECK},
+  //  {GDK_Alt_R, GDK_CONTROL_MASK, GDK_CONTROL_MASK, SC_DISABLE_CHECK}
 };
 
 static void     gtk_im_context_vn_class_init         (GtkIMContextVnClass  *class);
 static void     gtk_im_context_vn_class_finalize         (GtkIMContextVnClass  *class);
 static void     gtk_im_context_vn_init               (GtkIMContextVn       *im_context_vn);
 static void     gtk_im_context_vn_finalize           (GObject                  *obj);
-static gboolean gtk_im_context_vn_filter_keypress    (GtkIMContext             *context,
+static gboolean gtk_im_context_vn_filter_key         (GtkIMContext             *context,
 						      GdkEventKey              *key);
 static void     gtk_im_context_vn_reset              (GtkIMContext             *context);
 
@@ -107,8 +112,12 @@ static void     gtk_im_context_vn_get_preedit_string (GtkIMContext             *
 							  PangoAttrList           **attrs,
 							  gint                     *cursor_pos);
 */
+void restoreKeys(GtkIMContext *context, GdkEventKey  *event);
+
 static gboolean ResetByKey = FALSE;
 static gboolean InResetMode = FALSE;
+static int PendingBuf = 0;
+static int BackCount = 0;
 
 GType gtk_type_im_context_vn = 0;
 
@@ -127,15 +136,14 @@ static gint PauseLevel;
 static GdkEventKey KeyEvent;
 
 //------------------------------------------
-Atom AIMCharset, AIMUsing, AIMMethod, AIMViqrStarGui, AIMViqrStarCore;
-Atom ASuspend;
+Atom AIMCharset, AIMUsing, AIMMethod;
+Atom AGUIVisible;
 
 static void getSyncAtoms(int xvnkbSync);
 static void fixUnikeyToSyncMethod(int method);
 static void fixSyncToUnikeyMethod();
 
-static int UkMacroLoaded = 0;
-static int UkSuspend = 0;
+static int UkGUIVisible = 0;
 
 //------------------------------------------
 UkXimOpt GlobalOpt;
@@ -246,8 +254,10 @@ gtk_im_context_vn_event_filter (GdkXEvent *xevent,
     v = UkGetPropValue(ev->atom, VKC_UTF8);
     GlobalOpt.charset = SyncToUnikeyCharset(v);
     UnikeySetOutputCharset(GlobalOpt.charset);
+    /*
     if (UkMacroLoaded)
       UkUpdateMacroTable(GlobalOpt.charset);
+    */
     return GDK_FILTER_REMOVE;
   }
   else if (ev->atom == AIMMethod) {
@@ -260,12 +270,8 @@ gtk_im_context_vn_event_filter (GdkXEvent *xevent,
     //dont' need this
     return GDK_FILTER_REMOVE;
   }
-  else if (ev->atom == ASuspend) {
-    UkSuspend = UkGetPropValue(ASuspend, 0);
-    UnikeyResetBuf();
-    if (!UkSuspend)
-      reloadConfig();
-    return GDK_FILTER_REMOVE;
+  else if (ev->atom == AGUIVisible) {
+    UkGUIVisible = UkGetPropValue(AGUIVisible, 0);
   }
 
   return GDK_FILTER_CONTINUE;
@@ -320,7 +326,8 @@ gtk_im_context_vn_class_init (GtkIMContextVnClass *class)
 
   parent_class = g_type_class_peek_parent (class);
 
-  im_context_class->filter_keypress = gtk_im_context_vn_filter_keypress;
+  im_context_class->filter_keypress = gtk_im_context_vn_filter_key;
+
   im_context_class->reset = gtk_im_context_vn_reset;
   im_context_class->focus_out = gtk_im_context_vn_focus_out;
   //  im_context_class->set_cursor_location = gtk_im_context_vn_set_cursor_location;
@@ -333,17 +340,18 @@ gtk_im_context_vn_class_init (GtkIMContextVnClass *class)
 
   UkInitSync(display, root);
 
-  //init options
-  //memset(&GlobalOpt, 0, sizeof(GlobalOpt));
   UkSetDefOptions(&GlobalOpt);
   ConfigFile = UkGetDefConfFileName();
   UkTestDefConfFile();
-  reloadConfig();
 
+  /*
+  ASuspend = XInternAtom(display, UKP_SUSPEND, False);
   UkSuspend = UkGetPropValue(ASuspend, 0);
+  */
 
-  //UnikeySetOutputCharset(GlobalOpt.charset);
-  //UnikeySetInputMethod(GlobalOpt.inputMethod);
+  AGUIVisible = XInternAtom(display, UKP_GUI_VISIBLE, False);
+  UkGUIVisible = UkGetPropValue(AGUIVisible, 0);
+  reloadConfig();
 }
 
 //---------------------------------------------
@@ -360,7 +368,7 @@ gtk_im_context_vn_class_finalize (GtkIMContextVnClass *class)
     free(GlobalOpt.macroFile);
     GlobalOpt.macroFile = 0;
   }
-  UkCleanupMacro();
+  //UkCleanupMacro();
 }
 
 //---------------------------------------------
@@ -408,13 +416,75 @@ gtk_im_context_vn_commit_char (GtkIMContext *context,
   g_signal_emit_by_name (context, "commit", &buf);
 }
 
+//-------------------------------------------
+static void setOutputCharset(int charset)
+{
+  long v;
+  if (UkGUIVisible) {
+    v = UnikeyToSyncCharset(charset);
+    UkSetPropValue(AIMCharset, v);
+  }
+  else {
+    GlobalOpt.charset = charset;
+    UnikeySetOutputCharset(charset);
+  }
+}
+
+//-------------------------------------------
+static void setInputMethod(UkInputMethod im)
+{
+  if (UkGUIVisible) {
+    fixUnikeyToSyncMethod(im);
+  }
+  else {
+    GlobalOpt.inputMethod = im;
+    UnikeySetInputMethod(GlobalOpt.inputMethod);
+  }
+}
+
 //-----------------------------------------------------------------
-static gboolean checkShortcuts(GdkEventKey *event)
+static gboolean checkSwitchKey(GtkIMContext *context, GdkEventKey *event)
+{
+  static int pendingSwitch = 0;
+  if (event->type != GDK_KEY_PRESS && event->type != GDK_KEY_RELEASE)
+    return FALSE;
+  if (event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ||
+      event->keyval == GDK_Control_L || event->keyval == GDK_Control_R) {
+    if (event->type == GDK_KEY_RELEASE) {
+      if (pendingSwitch) {
+	pendingSwitch = 0;
+	if (UkGUIVisible) {
+	  if (GlobalOpt.enabled)
+	    UkSetPropValue(AIMMethod, VKM_OFF);
+	  else
+	    fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
+	}
+	else {
+	  UnikeyResetBuf();
+	  GlobalOpt.enabled = !GlobalOpt.enabled;
+	}
+	return TRUE;
+      }
+    }
+    else {
+      if (((event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R) && 
+	   (event->state & GDK_CONTROL_MASK)) ||
+	  ((event->keyval == GDK_Control_L || event->keyval == GDK_Control_R) && 
+	   (event->state & GDK_SHIFT_MASK))) {
+	pendingSwitch = 1;
+      }
+    }
+  }
+  else pendingSwitch = 0;
+  return FALSE;
+}
+
+//-----------------------------------------------------------------
+static gboolean checkShortcuts(GtkIMContext *context, GdkEventKey *event)
 {
   int i, count;
   guint modifier;
   guint modifier_mask;
-  long v;
   
   if (event->type != GDK_KEY_PRESS)
     return FALSE;
@@ -428,47 +498,54 @@ static gboolean checkShortcuts(GdkEventKey *event)
 	&& ((event->state & modifier_mask) == modifier)){
       switch (ShortcutList[i].scName) {
       case SC_SWITCH:
-	if (GlobalOpt.enabled)
-	  UkSetPropValue(AIMMethod, VKM_OFF);
-	else
-	  fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
+	if (UkGUIVisible) {
+	  if (GlobalOpt.enabled)
+	    UkSetPropValue(AIMMethod, VKM_OFF);
+	  else
+	    fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
+	}
+	else {
+	  UnikeyResetBuf();
+	  GlobalOpt.enabled = !GlobalOpt.enabled;
+	}
 	break;
       case SC_UNICODE_CHARSET:
-	v = UnikeyToSyncCharset(UNICODE_CHARSET);
-	UkSetPropValue(AIMCharset, v);
+	setOutputCharset(CONV_CHARSET_UNIUTF8);
 	break;
       case SC_VIQR_CHARSET:
-	v = UnikeyToSyncCharset(VIQR_CHARSET);
-	UkSetPropValue(AIMCharset, v);
+	setOutputCharset(CONV_CHARSET_VIQR);
 	break;
       case SC_TCVN_CHARSET:
-	v = UnikeyToSyncCharset(TCVN3_CHARSET);
-	UkSetPropValue(AIMCharset, v);
+	setOutputCharset(CONV_CHARSET_TCVN3);
 	break;
       case SC_VNI_CHARSET:
-	v = UnikeyToSyncCharset(VNI_CHARSET);
-	UkSetPropValue(AIMCharset, v);
+	setOutputCharset(CONV_CHARSET_VNIWIN);
 	break;
       case SC_TELEX_INPUT:
-	fixUnikeyToSyncMethod(TELEX_INPUT);
+	setInputMethod(UkTelex);
 	break;
       case SC_VNI_INPUT:
-	fixUnikeyToSyncMethod(VNI_INPUT);
+	setInputMethod(UkVni);
 	break;
       case SC_VIQR_INPUT:
-	fixUnikeyToSyncMethod(VIQR_INPUT);
+	setInputMethod(UkViqr);
 	break;
-      case SC_VIQR_STAR_INPUT:
-	fixUnikeyToSyncMethod(VIQR_STAR_INPUT);
+      case SC_USER_INPUT:
+	setInputMethod(UkUsrIM);
 	break;
       case SC_RELOAD_CONFIG:
 	reloadConfig();
+	break;
+      case SC_RESTORE_KEYS:
+	restoreKeys(context, event);
+	break;
+      case SC_DISABLE_CHECK:
+	UnikeySetSingleMode();
 	break;
       }
       return TRUE;
     }
   }
-
   return FALSE;
 }
 
@@ -479,23 +556,23 @@ static void commitString(GtkIMContext *context)
   static char buf[1024];
 
   char *utfBuf;
-  if (GlobalOpt.charset != UNICODE_CHARSET) {
+  if (GlobalOpt.charset != CONV_CHARSET_UNIUTF8) {
     int outLeft = sizeof(buf);
-    if (!latinToUtf(buf, UnikeyAnsiBuf, UnikeyBufChars, &outLeft))
+    if (!latinToUtf(buf, UnikeyBuf, UnikeyBufChars, &outLeft))
       return; //not enough memory
     buf[sizeof(buf)-outLeft] = 0;
     utfBuf = buf;
   }
   else {
-    UnikeyAnsiBuf[UnikeyBufChars] = 0;
-    utfBuf = UnikeyAnsiBuf;
+    UnikeyBuf[UnikeyBufChars] = 0;
+    utfBuf = UnikeyBuf;
   }
   g_signal_emit_by_name(context, "commit", utfBuf);
 }
 
 //---------------------------------------------
 static gboolean
-gtk_im_context_vn_filter_keypress (GtkIMContext *context,
+gtk_im_context_vn_filter_key (GtkIMContext *context,
 				       GdkEventKey  *event)
 {
   gunichar ch;
@@ -503,10 +580,9 @@ gtk_im_context_vn_filter_keypress (GtkIMContext *context,
 
   int i;
 
-  static int backCount = 0;
-  static int pendingBuf = 0;
-
-  if (UkSuspend) {
+  /*
+  if (UkSuspend && !GlobalOpt.gtkImAlone) {
+    printf("In suspend mode\n"); //DEBUG
     if (event->type == GDK_KEY_RELEASE)
       return FALSE;
     ch = gdk_keyval_to_unicode (event->keyval);
@@ -516,8 +592,9 @@ gtk_im_context_vn_filter_keypress (GtkIMContext *context,
     }
     return FALSE;
   }
+  */
 
-  if (checkShortcuts(event)) {
+  if (checkSwitchKey(context, event) || checkShortcuts(context, event)) {
     if (GlobalOpt.bellNotify)
       gdk_display_beep (gdk_drawable_get_display (event->window));
     return TRUE;
@@ -537,37 +614,41 @@ gtk_im_context_vn_filter_keypress (GtkIMContext *context,
   switch (event->keyval) {
 
   case GDK_Pause:
-    if (pendingBuf) {
+    if (PendingBuf) {
       //UnikeyAnsiBuf[UnikeyBufChars] = 0;
       //g_signal_emit_by_name(context, "commit", UnikeyAnsiBuf);
       commitString(context);
-      pendingBuf = 0;
+      PendingBuf = 0;
       InResetMode = FALSE;
       return TRUE;
     }
     return FALSE;
 
   case GDK_BackSpace:
+    /*
     if (!InResetMode)
       ResetByKey = TRUE;
-    if (backCount > 0) {
-      backCount--;
+    */
+    InResetMode = FALSE;
+    ResetByKey = TRUE;
+    if (BackCount > 0) {
+      BackCount--;
       return FALSE;
     }
 
     UnikeyBackspacePress();
     if (UnikeyBackspaces > 1) {
       //      gtk_im_context_delete_surrounding(context, -UnikeyBackspaces, UnikeyBackspaces);
-      backCount = UnikeyBackspaces-1;
+      BackCount = UnikeyBackspaces-1;
       createBackspaceEvent(&KeyEvent, event->window, event->time);
-      for (i=0; i<backCount; i++) {
+      for (i=0; i<BackCount; i++) {
 	gdk_event_put((GdkEvent *)&KeyEvent);
 	KeyEvent.time++;
       }
     }
     return FALSE;
   default:
-    if (pendingBuf) {
+    if (PendingBuf) {
       KeyEvent = *event;
       KeyEvent.time++;
       gdk_event_put((GdkEvent *)&KeyEvent);
@@ -604,22 +685,29 @@ gtk_im_context_vn_filter_keypress (GtkIMContext *context,
   }
   else {
     if (UnikeyBackspaces > 0) {
-      if (!gtk_im_context_delete_surrounding(context, -UnikeyBackspaces, UnikeyBackspaces)) {
-	pendingBuf = 1;
+      //it would be nice if we can use gtk_im_contex_delete_surrounding
+      //because in that case we don't have to generate fake backspace
+      //But at the moment, it's unreliable, since it causes context to be reset
+      // in an unmanageble way. So this code is commented out.
 
-	backCount = UnikeyBackspaces;
-	createBackspaceEvent(&KeyEvent, event->window, event->time+1);
+      //if (!gtk_im_context_delete_surrounding(context, -UnikeyBackspaces, UnikeyBackspaces)) {
 
-	for (i=0; i<backCount; i++) {
-	  gdk_event_put((GdkEvent *)&KeyEvent);
-	  KeyEvent.time++;
-	}
+      PendingBuf = 1;
 
-	createPauseEvent(&KeyEvent, event->window, KeyEvent.time);
+      BackCount = UnikeyBackspaces;
+      createBackspaceEvent(&KeyEvent, event->window, event->time+1);
+
+      for (i=0; i<BackCount; i++) {
 	gdk_event_put((GdkEvent *)&KeyEvent);
-
-	return TRUE;
+	KeyEvent.time++;
       }
+
+      createPauseEvent(&KeyEvent, event->window, KeyEvent.time);
+      gdk_event_put((GdkEvent *)&KeyEvent);
+
+      return TRUE;
+      //}
+      //ResetByKey = TRUE;
     }
     //UnikeyAnsiBuf[UnikeyBufChars] = 0;
     //g_signal_emit_by_name(context, "commit", UnikeyAnsiBuf);
@@ -633,8 +721,10 @@ gtk_im_context_vn_filter_keypress (GtkIMContext *context,
 static void
 gtk_im_context_vn_reset (GtkIMContext *context)
 {
-  if (!ResetByKey)
+  if (!ResetByKey) {
+    //    printf("reset buffer\n");
     UnikeyResetBuf();
+  }
   ResetByKey = FALSE;
   InResetMode = TRUE;
 }
@@ -645,6 +735,7 @@ static void gtk_im_context_vn_focus_out (GtkIMContext *context)
   UnikeyResetBuf();
 }
 
+
 //-------------------------------------------------------
 static void getSyncAtoms(int xvnkbSync)
 {
@@ -653,8 +744,6 @@ static void getSyncAtoms(int xvnkbSync)
 
   long v;
   
-  ASuspend = XInternAtom(display, UKP_SUSPEND, False);
-
   if (xvnkbSync) {
     AIMCharset = XInternAtom(display, VKP_CHARSET, False);
     AIMMethod = XInternAtom(display, VKP_METHOD, False);
@@ -665,27 +754,18 @@ static void getSyncAtoms(int xvnkbSync)
     AIMMethod = XInternAtom(display, UKP_METHOD, False);
     AIMUsing = XInternAtom(display, UKP_USING, False);
   }
+  
+  if (UkGUIVisible) {
+    v = UkGetPropValue(AIMCharset, VKC_UTF8);
+    GlobalOpt.charset = SyncToUnikeyCharset((int)v);
 
-  AIMViqrStarCore = XInternAtom(display, UKP_VIQR_STAR_CORE, False);
-  AIMViqrStarGui = XInternAtom(display, UKP_VIQR_STAR_GUI, False);
+    v = UkGetPropValue(AIMMethod, VKM_TELEX);
+    GlobalOpt.enabled = (v != VKM_OFF);
 
+    if (!GlobalOpt.enabled)
+      v = UkGetPropValue(AIMUsing, VKM_TELEX);
 
-  v = UkGetPropValue(AIMCharset, VKC_UTF8);
-  GlobalOpt.charset = SyncToUnikeyCharset((int)v);
-
-  v = UkGetPropValue(AIMMethod, VKM_TELEX);
-  GlobalOpt.enabled = (v != VKM_OFF);
-
-  if (!GlobalOpt.enabled)
-    v = UkGetPropValue(AIMUsing, VKM_TELEX);
-
-  GlobalOpt.inputMethod = SyncToUnikeyMethod((int)v);
-
-  if (GlobalOpt.inputMethod == VIQR_INPUT) {
-    v = UkGetPropValue(AIMViqrStarCore, 0);
-    if (v != 0)
-      GlobalOpt.inputMethod = VIQR_STAR_INPUT;
-    UkSetPropValue(AIMViqrStarCore, 0);
+    GlobalOpt.inputMethod = SyncToUnikeyMethod((int)v);
   }
 }
 
@@ -696,11 +776,6 @@ static void getSyncAtoms(int xvnkbSync)
 static void fixUnikeyToSyncMethod(int method)
 {
   long v;
-
-  if (method == VIQR_STAR_INPUT) {
-    UkSetPropValue(AIMViqrStarGui, 1);
-    UkSetPropValue(AIMViqrStarCore, 1);
-  }
 
   v = UnikeyToSyncMethod(method);
   UkSetPropValue(AIMMethod, v);
@@ -721,21 +796,13 @@ static void fixSyncToUnikeyMethod()
 
   if (GlobalOpt.enabled) {
     GlobalOpt.inputMethod = SyncToUnikeyMethod((int)v);
-    if (GlobalOpt.inputMethod == VIQR_INPUT) {
-      v = UkGetPropValue(AIMViqrStarCore, 0);
-      if (v != 0)
-	GlobalOpt.inputMethod = VIQR_STAR_INPUT;
-      UkSetPropValue(AIMViqrStarCore, 0);
-    }
   }
 }
 
 //----------------------------------------------------
-static void reloadConfig()
+static void reloadConfig(int useSyncProp)
 {
   char *fname;
-  long v;
-
   UnikeyGetOptions(&GlobalOpt.uk);
   if (GlobalOpt.macroFile) {
     free(GlobalOpt.macroFile);
@@ -743,10 +810,7 @@ static void reloadConfig()
   }
 
   if (ConfigFile != NULL) {
-    //    fprintf(stderr, "Loading unikey config file...\n");
-    if (UkParseOptFile(ConfigFile, &GlobalOpt)) {
-      //fprintf(stderr, "Unikey config file loaded!\n");
-    }
+    UkParseOptFile(ConfigFile, &GlobalOpt);
   }
 
   fname = 0;
@@ -755,37 +819,35 @@ static void reloadConfig()
   else if (GlobalOpt.macroFile)
     fname = GlobalOpt.macroFile;
 
-  UkCleanupMacro();
+  //UkCleanupMacro();
   if (fname) {
-    if (UkLoadMacroTable(fname)) {
+    if (UnikeyLoadMacroTable(fname)) {
       //fputs("\nMacro file loaded!\n", stderr);
-      UkSetupMacro();
-      UkMacroLoaded = 1;
+      //UkSetupMacro();
+      //UkMacroLoaded = 1;
       GlobalOpt.uk.macroEnabled = 1;
     }
     else {
-      UkMacroLoaded = 0;
+      //UkMacroLoaded = 0;
       GlobalOpt.uk.macroEnabled = 0;
       fprintf(stderr, "\nFailed to load macro file: %s!\n", fname);
     }
   }
   else {
-    UkMacroLoaded = 0;
+    //UkMacroLoaded = 0;
     GlobalOpt.uk.macroEnabled = 0;
     //fprintf(stderr, "No macrofile specified\n");
   }
+
+  if (GlobalOpt.usrKeyMapFile)
+    UnikeyLoadUserKeyMap(GlobalOpt.usrKeyMapFile);
   
   UnikeySetOptions(&GlobalOpt.uk);
 
   //set sync properties
   getSyncAtoms(GlobalOpt.xvnkbSync);
-  v = UnikeyToSyncCharset(GlobalOpt.charset);
-  UkSetPropValue(AIMCharset, v);
-  fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
-
-  if (!GlobalOpt.enabled)
-    UkSetPropValue(AIMMethod, VKM_OFF);
-
+  UnikeySetOutputCharset(GlobalOpt.charset);
+  UnikeySetInputMethod(GlobalOpt.inputMethod);
 }
 
 //----------------------------------------------------
@@ -834,3 +896,35 @@ static int readContext(GtkIMContext *context)
 /*
 int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen);
 */
+
+//-------------------------------------------------
+void restoreKeys(GtkIMContext *context, GdkEventKey  *event)
+{
+  int i;
+  if (!GlobalOpt.enabled)
+    return;
+
+  UnikeyRestoreKeyStrokes();
+  if (UnikeyBackspaces > 0) {
+    if (!gtk_im_context_delete_surrounding(context, -UnikeyBackspaces, UnikeyBackspaces)) {
+      PendingBuf = 1;
+    
+      BackCount = UnikeyBackspaces;
+      createBackspaceEvent(&KeyEvent, event->window, event->time+1);
+      
+      for (i=0; i<BackCount; i++) {
+	gdk_event_put((GdkEvent *)&KeyEvent);
+	KeyEvent.time++;
+      }
+      
+      createPauseEvent(&KeyEvent, event->window, KeyEvent.time);
+      gdk_event_put((GdkEvent *)&KeyEvent);
+
+      return;
+    }
+  }
+
+  if (UnikeyBufChars > 0)
+    commitString(context);
+  InResetMode = FALSE;
+}

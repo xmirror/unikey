@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <errno.h>
+#include <sys/stat.h>
+#include "vnconv.h"
 #include "optparse.h"
 #include "ukopt.h"
 
@@ -20,26 +23,36 @@ static char AutoSaveCmt[] =
 "# AutoSave is useful if you want unikey to remember its window position\n";
 
 static char InputCmt[] = 
-"# Input methods: TELEX|VNI|VIQR|VIQR*\n";
+"# Input: TELEX|VNI|VIQR|USER\n"
+"# Input method. If you specify input=USER, you must also specify UsrKeyMapFile\n";
 
 static char CharsetCmt[] = 
-"# Output charsets: UNICODE|TCVN|VNI|VIQR\n";
+"# Output charsets: UNICODE|TCVN|VNI|VIQR|BK2\n";
 
 static char FreeStyleCmt[] = 
 "# FreeStyle: Yes|No\n"
-"# \"Yes\" means you can type hook, breve marks at the end of words\n"
-"# TELEX users should use \"No\", VNI users should use \"Yes\"\n";
+"#  \"Yes\" means you can type hook, breve marks anywhere after the base character\n"
+"#  not necessarily right after the base.\n"
+"#  VNI users should set to Yes. TELEX users: your choice\n"
+"# Default: Yes\n";
 
+/*
 static char ToneManualCmt[] =
 "# ToneManual: Yes|No\n"
 "# You should set this to \"No\" to let Unikey determine position for tone marks.\n";
+*/
 
 static char ModernStyleCmt[] = 
 "# ModernStyle: Yes|No\n"
 "# \"Yes\" means \"hoa', khoe?\" style, \"No\" means \"ho'a, kho?e\" style\n";
 
+static char GtkImAloneCmt[] = 
+"# GtkImAlone: Yes|No. Default: No\n"
+"# Set this to Yes if you want GTK unikey module enabled\n"
+"# even when unikey GUI is not running\n";
+
 static char MacroFileCmt[] =
-"# Macrofile: path to macro file\n"
+"# Macrofile: path to macro file. Default: empty, macro is disabled\n"
 "# To enable macro, specify the path to your macro file.\n"
 "# For example: MacroFile = ~/ukmacro\n";
 
@@ -67,8 +80,16 @@ static char XimFlowCmt[] =
 "# XimFlow = Static|Dynamic. Default: Static\n"
 "# You should always use Static. If something does not work,\n"
 "#   then try Dynamic. Rxvt-unicode is known to work only with Dynamic mode.\n"
-"# Before changing this option, make sure unikey is not loaded in memory.\n";
+"# Before changing this option, make sure unikey is not loaded in memory.\n"
+"# See manual, section unload/restart unikey.\n";
 
+static char XimLocalesCmt[] = 
+"# XimLocales = List of locales separated by commas.\n"
+"# Default: C,en_US,vi_VN,fr_FR,fr_BE,fr_CA,de_DE,ja_JP,cs_CZ,ru_RU\n"
+"# Theses are locales that XIM Server must advertise to applications\n" 
+"# If your application runs in certain locale, make sure that locale is listed here.\n"
+"# Before changing this option, make sure unikey is not loaded in memory.\n"
+"# See manual, section unload/restart unikey.\n";
 
 static char PosXCmt[] =
 "# PosX: X Position of unikey window\n"
@@ -78,21 +99,32 @@ static char PosYCmt[] =
 "# PosY: Y Position of unikey window\n"
 "# set a minus value to let unikey use the default position\n";
 
+static char StrictSpellCmt[] =
+"# StrictSpell: Yes|No.\n"
+"# Enable strict spell-checking. Default: Yes\n";
+
+static char UsrKeyMapFileCmt[] =
+"# UsrKeyMapFile: path to user-defined input method file. Default: empty.\n"
+"# To enable user-define input method, specify the path here\n"
+"# For example: UsrKeyMapFile = ~/.unikey/my-telex\n";
+
 static OptMap InputLookup[] = {
-  {"TELEX", TELEX_INPUT},
-  {"VNI", VNI_INPUT},
-  {"VIQR", VIQR_INPUT},
-  {"VIQR*", VIQR_STAR_INPUT},
+  {"TELEX", UkTelex},
+  {"VNI", UkVni},
+  {"VIQR", UkViqr},
+  {"VIQR*", UkViqr},
+  {"USER", UkUsrIM},
   {0, 0}
 };
 
 static OptMap CharsetLookup[] = {
-  {"UNICODE", UNICODE_CHARSET},
-  {"UTF8", UNICODE_CHARSET},
-  {"UTF-8", UNICODE_CHARSET},
-  {"TCVN", TCVN3_CHARSET},
-  {"VNI", VNI_CHARSET},
-  {"VIQR", VIQR_CHARSET},
+  {"UNICODE", CONV_CHARSET_UNIUTF8},
+  {"UTF8", CONV_CHARSET_UNIUTF8},
+  {"UTF-8", CONV_CHARSET_UNIUTF8},
+  {"TCVN", CONV_CHARSET_TCVN3},
+  {"VNI", CONV_CHARSET_VNIWIN},
+  {"VIQR", CONV_CHARSET_VIQR},
+  {"BK2", CONV_CHARSET_BKHCM2},
   {0, 0}
 };
 
@@ -120,15 +152,19 @@ OptItem UkXimOptList[] = {
   {"Input", InputCmt, offsetof(UkXimOpt, inputMethod), LookupOpt, InputLookup},
   {"Charset", CharsetCmt, offsetof(UkXimOpt, charset), LookupOpt, CharsetLookup},
   {"FreeStyle", FreeStyleCmt, offsetof(UkXimOpt, uk.freeMarking), BoolOpt, 0},
-  {"ToneManual", ToneManualCmt, offsetof(UkXimOpt, uk.toneNextToVowel), BoolOpt, 0},
+  //  {"ToneManual", ToneManualCmt, offsetof(UkXimOpt, uk.toneNextToVowel), BoolOpt, 0},
   {"ModernStyle", ModernStyleCmt, offsetof(UkXimOpt, uk.modernStyle), BoolOpt, 0},
   {"XvnkbSync", XvnkbSyncCmt, offsetof(UkXimOpt, xvnkbSync), BoolOpt, 0},
   {"Bell", BellCmt, offsetof(UkXimOpt, bellNotify), BoolOpt, 0},
   {"CommitMethod", CommitMethodCmt, offsetof(UkXimOpt, commitMethod), LookupOpt, CommitLookup},
   {"XimFlow", XimFlowCmt, offsetof(UkXimOpt, ximFlow), LookupOpt, XimFlowLookup},
   {"MacroFile", MacroFileCmt, offsetof(UkXimOpt, macroFile), StrOpt, 0},
+  {"XimLocales", XimLocalesCmt, offsetof(UkXimOpt, ximLocales), StrOpt, 0},
+  {"GtkImAlone", GtkImAloneCmt, offsetof(UkXimOpt, gtkImAlone), BoolOpt, 0},
   {"PosX", PosXCmt, offsetof(UkXimOpt, posX), LongOpt, 0},
-  {"PosY", PosYCmt, offsetof(UkXimOpt, posY), LongOpt, 0}
+  {"PosY", PosYCmt, offsetof(UkXimOpt, posY), LongOpt, 0},
+  {"StrictSpell", StrictSpellCmt, offsetof(UkXimOpt, uk.strictSpellCheck), BoolOpt, 0},
+  {"UsrKeyMapFile", UsrKeyMapFileCmt, offsetof(UkXimOpt, usrKeyMapFile), StrOpt, 0}
 };
 
 /*
@@ -155,6 +191,10 @@ int UkParseOptFile(const char *fileName, UkXimOpt *options)
     free(options->macroFile);
     options->macroFile = expName;
   }
+  if (ParseExpandFileName(options->usrKeyMapFile, &expName)) {
+    free(options->usrKeyMapFile);
+    options->usrKeyMapFile = expName;
+  }
   //  testParse(options);
   return ret;
 }
@@ -171,8 +211,20 @@ char *UkGetDefConfFileName()
 {
   static char buf[128];
   strcpy(buf, getenv("HOME"));
-  strcat(buf, "/.unikeyrc");
+  //  strcat(buf, "/.unikeyrc");
+  strcat(buf, "/.unikey/options");
   return buf;
+}
+
+//------------------------------------------------------
+int createDefConfDir()
+{
+  int ret;
+  char name[128];
+  strcpy(name, getenv("HOME"));
+  strcat(name, "/.unikey");
+  ret = mkdir(name, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+  return (ret == 0 || errno == EEXIST);
 }
 
 //------------------------------------------------------
@@ -182,8 +234,8 @@ void UkSetDefOptions(UkXimOpt *options)
 
   CreateDefaultUnikeyOptions(&options->uk);
 
-  options->inputMethod = TELEX_INPUT;
-  options->charset = UNICODE_CHARSET;
+  options->inputMethod = UkTelex;
+  options->charset = CONV_CHARSET_UNIUTF8;
   options->enabled = 1;
   options->xvnkbSync = 0;
   options->bellNotify = 1;
@@ -193,20 +245,25 @@ void UkSetDefOptions(UkXimOpt *options)
   options->posX = -1;
   options->posY = -1;
   options->macroFile = 0;
+  options->ximLocales = 0;
+  options->gtkImAlone = 0;
+  options->usrKeyMapFile = 0;
 }
 
 //------------------------------------------------------
-// test if default config file exists, if not then create it
+// test if default config file and directory exist, if not then create them
 //------------------------------------------------------
 void UkTestDefConfFile()
 {
   FILE *f;
-  char *name = UkGetDefConfFileName();
-  f = fopen(name, "r");
+  char *fname;
+  createDefConfDir();
+  fname = UkGetDefConfFileName();
+  f = fopen(fname, "r");
   if (!f) {
     UkXimOpt opt;
     UkSetDefOptions(&opt);
-    UkWriteOptFile(name, &opt);
+    UkWriteOptFile(fname, &opt);
   }
   else
     fclose(f);

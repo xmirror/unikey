@@ -16,6 +16,9 @@ typedef struct _UkXimOpt {
   long posX;
   long posY;
   char *macroFile;
+  char *ximLocales;
+  long gtkImAlone;
+  char *usrKeyMapFile;
 } UkXimOpt;
 
 enum {

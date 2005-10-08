@@ -1,5 +1,2 @@
 SUBDIRS = src
 EXTRA_DIST = doc CREDITS
-
-
-

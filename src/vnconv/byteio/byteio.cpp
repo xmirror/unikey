@@ -12,7 +12,7 @@
 */
 
 //------------------------------------------------
-StringBIStream::StringBIStream(BYTE *data, int len)
+StringBIStream::StringBIStream(UKBYTE *data, int len)
 {
 	m_data = m_current = data;
 	m_len = m_left = len;
@@ -30,7 +30,7 @@ int StringBIStream::eos()
 }
 
 //------------------------------------------------
-int StringBIStream::getNext(BYTE & b)
+int StringBIStream::getNext(UKBYTE & b)
 {
 	if (m_eos)
 		return 0;
@@ -46,7 +46,7 @@ int StringBIStream::getNext(BYTE & b)
 }
 
 //------------------------------------------------
-int StringBIStream::unget(BYTE b)
+int StringBIStream::unget(UKBYTE b)
 {
 	if (m_current != m_data) {
 		*--m_current = b;
@@ -64,10 +64,10 @@ int StringBIStream::unget(BYTE b)
 }
 
 //------------------------------------------------
-int StringBIStream::getNextW(WORD & w)
+int StringBIStream::getNextW(UKWORD & w)
 {
 	if (m_eos) return 0;
-	w = *((WORD *)m_current);
+	w = *((UKWORD *)m_current);
 	m_current += 2;
 	if (m_len == -1)
 		m_eos = (w == 0);
@@ -80,7 +80,7 @@ int StringBIStream::getNextW(WORD & w)
 
 
 //------------------------------------------------
-int StringBIStream::peekNext(BYTE & b)
+int StringBIStream::peekNext(UKBYTE & b)
 {
 	if (m_eos)
 		return 0;
@@ -89,11 +89,11 @@ int StringBIStream::peekNext(BYTE & b)
 }
 
 //------------------------------------------------
-int StringBIStream::peekNextW(WORD & w)
+int StringBIStream::peekNextW(UKWORD & w)
 {
 	if (m_eos)
 		return 0;
-	w = *((WORD *)m_current);
+	w = *((UKWORD *)m_current);
 	return 1;
 }
 
@@ -145,7 +145,7 @@ int StringBIStream::close()
 //////////////////////////////////////////////////
 
 //------------------------------------------------
-StringBOStream::StringBOStream(BYTE *buf, int len)
+StringBOStream::StringBOStream(UKBYTE *buf, int len)
 {
 	m_current = m_buf = buf;
 	m_len = len;
@@ -154,7 +154,7 @@ StringBOStream::StringBOStream(BYTE *buf, int len)
 }
 
 //------------------------------------------------
-int StringBOStream::putB(BYTE b)
+int StringBOStream::putB(UKBYTE b)
 {
 	m_out++;
 /*
@@ -180,13 +180,13 @@ int StringBOStream::putB(BYTE b)
 }
 
 //------------------------------------------------
-int StringBOStream::putW(WORD w)
+int StringBOStream::putW(UKWORD w)
 {
 	m_out += 2;
 	if (m_bad)
 		return 0;
 	if (m_out <= m_len) {
-		*((WORD *)m_current) = w;
+		*((UKWORD *)m_current) = w;
 		m_current += 2;
 		return 1;
 	}
@@ -305,7 +305,7 @@ int FileBIStream::eos()
 }
 
 //----------------------------------------------------
-int FileBIStream::getNext(BYTE &b)
+int FileBIStream::getNext(UKBYTE &b)
 {
   if (m_readAhead) {
     m_readAhead = 0;
@@ -320,7 +320,7 @@ int FileBIStream::getNext(BYTE &b)
 }
 
 //----------------------------------------------------
-int FileBIStream::peekNext(BYTE &b)
+int FileBIStream::peekNext(UKBYTE &b)
 {
   if (m_readAhead) {
     b = m_readByte;
@@ -335,7 +335,7 @@ int FileBIStream::peekNext(BYTE &b)
 }
 
 //----------------------------------------------------
-int FileBIStream::unget(BYTE b)
+int FileBIStream::unget(UKBYTE b)
 {
   if (m_lastIsAhead) {
     m_lastIsAhead = 0;
@@ -349,9 +349,9 @@ int FileBIStream::unget(BYTE b)
 }
 
 //----------------------------------------------------
-int FileBIStream::getNextW(WORD &w)
+int FileBIStream::getNextW(UKWORD &w)
 {
-  BYTE hi, low;
+  UKBYTE hi, low;
 
   if (getNext(low)) {
     if (getNext(hi)) {
@@ -369,9 +369,9 @@ int FileBIStream::getNextW(WORD &w)
 }
 
 //----------------------------------------------------
-int FileBIStream::peekNextW(WORD &w)
+int FileBIStream::peekNextW(UKWORD &w)
 {
-  BYTE hi, low;
+  UKBYTE hi, low;
   if (getNext(low)) {
     if (getNext(hi)) {
       unget(hi);
@@ -468,7 +468,7 @@ int FileBOStream::close()
 }
 
 //----------------------------------------------------
-int FileBOStream::putB(BYTE b)
+int FileBOStream::putB(UKBYTE b)
 {
 	if (m_bad)
 		return 0;
@@ -477,15 +477,15 @@ int FileBOStream::putB(BYTE b)
 }
 
 //----------------------------------------------------
-int FileBOStream::putW(WORD w)
+int FileBOStream::putW(UKWORD w)
 {
 	if (m_bad)
 		return 0;
 	//	m_bad = (fputwc(w, m_file) == WEOF); 
-	m_bad = (fputc((BYTE)w, m_file) == EOF);
+	m_bad = (fputc((UKBYTE)w, m_file) == EOF);
 	if (m_bad)
 	  return 0;
-	m_bad = (fputc((BYTE)(w >> 8), m_file) == EOF);
+	m_bad = (fputc((UKBYTE)(w >> 8), m_file) == EOF);
 	return (!m_bad);
 }
 

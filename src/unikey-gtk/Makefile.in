@@ -128,6 +128,7 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -161,6 +162,7 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sys_libdir = @sys_libdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
@@ -188,11 +190,10 @@ im_vn_la_SOURCES = \
 	imvn.c \
 	uksync.c uksync.h \
 	nls.h \
+	dummy.cpp \
 	../gui/xvnkb.h \
 	../xim/optparse.c ../xim/optparse.h \
-	../xim/ukopt.c ../xim/ukopt.h \
-	../xim/macro.cpp ../xim/macro.h \
-	../xim/mactab.cpp ../xim/mactab.h
+	../xim/ukopt.c ../xim/ukopt.h
 
 
 im_vn_la_LIBADD = @GTK_LIBS@ ../ukengine/libUnikey.la ../vnconv/libvnconv.la
@@ -204,17 +205,17 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(module_LTLIBRARIES)
 
 im_vn_la_DEPENDENCIES = ../ukengine/libUnikey.la ../vnconv/libvnconv.la
-am_im_vn_la_OBJECTS = gtkimcontextvn.lo imvn.lo uksync.lo optparse.lo \
-	ukopt.lo macro.lo mactab.lo
+am_im_vn_la_OBJECTS = gtkimcontextvn.lo imvn.lo uksync.lo dummy.lo \
+	optparse.lo ukopt.lo
 im_vn_la_OBJECTS = $(am_im_vn_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gtkimcontextvn.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/imvn.Plo ./$(DEPDIR)/macro.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/mactab.Plo ./$(DEPDIR)/optparse.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ukopt.Plo ./$(DEPDIR)/uksync.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/dummy.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/gtkimcontextvn.Plo ./$(DEPDIR)/imvn.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/optparse.Plo ./$(DEPDIR)/ukopt.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/uksync.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -280,10 +281,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkimcontextvn.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/imvn.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/macro.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mactab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/optparse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ukopt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uksync.Plo@am__quote@
@@ -419,72 +419,6 @@ ukopt.lo: ../xim/ukopt.c
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
-
-macro.o: ../xim/macro.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT macro.o -MD -MP -MF "$(DEPDIR)/macro.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o macro.o `test -f '../xim/macro.cpp' || echo '$(srcdir)/'`../xim/macro.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/macro.Tpo" "$(DEPDIR)/macro.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/macro.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../xim/macro.cpp' object='macro.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/macro.Po' tmpdepfile='$(DEPDIR)/macro.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o macro.o `test -f '../xim/macro.cpp' || echo '$(srcdir)/'`../xim/macro.cpp
-
-macro.obj: ../xim/macro.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT macro.obj -MD -MP -MF "$(DEPDIR)/macro.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o macro.obj `if test -f '../xim/macro.cpp'; then $(CYGPATH_W) '../xim/macro.cpp'; else $(CYGPATH_W) '$(srcdir)/../xim/macro.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/macro.Tpo" "$(DEPDIR)/macro.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/macro.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../xim/macro.cpp' object='macro.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/macro.Po' tmpdepfile='$(DEPDIR)/macro.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o macro.obj `if test -f '../xim/macro.cpp'; then $(CYGPATH_W) '../xim/macro.cpp'; else $(CYGPATH_W) '$(srcdir)/../xim/macro.cpp'; fi`
-
-macro.lo: ../xim/macro.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT macro.lo -MD -MP -MF "$(DEPDIR)/macro.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o macro.lo `test -f '../xim/macro.cpp' || echo '$(srcdir)/'`../xim/macro.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/macro.Tpo" "$(DEPDIR)/macro.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/macro.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../xim/macro.cpp' object='macro.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/macro.Plo' tmpdepfile='$(DEPDIR)/macro.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o macro.lo `test -f '../xim/macro.cpp' || echo '$(srcdir)/'`../xim/macro.cpp
-
-mactab.o: ../xim/mactab.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mactab.o -MD -MP -MF "$(DEPDIR)/mactab.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o mactab.o `test -f '../xim/mactab.cpp' || echo '$(srcdir)/'`../xim/mactab.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mactab.Tpo" "$(DEPDIR)/mactab.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/mactab.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../xim/mactab.cpp' object='mactab.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/mactab.Po' tmpdepfile='$(DEPDIR)/mactab.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mactab.o `test -f '../xim/mactab.cpp' || echo '$(srcdir)/'`../xim/mactab.cpp
-
-mactab.obj: ../xim/mactab.cpp
-@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mactab.obj -MD -MP -MF "$(DEPDIR)/mactab.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o mactab.obj `if test -f '../xim/mactab.cpp'; then $(CYGPATH_W) '../xim/mactab.cpp'; else $(CYGPATH_W) '$(srcdir)/../xim/mactab.cpp'; fi`; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mactab.Tpo" "$(DEPDIR)/mactab.Po"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/mactab.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../xim/mactab.cpp' object='mactab.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/mactab.Po' tmpdepfile='$(DEPDIR)/mactab.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mactab.obj `if test -f '../xim/mactab.cpp'; then $(CYGPATH_W) '../xim/mactab.cpp'; else $(CYGPATH_W) '$(srcdir)/../xim/mactab.cpp'; fi`
-
-mactab.lo: ../xim/mactab.cpp
-@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT mactab.lo -MD -MP -MF "$(DEPDIR)/mactab.Tpo" \
-@am__fastdepCXX_TRUE@	  -c -o mactab.lo `test -f '../xim/mactab.cpp' || echo '$(srcdir)/'`../xim/mactab.cpp; \
-@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/mactab.Tpo" "$(DEPDIR)/mactab.Plo"; \
-@am__fastdepCXX_TRUE@	else rm -f "$(DEPDIR)/mactab.Tpo"; exit 1; \
-@am__fastdepCXX_TRUE@	fi
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='../xim/mactab.cpp' object='mactab.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/mactab.Plo' tmpdepfile='$(DEPDIR)/mactab.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o mactab.lo `test -f '../xim/mactab.cpp' || echo '$(srcdir)/'`../xim/mactab.cpp
 
 mostlyclean-libtool:
 	-rm -f *.lo

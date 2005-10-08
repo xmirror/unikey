@@ -1,16 +1,15 @@
 Unikey Input Method for X-Window
-Copyright (C) 2004 Pham Kim Long
+Copyright (C) 2004-2005 Pham Kim Long
 Contact:
-   longcz@yahoo.com
-   UniKey project: http://unikey.sf.net
+   unikey@gmail.com
+   UniKey project: http://unikey.org
 
 ======================================================================
 About this manual
 
-This is a very brief manual. Sorry only English version is available
-at the moment. I just don't like writing Vietnamese in VIQR. More
-detailed documents in Vietnamese will be available later in HTML
-format. Your contribution to documentation are always welcome.
+This is a very brief manual. Only English version is available
+at the moment. Your contribution to documentation and/or translation
+are always welcome.
 
 ----------------------------------------------------------------------
 About x-unikey package
@@ -21,10 +20,8 @@ This package contains the following components:
 - unikey-gtk: GTK vietnamese input method module
 
 In most cases you only need unikey and ukxim to type Vietnamese in
-applications (including GTK applications).
-
-unikey-gtk can be used only with in GTK applications. This program is
-provided as an experiment and for use in special cases.
+applications. unikey-gtk can be used only with in GTK
+applications. (GTK applications can use either unikey-gtk or ukxim).
 ----------------------------------------------------------------------
 
 ----------------
@@ -51,7 +48,7 @@ export LANG=vi_VN.UTF-8
 ------------
 
 Unikey provides:
-- TELEX, VNI, VIQR, VIQR* input methods.
+- TELEX, VNI, VIQR, and one user-defined input methods.
 - UNICODE (UTF-8), TCVN, VNI, VIQR charsets.
 - Support for macro (auto text)
 
@@ -90,16 +87,17 @@ See 4.2 on how to close unikey
 The following shortcuts are provided to change Unikey's settings:
 
   CTRL-SHIFT: switch on/off
+  CTRL-SHIFT-F9: switch on/off
 
-  ALT-SHIFT-F1: Change to UNICODE charset
-  ALT-SHIFT-F2: VIQR charset
-  ALT-SHIFT-F3: TCVN charset
-  ALT-SHIFT-F4: VNI charset
+  CTRL-SHIFT-F1: Change to UNICODE charset
+  CTRL-SHIFT-F2: VIQR charset
+  CTRL-SHIFT-F3: TCVN charset
+  CTRL-SHIFT-F4: VNI charset
 
-  ALT-SHIFT-F5: Change to TELEX input method
-  ALT-SHIFT-F6: VNI input method
-  ALT-SHIFT-F7: VIQR input method
-  ALT-SHIFT-F8: VIQR* input method
+  CTRL-SHIFT-F5: Change to TELEX input method
+  CTRL-SHIFT-F6: VNI input method
+  CTRL-SHIFT-F7: VIQR input method
+  CTRL-SHIFT-F8: User-defined input method
 
 4.1.2 Using Unikey window
 
@@ -113,8 +111,8 @@ The settings can also be changed by clicking the Unikey icon:
 4.1.3 Reloading settings
 -------------------------
 Settings in a configuration file can be reloaded by one of 2 ways:
-  [ALT-SHIFT] + Left Click unikey icon
-or
+  [CTRL-SHIFT] + Left Click unikey icon
+or programatically:
   $ kill -s USR1 `pidof ukxim`
 
 
@@ -122,29 +120,21 @@ or
 -------------------------
 Control-Alt + Left-click
 
-Once Unikey has been started, you should not close it. Some (badly XIM
-implemented) applications that have established connection with Unikey
-may crash if you close it. Xterm, Mozilla Firebird are known to have
-this problem with XIM server.
-
-Don't close unikey if all you want is to reload your settings
-from the config file. See 4.1.3 on how to reload settings.
-
-[UPDATED from 0.9.1]
-
-To prevent applications from crashing when unikey is closed, from
-version 0.9.1 you can only hide unikey window and disable the XIM
-server.
-
 If you press [Control-Alt + Left-click], unikey window will disappear
 and the unikey XIM server is disabled, but unikey and ukxim processes
 still remain in the memory. Everything will work exactly as if unikey
 has never been loaded. To start using unikey again, just run unikey
-again. If you really want to get rid of unikey from memory (although I
-see no reason to so so), run:
+again. 
 
-$ kill `pidof unikey`
+If you really want to get rid of unikey from memory (although it is
+not reccomended, and should be used only in few rare occasions), run:
 
+$ killall unikey
+
+CAUTIONS: When you kill unikey process this way, some applications
+that have established a connection with Unikey may crash. Therefore 
+it is not recommended to do so. If all what you want is to make unikey
+reload your settings, see 4.1.3.
 
 4.3 Command line options:
 -------------------------
@@ -161,12 +151,19 @@ Options:
   -xim <ukxim>     Path to Unikey XIM server (ukxim)
   -config <file>   Specify configuration file (default: ~/.unikeyrc)
   -macro <file>    Load macro file
-
+  -l, -locales <list> Locales accepted by unikey (default:"C,en_US,vi_VN,fr_FR")
 Examples:
   $ unikey
       Unikey will search for ukxim in the default search path
   $ unikey -xim /usr/local/bin/ukxim -macro ~/ukmacro
       Explicitly specifies ukxim, and loads ukmacro
+  $ unikey -locales "en_US,fr_BE"
+      Runs unikey with support for en_US and fr_BE locales
+
+** Notes on option -locales:
+By default unikey supports C, en_US, vi_VN, fr_FR locales. If your
+application run in a different locale, use this option with your
+desired locale. E.g. unikey -locales "en_US,fr_BE"
 
 4.3.2 ukxim:
 (See 6.2 on how you can run ukxim independently)
@@ -181,24 +178,27 @@ Options:
   -xvnkb-sync      Enable synchronization with xvnkb GUI
   -config <file>   Specify configuration file (default: ~/.unikeyrc)
   -macro <file>    Load macro file
+  -l, -locales <list> Locales accepted by unikey (default:"C,en_US,vi_VN,fr_FR")
 
 Examples:
   $ ukxim &
       Runs ukxim with default options
   $ unikey -macro ~/ukmacro &
       Runs ukxim with ukmacro file loaded from home directory
+  $ ukxim -locales "en_US,fr_FR"
+      Runs ukxim with support for en_US and fr_FR locales
 
 
 4.4 Configuration file
 ------------------------
 Initial settings for Unikey can be put into a configuration file. Upon
-starting, unikey looks for .unikeyrc in your home directory. If this
+starting, unikey looks for '.unikey/options' in your home directory. If this
 file does not exist, unikey will create it with default options.
 
 You can explicitly specify configuration file on command line (see
 4.3)
 
-See the sample unikeyrc file in this directory for syntax of
+See the sample options file in this directory for syntax of
 configuration file.
 
 
@@ -213,26 +213,37 @@ configuration file.
 The syntax for macro file is shown in the sample file ukmacro in this
 directory.
 
-Note: Macro file uses VIQR encoding charset.
+Note: Macro file uses VIQR encoding.
 
-4.6 Cautions!!!
+4.6 User-defined input method
+-------------------------------- 
+
+Besides the built-in input methods TELEX, VNI, VIQR, Unikey lets you
+define your own input method. Once you have defined and loaded it, it
+can be selected from unikey window, just as other built-in
+methods. When selected, the user-defined method is dislayed as "UR" in
+unikey window.
+
+To enable user-defined input method, set 'UsrKeyMapFile' (in unikey
+options file) to the file specifying the method.
+
+Syntax of the user-defined input method file is described in
+keymap-syntax file, provided in the same folder as this manual. You
+can build your method from sample methods in this folder.
+
+4.7 Cautions!!!
 ----------------
 
-4.6.1 
+4.7.1 
 
-Once Unikey has been started, you should not close it. Some (badly XIM
-implemented) applications that have established connection with Unikey
-may crash if you close it. Xterm, Mozilla Firebird are known to have
-this problem with XIM server.
+Once Unikey has been started, you should not kill unikey process. Some
+applications that have established a connection with unikey may crash
+if unikey is not present any more. Xterm, Mozilla Firefox are known to
+have this problem with unikey, and XIM servers in general. Note that,
+just closing unikey window (as mentioned in 4.2) is safe, since unikey
+process still remains in the memory.
 
-Don't close unikey if you simply want unikey to reload your settings
-in config file. Use the keyboard shortcut (see 4.1.3) to reload config
-file. Or you can reload config file "the professional way" as follows
-:)
-
-$ kill -s USR1 `pidof ukxim`
-
-4.6.2
+4.7.2
 
 When using unikey, other Vietnamese input programs (such as xnvkb)
 should be disabled/deactivated. (Just disable, not necessarily to
@@ -309,31 +320,32 @@ Create a symbolic link in ~/.kde/AutoStart
 
 $ ln -s /usr/local/bin/unikey ~/.kde/AutoStart
 
-6.5 How to fresh-restart unikey (pls, correct my English :-)
+6.5 How to unload/restart unikey 
 ------------------------------------------------------------
 
 As pointed out in 4.2, when you close Unikey, it still remains in
-memory. This would be sufficient in most cases. However, in some
-special cases if you want to launch a fresh-start of unikey, follow
-these steps:
+the memory. This would be sufficient in most cases. However, changing
+certain options require that you unload and run unikey again for the
+changes to have effect. 
 
-- run: kill `pidof unikey`
-- Change the config file if you wish. 
+The proper order is as follows:
+- run: 'killall unikey'
+- Change the 'options' file as you wish. 
 - run unikey again.
 
 Note: 
-- restarting unikey this way may cause some applications to crash.
-- I can see only 1 reason to do this is when you want to change XimFlow
-between Dynamic and Static.
+- Restarting unikey this way may cause some applications to crash.
+- In the current version, there are 2 options that require reloading
+unikey this way: XimFlow and CommitMethod.
 
 
 6.6 If some application does not work with unikey
 ------------------------------------------------
 Try the following steps:
 
-- run: kill `pidof unikey`
+- run: 'killall unikey'
 
-- Edit config file, change "XimFlow" option from Static to Dynamic or
+- Edit options file, change "XimFlow" option from Static to Dynamic or
 vice versa (if it was Dynamic).
 
 - run unikey again.
@@ -342,8 +354,8 @@ vice versa (if it was Dynamic).
 
 If it still does not work, try further:
 - run: kill `pidof unikey`
-- Edit config file, change "CommitMethod" option from Send to Forward or
+- Edit options file, change "CommitMethod" option from Send to Forward or
 vice versa (if it was Forward).
  
-See 6.5 for cautions.
+See 4.7 for cautions.
 

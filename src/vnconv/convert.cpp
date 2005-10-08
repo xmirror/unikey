@@ -46,13 +46,13 @@ int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOu
 	while (!input.eos()) {
 		if (incs.nextInput(input, stdChar, bytesRead)) {
 			if (stdChar != INVALID_STD_CHAR) {
-				if (VnCharsetLibObj.m_options.toLower)
-					stdChar = StdVnToLower(stdChar);
-				else if (VnCharsetLibObj.m_options.toUpper)
-					stdChar = StdVnToUpper(stdChar);
-				if (VnCharsetLibObj.m_options.removeTone)
-					stdChar = StdVnRemoveTone(stdChar);
-				ret = outcs.putChar(output, stdChar, bytesWritten);
+			  if (VnCharsetLibObj.m_options.toLower)
+			    stdChar = StdVnToLower(stdChar);
+			  else if (VnCharsetLibObj.m_options.toUpper)
+			    stdChar = StdVnToUpper(stdChar);
+			  if (VnCharsetLibObj.m_options.removeTone)
+			    stdChar = StdVnRemoveTone(stdChar);
+			  ret = outcs.putChar(output, stdChar, bytesWritten);
 			}
 		}
 		else break;
@@ -74,9 +74,9 @@ int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOu
 // Returns:  0 if successful
 //           error code: if failed
 //----------------------------------------------
-//int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, int & inLen, int & maxOutLen)
+//int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, int & inLen, int & maxOutLen)
 
-int VnConvert(int inCharset, int outCharset, BYTE *input, BYTE *output, 
+int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
 	      int * pInLen, int * pMaxOutLen)
 {
 	int inLen, maxOutLen;
@@ -220,8 +220,8 @@ int vnFileStreamConvert(int inCharset, int outCharset, FILE * inf, FILE *outf)
 		return VNCONV_INVALID_CHARSET;
 
 	if (outCharset == CONV_CHARSET_UNICODE) {
-		WORD sign = 0xFEFF;
-		fwrite(&sign, sizeof(WORD), 1, outf);
+		UKWORD sign = 0xFEFF;
+		fwrite(&sign, sizeof(UKWORD), 1, outf);
 	}
 
 	FileBIStream is;

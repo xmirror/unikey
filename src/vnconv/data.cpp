@@ -42,7 +42,7 @@ Steps to add an 1-byte charset:
   this section for your charset, and set zero for each code point
   that is occupied by your charset (for representing Vietnamese characters).
 
-Steps to add an 1-byte charset:
+Steps to add a 2-byte charset:
 - Determine the Id for your charset. See "vnconv.h". The Id
   for your charset is equal to the id of the last 2-byte charset PLUS 1.
   Then define a constant for that Id (e.g. #define MY_NEW_CHARSET 44)
@@ -58,22 +58,25 @@ Steps to add an 1-byte charset:
 
 
 CharsetNameId CharsetIdMap[] = {
-	{"TCVN3",		CONV_CHARSET_TCVN3},
-	{"UNICODE",		CONV_CHARSET_UNICODE},
-	{"VNI",			CONV_CHARSET_VNIWIN},
-	{"VIQR",		CONV_CHARSET_VIQR},
-	{"UTF-8",		CONV_CHARSET_UNIUTF8},
-	{"VPS",			CONV_CHARSET_VPS},
-	{"VISCII",		CONV_CHARSET_VISCII},
 	{"BKHCM1",		CONV_CHARSET_BKHCM1},
 	{"BKHCM2",		CONV_CHARSET_BKHCM2},
+	{"ISC",			CONV_CHARSET_ISC},
+	{"NCR-DEC",		CONV_CHARSET_UNIREF},
+	{"NCR-HEX",		CONV_CHARSET_UNIREF_HEX},
+	{"TCVN3",		CONV_CHARSET_TCVN3},
+	{"UNI-COMP",	CONV_CHARSET_UNIDECOMPOSED},
+	{"UNICODE",		CONV_CHARSET_UNICODE},
+	{"UTF-8",		CONV_CHARSET_UNIUTF8},
+	{"UTF8",		CONV_CHARSET_UNIUTF8},
+	{"UVIQR",       CONV_CHARSET_UTF8VIQR},
 	{"VIETWARE-F",	CONV_CHARSET_VIETWAREF},
 	{"VIETWARE-X",	CONV_CHARSET_VIETWAREX},
-	{"NCR-HEX",		CONV_CHARSET_UNIREF_HEX},
-	{"NCR-DEC",		CONV_CHARSET_UNIREF},
-	{"UNI-COMP",	CONV_CHARSET_UNIDECOMPOSED},
-	{"WINCP-1258",	CONV_CHARSET_WINCP1258},
-	{"UVIQR",         CONV_CHARSET_UTF8VIQR}
+	{"VIQR",		CONV_CHARSET_VIQR},
+	{"VISCII",		CONV_CHARSET_VISCII},
+	{"VNI-MAC",		CONV_CHARSET_VNIMAC},
+	{"VNI-WIN",		CONV_CHARSET_VNIWIN},
+	{"VPS",			CONV_CHARSET_VPS},
+	{"WINCP-1258",	CONV_CHARSET_WINCP1258}
 };
 
 const int CharsetCount = sizeof(CharsetIdMap)/sizeof(CharsetNameId);
@@ -90,14 +93,15 @@ See TCVN3 & VPS below for examples
 */
 
 unsigned char SingleByteTables[][TOTAL_VNCHARS] = 
+
 // TCVN3
-{{'A','a','∏','∏','µ','µ','∂','∂','∑','∑','π','π', //a
+{{'A','a','∏','∏','µ','µ','∂','∂','∑','∑','π','π',      // 0: a
   '¢','©',' ',' ','«','«','»','»','…','…','À','À',		// 1: a^
   '°','®','æ','æ','ª','ª','º','º','Ω','Ω','∆','∆',		// 2: a(
   'B','b','C','c','D','d',
   'ß','Æ',
   'E','e','–','–','Ã','Ã','Œ','Œ','œ','œ','—','—',		// 3: e
-  '£','™','’','’','“','“','”','”','‘','‘','÷','÷',       // 4: e^
+  '£','™','’','’','“','“','”','”','‘','‘','÷','÷',      // 4: e^
   'F','f','G','g','H','h',
   'I','i','›','›','◊','◊','ÿ','ÿ','‹','‹','ﬁ','ﬁ',		// 5: i
   'J','j','K','k','L','l','M','m','N','n',
@@ -114,7 +118,6 @@ unsigned char SingleByteTables[][TOTAL_VNCHARS] =
   0x89, 0x8A, 0x8B, 0x8C, 0x8E, 0x91, 0x92, 0x93,
   0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B,
   0x9C, 0x9E, 0x9F},
-
 //VPS
 { 'A','a','¡','·','Ä','‡','Å','‰','Ç','„','Â','Â',
   '¬','‚','É','√','Ñ','¿','Ö','ƒ','≈','≈','∆','∆',
@@ -139,26 +142,25 @@ unsigned char SingleByteTables[][TOTAL_VNCHARS] =
   0x00, 0x00, 0x00, 0x00, 0x8E, 0x91, 0x92, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x9E, 0x00},
-
 //VISCII
-{ 'A','a','¡','·','¿','‡','ƒ','‰','√','„','Ä','’',  //a
-  '¬','‚','Ñ','§','Ö','•','Ü','¶','Á','Á','á','ß', //a^
-  '≈','Â','Å','°','Ç','¢','∆','∆','«','«','É','£', //a(
+{ 'A','a','¡','·','¿','‡','ƒ','‰','√','„','Ä','’',
+  '¬','‚','Ñ','§','Ö','•','Ü','¶','Á','Á','á','ß',
+  '≈','Â','Å','°','Ç','¢','∆','∆','«','«','É','£',
   'B','b','C','c','D','d',
   '–','',
-  'E','e','…','È','»','Ë','À','Î','à','®','â','©', //e
-  ' ','Í','ä','™','ã','´','å','¨','ç','≠','é','Æ',  //e^
+  'E','e','…','È','»','Ë','À','Î','à','®','â','©',
+  ' ','Í','ä','™','ã','´','å','¨','ç','≠','é','Æ',
   'F','f','G','g','H','h',
-  'I','i','Õ','Ì','Ã','Ï','õ','Ô','Œ','Ó','ò','∏', //i
+  'I','i','Õ','Ì','Ã','Ï','õ','Ô','Œ','Ó','ò','∏',
   'J','j','K','k','L','l','M','m','N','n',
-  'O','o','”','Û','“','Ú','ô','ˆ','ı','ı','ö','˜', //o
-  '‘','Ù','è','Ø','ê','∞','ë','±','í','≤','ì','µ', //o^
-  '¥','Ω','ï','æ','ñ','∂','ó','∑','≥','ﬁ','î','˛', //o+
+  'O','o','”','Û','“','Ú','ô','ˆ','ı','ı','ö','˜',
+  '‘','Ù','è','Ø','ê','∞','ë','±','í','≤','ì','µ',
+  '¥','Ω','ï','æ','ñ','∂','ó','∑','≥','ﬁ','î','˛',
   'P','p','Q','q','R','r','S','s','T','t',
-  'U','u','⁄','˙','Ÿ','˘','ú','¸','ù','˚','û','¯',  //u
-  'ø','ﬂ','∫','—','ª','◊','º','ÿ','ˇ','Ê','π','Ò', //u+
+  'U','u','⁄','˙','Ÿ','˘','ú','¸','ù','˚','û','¯',
+  'ø','ﬂ','∫','—','ª','◊','º','ÿ','ˇ','Ê','π','Ò',
   'V','v','W','w','X','x',
-  'Y','y','›','˝','ü','œ','÷','÷','€','€','‹','‹', //y
+  'Y','y','›','˝','ü','œ','÷','÷','€','€','‹','‹',
   'Z','z',
   0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x8E, 0x00, 0x00, 0x00,
@@ -211,11 +213,35 @@ unsigned char SingleByteTables[][TOTAL_VNCHARS] =
   0x80, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88,
   0x89, 0x8A, 0x8B, 0x8C, 0x8E, 0x91, 0x92, 0x93,
   0x94, 0x95, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x9E, 0x00}
+  0x00, 0x9E, 0x00},
+// ISC
+ {'A','a','É','∏','Ä','µ','Å','∂','Ç','∑','Ñ','π', 
+  '¢','©','ƒ','†','¡','«','¬','»','√','…','Ü','À',
+  '°','®','¿','æ','Ø','ª','∫','º','ø','Ω','Ö','∆',
+  'B','b','C','c','D','d',
+  'ß','Æ',
+  'E','e','–','ä','á','Ã','à','Œ','â','œ','—','ã',
+  '£','™','⁄','’','≈','“','Õ','”','Ÿ','‘','å','÷',
+  'F','f','G','g','H','h',
+  'I','i','ê','›','ç','◊','é','ÿ','è','‹','ë','ﬁ',
+  'J','j','K','k','L','l','M','m','N','n',
+  'O','o','ï','„','í','ﬂ','ì','·','î','‚','ñ','‰',
+  '§','´','ˇ','Ë','€','Â','‡','Ê','','Á','ó','È',
+  '•','¨','õ','Ì','ò','Í','ô','Î','ö','Ï','ú','Ó',
+  'P','p','Q','q','R','r','S','s','T','t',
+  'U','u','@','Û','ù','Ô','û','Ò','ü','Ú','|','Ù',
+  '¶','≠','`','¯',0x5C,'ı','^','ˆ','~','˜','#','˘',
+  'V','v','W','w','X','x',
+  'Y','y','≥','˝','∞','˙','±','˚','≤','¸','¥','˛',
+  'Z','z',
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x12, 0x13,
+  0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00}
 };
 
-WORD DoubleByteTables[][TOTAL_VNCHARS] = {
-//VNIWIN
+UKWORD DoubleByteTables[][TOTAL_VNCHARS] = {
+//VNI-WIN
 { 0x0041, 0x0061, 0xd941, 0xf961, 0xd841, 0xf861, 0xdb41, 0xfb61, 0xd541, 0xf561, 0xcf41, 0xef61, //a
   0xc241, 0xe261, 0xc141, 0xe161, 0xc041, 0xe061, 0xc541, 0xe561, 0xc341, 0xe361, 0xc441, 0xe461, //a^
   0xca41, 0xea61, 0xc941, 0xe961, 0xc841, 0xe861, 0xda41, 0xfa61, 0xdc41, 0xfc61, 0xcb41, 0xeb61, //a(
@@ -286,10 +312,34 @@ WORD DoubleByteTables[][TOTAL_VNCHARS] = {
   0x0080, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087, 0x0088,
   0x0089, 0x008A, 0x008B, 0x008C, 0x008E, 0x0091, 0x0092, 0x0093,
   0x0094, 0x0095, 0x0096, 0x0097, 0x0098, 0x0099, 0x009A, 0x009B,
-  0x009C, 0x009E, 0x009F}
+  0x009C, 0x009E, 0x009F},
+// VNI-MAC
+{ 0x0041, 0x0061, 0xf441, 0x9d61, 0xaf41, 0xbf61, 0xf341, 0x9e61, 0xcd41, 0x9b61, 0xec41, 0x9561, //a
+  0xe541, 0x8961, 0xe741, 0x8761, 0xcb41, 0x8861, 0x8141, 0x8c61, 0xcc41, 0x8b61, 0x8041, 0x8a61, //a^
+  0xe641, 0x9061, 0x8341, 0x8e61, 0xe941, 0x8f61, 0xf241, 0x9c61, 0x8641, 0x9f61, 0xe841, 0x9161, //a(
+  0x0042, 0x0062, 0x0043, 0x0063, 0x0044, 0x0064, //B b C c D d
+  0x0084, 0x0096, //DD, dd
+  0x0045, 0x0065, 0xf445, 0x9d65, 0xaf45, 0xbf65, 0xf345, 0x9e65, 0xcd45, 0x9b65, 0xec45, 0x9565, //e
+  0xe545, 0x8965, 0xe745, 0x8765, 0xcb45, 0x8865, 0x8145, 0x8c65, 0xcc45, 0x8b65, 0x8045, 0x8a65, //e^
+  0x0046, 0x0066, 0x0047, 0x0067, 0x0048, 0x0068, // F f G g H h
+  0x0049, 0x0069, 0x00ea, 0x0092, 0x00ed, 0x0093, 0x00ae, 0x00be, 0x00ee, 0x0097, 0x00f1, 0x0098, //i
+  0x004a, 0x006a, 0x004b, 0x006b, 0x004c, 0x006c, 0x004d, 0x006d, 0x004e, 0x006e,  // J j K k L l M m N n
+  0x004f, 0x006f, 0xf44f, 0x9d6f, 0xaf4f, 0xbf6f, 0xf34f, 0x9e6f, 0xcd4f, 0x9b6f, 0xec4f, 0x956f, //o
+  0xe54f, 0x896f, 0xe74f, 0x876f, 0xcb4f, 0x886f, 0x814f, 0x8c6f, 0xcc4f, 0x8b6f, 0x804f, 0x8a6f, //o^
+  0x00ef, 0x0099, 0xf4ef, 0x9d99, 0xafef, 0xbf99, 0xf3ef, 0x9e99, 0xcdef, 0x9b99, 0xecef, 0x9599, //o+
+  0x0050, 0x0070, 0x0051, 0x0071, 0x0052, 0x0072, 0x0053, 0x0073, 0x0054, 0x0074,                 //P p Q q R r S s T t
+  0x0055, 0x0075, 0xf455, 0x9d75, 0xaf55, 0xbf75, 0xf355, 0x9e75, 0xcd55, 0x9b75, 0xec55, 0x9575, //u
+  0x0085, 0x009a, 0xf485, 0x9d9a, 0xaf85, 0xbf9a, 0xf385, 0x9e9a, 0xcd85, 0x9b9a, 0xec85, 0x959a, //u+
+  0x0056, 0x0076, 0x0057, 0x0077, 0x0058, 0x0078, // V v W w X x
+  0x0059, 0x0079, 0xf459, 0x9d79, 0xaf59, 0xbf79, 0xf359, 0x9e79, 0xcd59, 0x9b79, 0x00eb, 0x0094, //y
+  0x005a, 0x007a, // Z z
+  0x00db, 0x00e2, 0x00c4, 0x00e3, 0x00c9, 0x00a0, 0x00e0, 0x00f6,
+  0x00e4, 0x003f, 0x00dc, 0x00ce, 0x003f, 0x00d4, 0x00d5, 0x00d2,
+  0x00d3, 0x00a5, 0x00d0, 0x00d1, 0x00f7, 0x00aa, 0x003f, 0x00dd,
+  0x00cf, 0x003f, 0x00d9}
 };
 
-WORD WinCP1258[TOTAL_VNCHARS]=
+UKWORD WinCP1258[TOTAL_VNCHARS]=
 //Windows CP 1258
 { 0x0041, 0x0061, 0xec41, 0xec61, 0xcc41, 0xcc61, 0xd241, 0xd261, 0xde41, 0xde61, 0xf241, 0xf261, //a
   0x00c2, 0x00e2, 0xecc2, 0xece2, 0xccc2, 0xcce2, 0xd2c2, 0xd2e2, 0xdec2, 0xdee2, 0xf2c2, 0xf2e2, //a^
@@ -315,7 +365,7 @@ WORD WinCP1258[TOTAL_VNCHARS]=
   0x0094, 0x0095, 0x0096, 0x0097, 0x0098, 0x0099, 0x009A, 0x009B,
   0x009C, 0x009E, 0x009F};
 
-WORD WinCP1258Pre[TOTAL_VNCHARS]=
+UKWORD WinCP1258Pre[TOTAL_VNCHARS]=
 //Windows CP1258 - with some more precomposed characters
 { 0x0041, 0x0061, 0x00c1, 0x00e1, 0x00c0, 0x00e0, 0xd241, 0xd261, 0xde41, 0xde61, 0xf241, 0xf261, //a
   0x00c2, 0x00e2, 0xecc2, 0xece2, 0xccc2, 0xcce2, 0xd2c2, 0xd2e2, 0xdec2, 0xdee2, 0xf2c2, 0xf2e2, //a^
@@ -387,7 +437,7 @@ unsigned char WesternSymbols[] =
 + 0x2b
 
 */
-DWORD VIQRTable[TOTAL_VNCHARS] = 
+UKDWORD VIQRTable[TOTAL_VNCHARS] = 
 	{  0x41,   0x61,   0x2741,   0x2761,   0x6041,   0x6061,   0x3f41,   0x3f61,   0x7e41,   0x7e61,   0x2e41,   0x2e61, //a
 	 0x5e41, 0x5e61, 0x275e41, 0x275e61, 0x605e41, 0x605e61, 0x3f5e41, 0x3f5e61, 0x7e5e41, 0x7e5e61, 0x2e5e41, 0x2e5e61, //a^
 	 0x2841, 0x2861, 0x272841, 0x272861, 0x602841, 0x602861, 0x3f2841, 0x3f2861, 0x7e2841, 0x7e2861, 0x2e2841, 0x2e2861, //a(
@@ -413,7 +463,7 @@ DWORD VIQRTable[TOTAL_VNCHARS] =
 	   0x9C, 0x9E, 0x9F};
 
 
-DWORD UnicodeComposite[TOTAL_VNCHARS] = 
+UKDWORD UnicodeComposite[TOTAL_VNCHARS] = 
 { 0x00000041, 0x00000061, 0x03010041, 0x03010061, 0x03000041, 0x03000061, //a
   0x03090041, 0x03090061, 0x03030041, 0x03030061, 0x03230041, 0x03230061, //a
 

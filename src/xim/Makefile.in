@@ -128,6 +128,7 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -161,18 +162,18 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sys_libdir = @sys_libdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
-AM_CPPFLAGS = -Wall -I../IMdkit -I../ukengine -I ../vnconv
+AM_CPPFLAGS = -Wall -I../IMdkit -I../ukengine -I ../vnconv -I ../vnconv/byteio
 bin_PROGRAMS = ukxim
 ukxim_SOURCES = \
 	xim.c IC.c IC.h \
 	uksync.c uksync.h ../gui/xvnkb.h \
-	macro.cpp macro.h \
-	mactab.cpp mactab.h \
 	optparse.c optparse.h \
-	ukopt.c ukopt.h
+	ukopt.c ukopt.h \
+	dummy.cpp
 
 
 ukxim_CFLAGS = \
@@ -181,7 +182,7 @@ ukxim_CFLAGS = \
 ukxim_LDADD = ../IMdkit/libIMdkit.la ../ukengine/libUnikey.la ../vnconv/libvnconv.la
 ukxim_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11
 
-EXTRA_DIST = install.sed uninstall.sed
+EXTRA_DIST = install.sh install.sed uninstall.sed
 
 sysbash = /etc/profile
 subdir = src/xim
@@ -193,8 +194,8 @@ bin_PROGRAMS = ukxim$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ukxim_OBJECTS = ukxim-xim.$(OBJEXT) ukxim-IC.$(OBJEXT) \
-	ukxim-uksync.$(OBJEXT) macro.$(OBJEXT) mactab.$(OBJEXT) \
-	ukxim-optparse.$(OBJEXT) ukxim-ukopt.$(OBJEXT)
+	ukxim-uksync.$(OBJEXT) ukxim-optparse.$(OBJEXT) \
+	ukxim-ukopt.$(OBJEXT) dummy.$(OBJEXT)
 ukxim_OBJECTS = $(am_ukxim_OBJECTS)
 ukxim_DEPENDENCIES = ../IMdkit/libIMdkit.la ../ukengine/libUnikey.la \
 	../vnconv/libvnconv.la
@@ -202,8 +203,7 @@ ukxim_DEPENDENCIES = ../IMdkit/libIMdkit.la ../ukengine/libUnikey.la \
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/macro.Po ./$(DEPDIR)/mactab.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/ukxim-IC.Po \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/dummy.Po ./$(DEPDIR)/ukxim-IC.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ukxim-optparse.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ukxim-ukopt.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/ukxim-uksync.Po \
@@ -275,8 +275,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/macro.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mactab.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ukxim-IC.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ukxim-optparse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ukxim-ukopt.Po@am__quote@
@@ -704,8 +703,7 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 	uninstall-info-am
 
 install-data-hook:
-	sed -f uninstall.sed $(sysbash) | sed -f install.sed > tmpfile
-	mv tmpfile $(sysbash)
+	./install.sh
 
 uninstall-hook:
 	sed -f uninstall.sed $(sysbash) > tmpfile && mv tmpfile $(sysbash)
