@@ -128,6 +128,7 @@ ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -161,10 +162,11 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+sys_libdir = @sys_libdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
-AM_CPPFLAGS = -Wall
+AM_CPPFLAGS = -Wall -I../vnconv -I../vnconv/byteio
 
 noinst_LTLIBRARIES = libUnikey.la
 
@@ -172,8 +174,15 @@ libUnikey_la_SOURCES = \
 	ukengine.cpp \
 	ukengine.h \
 	unikey.cpp \
+	mactab.cpp \
+	mactab.h \
+	inputproc.cpp \
+	usrkeymap.cpp \
+	usrkeymap.h \
+	vnlexi.h \
 	unikey.h \
-	keycons.h
+	keycons.h \
+	inputproc.h
 
 subdir = src/ukengine
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -184,13 +193,16 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 
 libUnikey_la_LDFLAGS =
 libUnikey_la_LIBADD =
-am_libUnikey_la_OBJECTS = ukengine.lo unikey.lo
+am_libUnikey_la_OBJECTS = ukengine.lo unikey.lo mactab.lo inputproc.lo \
+	usrkeymap.lo
 libUnikey_la_OBJECTS = $(am_libUnikey_la_OBJECTS)
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ukengine.Plo ./$(DEPDIR)/unikey.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/inputproc.Plo ./$(DEPDIR)/mactab.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/ukengine.Plo ./$(DEPDIR)/unikey.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/usrkeymap.Plo
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -237,8 +249,11 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inputproc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mactab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ukengine.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unikey.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usrkeymap.Plo@am__quote@
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	if $(CXXCOMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" \

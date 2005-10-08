@@ -1,10 +1,10 @@
-// -*- coding:unix -*-
+// -*- coding:unix; mode:c++ -*-
 /*------------------------------------------------------------------------------
 UniKey - Open-source Vietnamese Keyboard
-Copyright (C) 1998-2004 Pham Kim Long
+Copyright (C) 2000-2005 Pham Kim Long
 Contact:
-  longcz@yahoo.com
-  http://unikey.sf.net
+  unikey@gmail.com
+  http://unikey.org
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -73,12 +73,12 @@ extern "C" {
     int macroEnabled;
     int useUnicodeClipboard;
     int alwaysMacro;
+    int strictSpellCheck;
   };
 
-  extern unsigned char *UnikeyAnsiBuf;
-  extern unsigned short int *UnikeyUniBuf;
-  extern unsigned int UnikeyBackspaces;
-  extern unsigned int UnikeyBufChars;
+  extern unsigned char UnikeyBuf[];
+  extern int UnikeyBackspaces;
+  extern int UnikeyBufChars;
 
   void UnikeySetup(); // always call this first
   void UnikeyCleanup(); // call this when unloading unikey module
@@ -88,14 +88,17 @@ extern "C" {
   void UnikeyResetBuf(); 
 
  // main handler, call every time a character input is received
-  void UnikeyFilter(unsigned char ch);
-  void UnikeyPutChar(unsigned char ch); // put new char without filtering
+  void UnikeyFilter(unsigned int ch);
+  void UnikeyPutChar(unsigned int ch); // put new char without filtering
 
   // call this before UnikeyFilter for correctly processing some TELEX shortcuts
   void UnikeySetCapsState(int shiftPressed, int CapsLockOn);
 
  // call this when backspace is pressed
   void UnikeyBackspacePress();
+
+  // call this to restore to original key strokes
+  void UnikeyRestoreKeyStrokes();
 
  //set extra options
   void UnikeySetOptions(UnikeyOptions *pOpt); 
@@ -105,13 +108,19 @@ extern "C" {
 
   // set input method
   //   im: TELEX_INPUT, VNI_INPUT, VIQR_INPUT, VIQR_STAR_INPUT
-  void UnikeySetInputMethod(int im);
-
+  void UnikeySetInputMethod(UkInputMethod im);
   // set output format
   //  void UnikeySetOutputVIQR();
   // void UnikeySetOutputUTF8();
   int UnikeySetOutputCharset(int charset);
 
+  int UnikeyLoadMacroTable(const char *fileName);
+  int UnikeyLoadUserKeyMap(const char *fileName);
+
+  //call this to enable typing vietnamese even in a non-vn sequence
+  //e.g: GD&DDT,QDDND...
+  //The engine will return to normal mode when a word-break occurs.
+  void UnikeySetSingleMode();
 #if defined(__cplusplus)
 }
 #endif
