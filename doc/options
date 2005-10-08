@@ -1,0 +1,93 @@
+# Unikey XIM config file
+
+# AutoSave: Yes|No
+# If AutoSave=Yes, unikey will save options on exit
+# Be careful when editing this file while unikey is running with AutoSave enabled
+#   Upon exit unikey will overwrite your settings. To avoid that, tell unikey
+#   to reload config file when you finish editing. See unikey manual
+# AutoSave is useful if you want unikey to remember its window position
+AutoSave = Yes
+
+# Initial state: On|Off
+InitState = OFF
+
+# Input: TELEX|VNI|VIQR|USER
+# Input method. If you specify input=USER, you must also specify UsrKeyMapFile
+Input = TELEX
+
+# Output charsets: UNICODE|TCVN|VNI|VIQR
+Charset = UNICODE
+
+# FreeStyle: Yes|No
+#  "Yes" means you can type hook, breve marks anywhere after the base character
+#  not necessarily right after the base.
+#  VNI users should set to Yes. TELEX users: your choice
+# Default: Yes
+FreeStyle = Yes
+
+# ModernStyle: Yes|No
+# "Yes" means "hoa', khoe?" style, "No" means "ho'a, kho?e" style
+ModernStyle = No
+
+# XvnkbSync: Yes|No
+# Set to "Yes" to synchronize unikey-gtk with xvnkb GUI
+# This applies only to unikey-gtk module, not XIM server (ukxim)
+# To synchronize ukxim with xvnkb GUI, see doc/manual
+XvnkbSync = No
+
+# Bell: Yes|No
+# Turn on/off bell notification when key shortcuts are pressed
+Bell = Yes
+
+# CommitMethod: Send|Forward|Mixed. Default: Send
+#   Use XSendEvent or XIM forward key event to commit string
+# Both methods will work with most applications.
+# Some application with high-level security may
+#   block XSendEvent, so CommitMethod must be set to "Forward"
+# Some versions of xterm are known to work only if CommitMethod=Send
+#   see doc/manual for information on xterm
+# I recommend "Send" first. If it does not work, try "Forward"
+CommitMethod = Send
+
+# XimFlow = Static|Dynamic. Default: Static
+# You should always use Static. If something does not work,
+#   then try Dynamic. Rxvt-unicode is known to work only with Dynamic mode.
+# Before changing this option, make sure unikey is not loaded in memory.
+# See manual, section unload/restart unikey.
+XimFlow = Static
+
+# Macrofile: path to macro file. Default: empty, macro is disabled
+# To enable macro, specify the path to your macro file.
+# For example: MacroFile = ~/ukmacro
+MacroFile = /home/pklong/.unikey/ukmacro
+
+# XimLocales = List of locales separated by commas.
+# Default: C,en_US,vi_VN,fr_FR,fr_BE,fr_CA,de_DE,ja_JP,cs_CZ,ru_RU
+# Theses are locales that XIM Server must advertise to applications
+# If your application runs in certain locale, make sure that locale is listed here.
+# Before changing this option, make sure unikey is not loaded in memory.
+# See manual, section unload/restart unikey.
+XimLocales = C,en_US,vi_VN,fr_FR,fr_BE,fr_CA,de_DE,ja_JP,cs_CZ,ru_RU
+
+# GtkImAlone: Yes|No. Default: No
+# Set this to Yes if you want GTK unikey module enabled
+# even when unikey GUI is not running
+GtkImAlone = No
+
+# PosX: X Position of unikey window
+# set a minus value to let unikey use the default position
+PosX = 850
+
+# PosY: Y Position of unikey window
+# set a minus value to let unikey use the default position
+PosY = 0
+
+# StrictSpell: Yes|No.
+# Enable strict spell-checking. Default: Yes
+StrictSpell = Yes
+
+# UsrKeyMapFile: path to user-defined input method file. Default: empty.
+# To enable user-define input method, specify the path here
+# For example: UsrKeyMapFile = ~/.unikey/my-telex
+UsrKeyMapFile = /home/pklong/.unikey/telex-pro
+

@@ -1,0 +1,42 @@
+For users of version 0.9.2 and older, take note of some changes since
+version 1.0:
+
+- Config file is changed from ~/.unikeyrc to ~/.unikey/options. Other
+files, such as macro, user-define input method should be put in
+~/.unikey folder.
+
+- From this version, you can define your own input method. See 4.6 in
+the Manual.
+
+- To restore a sequence of key strokes (that has been processed as
+Vietnamese), press: CTRL-SHIFT-ESC.
+
+Some options are removed since version 1.0:
+- FreeMarking: Now it's always on.
+- ManualTone: Who needs it anymore ? ;)
+
+---------------
+
+The unikey engine has been totally rewritten for version 1.0. You will
+find out many new features as you use it, especially how unikey
+recoginises non-vietnamese sequences to NOT process them as
+vietnamese. As a result, telex users can type many english words
+without having to switch back and forth between vietnamese and
+non-vietnamese modes, or double-type conflicting characters. (VNI
+users can also benefit, but not as much as TELEX users).
+
+For example: now you can type 'linux', 'changes' normally, you don't have
+to type 'linuxx' or 'changess'.
+
+This feature also helps you recognise typing mistakes as you
+type. When you see unikey refuses to put a tone mark (that you think
+it should), you know the word is not vietnamese correct.
+
+There is a side effect, however. Now it's NOT easy to to type
+incorrect vietnamese sequences such as abbreviations: HDDQT (Hoi DDo^`ng
+Qua?n Tri), BDD (Bo'ng DDa'). To type those sequences, you need to
+start the word by hitting CTRL-SHIFT-Z. Doing so will temporarily
+disable unikey's spell-check, therefore enables typing incorrect
+vietnamese sequences (such as abbreviations above). When you type a
+new word, unikey will be back to the normal processing mode.
+

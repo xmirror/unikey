@@ -1,0 +1,75 @@
+An user-defined input method is a set of lines in the following format:
+
+  <key> = <action>
+
+- key is a single character, which is any key you can type on your keyboard.
+- action is the action to take when <key> is typed. Unikey defines a set of
+actions you can use to describe your input method.
+
+Empty lines and lines beginning with ';' are ignored.
+
+*** Example:
+
+[a = Roof-A] means that when you type 'a', Unikey will try to put a
+roof above an 'a' character to make it become a^, if possible.
+
+[6 = Hook-UO] means that when you type '6', unikey will try to put a
+hook to any 'u' or 'o' character to make it become 'u+', or 'o+'
+respectively.
+
+***
+
+
+Following is the list of actions understood by unikey:
+
+------------------------------------------------------------------------
+           ACTION TABLE
+------------------------------------------------------------------------
+Roof-All: put a roof to any applicable character (a, o, e)
+Roof-A: put a roof above 'a'
+Roof-E: put a roof above 'e'
+Roof-O: put a roof above 'o'
+Hook-Bowl: put a hook to 'u' or 'o', or a bowl to 'a', if applicable
+Hook-UO: put a hook to 'u' or 'o'
+Hook-U: put a hook to 'u'
+Hook-O: put a hook to 'o'
+Bowl: put a bowl to 'a'
+D-mark: make 'd' become 'dd'
+Tone0: clear an existing tone
+Tone1: sa('c
+Tone2: huye^`n
+Tone3: ho?i
+Tone4: nga~
+Tone5: na(.ng
+Telex-W: special key, has all the functions of 'w' key in telex method.
+A^: generate 'A^' character
+a^: generate 'a^' character
+A(: generate 'A(' character
+a(: generate 'a(' character
+E^: generate 'E^' character
+e^: generate 'e^' character
+O^: generate 'O^' character
+o^: generate 'o^' character
+O+: generate 'O+' character
+o+: generate 'o+' character
+U+: generate 'U+' character
+u+: generate 'u+' character
+DD: generate 'DD' character
+dd: generate 'dd' character
+----------------------------------------------------------------------
+
+NOTE:
+
+Action names are case sensitive. That means 'A^' is different from
+'a^'. If you type "Roof-a", it will not be understood, the correct
+name is "Roof-A".
+
+If <key> is an alpha character (a-z), both cases of the character will
+get the same action. For example: [a = Roof-A] implies [A = Roof-A],
+and vice versa, so you need to specify only one of them.
+
+An input method does not need to assign keys to all available
+actions. You need to assign only enough keys for you to type any vietnamese
+word.
+
+See im-samples/ folder for some sample input method files.
