@@ -1,0 +1,18 @@
+; Enhanced VNI
+
+; Standard keys
+0 = Tone0
+1 = Tone1
+2 = Tone2
+3 = Tone3
+4 = Tone4
+5 = Tone5
+6 = Roof-All
+7 = Hook-UO
+8 = Bowl
+9 = D-Mark
+; additional keys
+a = Roof-A
+e = Roof-E
+o = Roof-O
+d = D-Mark

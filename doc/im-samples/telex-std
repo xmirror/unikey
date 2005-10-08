@@ -1,0 +1,17 @@
+; This is the standard TELEX input method
+
+z = Tone0
+s = Tone1
+f = Tone2
+r = Tone3
+x = Tone4
+j = Tone5
+w = Telex-W
+a = Roof-A
+e = Roof-E
+o = Roof-O
+d = D-Mark
+[ = u+
+] = o+
+{ = U+
+} = O+

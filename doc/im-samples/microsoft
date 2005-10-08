@@ -1,0 +1,26 @@
+; Microsoft Vietnamese Input Method
+
+1 = a(
+! = A(
+2 = a^
+@ = A^
+3 = e^
+# = E^
+4 = o^
+$ = O^
+5 = Tone2
+% = Tone2
+6 = Tone3
+^ = Tone3
+7 = Tone4
+& = Tone4
+8 = Tone1
+* = Tone1
+9 = Tone5
+( = Tone5
+0 = dd
+) = DD
+[ = u+
+] = o+
+{ = U+
+} = O+

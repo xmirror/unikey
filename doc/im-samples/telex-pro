@@ -1,0 +1,15 @@
+; This is a modified version of TELEX. It's more convenient for progammers
+; [,],{,} are removed from standard TELEX
+; 'w' in the beginning of a word is not understood as u+
+
+z = Tone0
+s = Tone1
+f = Tone2
+r = Tone3
+x = Tone4
+j = Tone5
+w = Hook-Bowl
+a = Roof-A
+e = Roof-E
+o = Roof-O
+d = D-Mark
