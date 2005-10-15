@@ -166,7 +166,7 @@ sys_libdir = @sys_libdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
-AM_CPPFLAGS = -Wall -I../vnconv -I../vnconv/byteio
+AM_CPPFLAGS = -Wall -I../vnconv -I../byteio
 
 noinst_LTLIBRARIES = libUnikey.la
 

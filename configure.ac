@@ -130,7 +130,7 @@ AC_CONFIG_FILES([Makefile
   src/unikey-gtk/Makefile
   src/IMdkit/Makefile
   src/gui/Makefile
+  src/byteio/Makefile
   src/vnconv/Makefile
-  src/vnconv/byteio/Makefile
   src/xim/Makefile])
 AC_OUTPUT

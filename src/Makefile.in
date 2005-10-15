@@ -168,7 +168,7 @@ target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
 @COND_UNIKEY_GTK_TRUE@MAYBE_UNIKEY_GTK = unikey-gtk
 
-SUBDIRS = ukengine vnconv IMdkit xim gui $(MAYBE_UNIKEY_GTK)
+SUBDIRS = byteio ukengine vnconv IMdkit xim gui $(MAYBE_UNIKEY_GTK)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -182,7 +182,7 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
 DIST_COMMON = $(srcdir)/Makefile.in Makefile.am
-DIST_SUBDIRS = ukengine vnconv IMdkit xim gui unikey-gtk
+DIST_SUBDIRS = byteio ukengine vnconv IMdkit xim gui unikey-gtk
 all: all-recursive
 
 .SUFFIXES:
