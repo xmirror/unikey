@@ -22,7 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __CHARSET_CONVERT_H
 #define __CHARSET_CONVERT_H
 
-#include <stdint.h>
+#if !defined(_WIN32)
+  #include <stdint.h>
+#endif
+
 #include "vnconv.h"
 #include "byteio.h"
 #include "pattern.h"
@@ -31,19 +34,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define TOTAL_ALPHA_VNCHARS 186
 
 #if defined(_WIN32)
-typedef unsigned __int32 StdVnChar;
+    typedef unsigned __int32 StdVnChar;
+    typedef unsigned __int16 UnicodeChar;
+    typedef unsigned __int16 UKWORD;
+    typedef unsigned __int32 UKDWORD;
 #else
 //typedef unsigned int StdVnChar; //the size should be more specific
-typedef uint32_t StdVnChar;
+	typedef uint32_t StdVnChar;
+    typedef uint16_t UnicodeChar;
+    typedef uint16_t UKWORD;
+    typedef uint32_t UKDWORD;
 #endif
 
 //typedef unsigned short UnicodeChar;
 //typedef unsigned short UKWORD;
-typedef uint16_t UnicodeChar;
-typedef uint16_t UKWORD;
 
 //typedef unsigned int UKDWORD; //the size should be more specific
-typedef uint32_t UKDWORD;
 
 #ifndef LOWORD
 #define LOWORD(l)           ((UKWORD)(l))

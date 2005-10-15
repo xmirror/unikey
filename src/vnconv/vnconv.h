@@ -19,6 +19,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 --------------------------------------------------------------------------------*/
 //This library is shared among x-unikey and win-unikey modules
+//
 #ifndef __VN_CONVERT_H
 #define __VN_CONVERT_H
 
@@ -60,7 +61,6 @@ typedef unsigned char UKBYTE;
 #if defined(__cplusplus)
 extern "C" {
 #endif
-  //int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, int & inLen, int & maxOutLen);
   int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
 		int * pInLen, int * pMaxOutLen);
 
