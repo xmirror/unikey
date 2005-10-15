@@ -674,6 +674,7 @@ int DoubleByteCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
 unsigned char VIQRTones[] = {'\'','`','?','~','.'};
 
 char *VIQREscapes[] = {
+	"://",
 	"/",
 	"@",
 	"mailto:",
