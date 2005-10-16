@@ -63,19 +63,6 @@ Clean up:
 #if defined(__cplusplus)
 extern "C" {
 #endif
-  typedef struct _UnikeyOptions UnikeyOptions;
-
-  struct _UnikeyOptions
-  {
-    int freeMarking;
-    int toneNextToVowel;
-    int modernStyle;
-    int macroEnabled;
-    int useUnicodeClipboard;
-    int alwaysMacro;
-    int strictSpellCheck;
-  };
-
   extern unsigned char UnikeyBuf[];
   extern int UnikeyBackspaces;
   extern int UnikeyBufChars;

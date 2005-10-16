@@ -35,5 +35,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CP_US_ANSI 1252
 
 typedef enum {UkTelex, UkVni, UkViqr, UkUsrIM} UkInputMethod;
+  typedef struct _UnikeyOptions UnikeyOptions;
+
+  struct _UnikeyOptions
+  {
+    int freeMarking;
+    int toneNextToVowel;
+    int modernStyle;
+    int macroEnabled;
+    int useUnicodeClipboard;
+    int alwaysMacro;
+    int strictSpellCheck;
+  };
 
 #endif
