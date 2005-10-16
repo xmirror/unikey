@@ -180,7 +180,7 @@ AM_CPPFLAGS = -Wall @STRIP_BEGIN@ \
 	-DGDK_DISABLE_DEPRECATED	\
 	-DGTK_DISABLE_DEPRECATED 	\
 	@GTK_CFLAGS@ \
-	-I ../ukengine -I ../vnconv \
+	-I ../ukinterface -I ../ukengine -I ../vnconv \
 @STRIP_END@
 
 
@@ -196,7 +196,7 @@ im_vn_la_SOURCES = \
 	../xim/ukopt.c ../xim/ukopt.h
 
 
-im_vn_la_LIBADD = @GTK_LIBS@ ../ukengine/libUnikey.la ../vnconv/libvnconv.la
+im_vn_la_LIBADD = @GTK_LIBS@ ../ukinterface/libukint.la
 subdir = src/unikey-gtk
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -204,7 +204,7 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(module_LTLIBRARIES)
 
-im_vn_la_DEPENDENCIES = ../ukengine/libUnikey.la ../vnconv/libvnconv.la
+im_vn_la_DEPENDENCIES = ../ukinterface/libukint.la
 am_im_vn_la_OBJECTS = gtkimcontextvn.lo imvn.lo uksync.lo dummy.lo \
 	optparse.lo ukopt.lo
 im_vn_la_OBJECTS = $(am_im_vn_la_OBJECTS)

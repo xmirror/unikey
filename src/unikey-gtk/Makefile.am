@@ -14,7 +14,7 @@ AM_CPPFLAGS = -Wall @STRIP_BEGIN@ \
 	-DGDK_DISABLE_DEPRECATED	\
 	-DGTK_DISABLE_DEPRECATED 	\
 	@GTK_CFLAGS@ \
-	-I ../ukengine -I ../vnconv \
+	-I ../ukinterface -I ../ukengine -I ../vnconv \
 @STRIP_END@
 
 im_vn_la_SOURCES = 	\
@@ -30,7 +30,7 @@ im_vn_la_SOURCES = 	\
 ##	../ukengine/macro.cpp ../ukengine/macro.h \
 ##	../ukengine/mactab.cpp ../ukengine/mactab.h
 
-im_vn_la_LIBADD = @GTK_LIBS@ ../ukengine/libUnikey.la ../vnconv/libvnconv.la
+im_vn_la_LIBADD = @GTK_LIBS@ ../ukinterface/libukint.la
 
 install-data-hook:
 	gtk-query-immodules-2.0 \

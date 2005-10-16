@@ -166,7 +166,7 @@ sys_libdir = @sys_libdir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 unikey_gtk = @unikey_gtk@
-AM_CPPFLAGS = -Wall -I../IMdkit -I../ukengine -I ../vnconv -I ../vnconv/byteio
+AM_CPPFLAGS = -Wall -I../IMdkit -I../ukengine -I ../vnconv -I ../ukinterface
 bin_PROGRAMS = ukxim
 ukxim_SOURCES = \
 	xim.c IC.c IC.h \
@@ -179,7 +179,7 @@ ukxim_SOURCES = \
 ukxim_CFLAGS = \
     @X_CFLAGS@
 
-ukxim_LDADD = ../IMdkit/libIMdkit.la ../ukengine/libUnikey.la ../vnconv/libvnconv.la
+ukxim_LDADD = ../IMdkit/libIMdkit.la ../ukinterface/libukint.la
 ukxim_LDFLAGS = @X_LIBS@ @X_PRE_LIBS@ -lX11
 
 EXTRA_DIST = install.sh install.sed uninstall.sed
@@ -197,8 +197,7 @@ am_ukxim_OBJECTS = ukxim-xim.$(OBJEXT) ukxim-IC.$(OBJEXT) \
 	ukxim-uksync.$(OBJEXT) ukxim-optparse.$(OBJEXT) \
 	ukxim-ukopt.$(OBJEXT) dummy.$(OBJEXT)
 ukxim_OBJECTS = $(am_ukxim_OBJECTS)
-ukxim_DEPENDENCIES = ../IMdkit/libIMdkit.la ../ukengine/libUnikey.la \
-	../vnconv/libvnconv.la
+ukxim_DEPENDENCIES = ../IMdkit/libIMdkit.la ../ukinterface/libukint.la
 
 DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp

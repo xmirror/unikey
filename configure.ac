@@ -131,6 +131,7 @@ AC_CONFIG_FILES([Makefile
   src/IMdkit/Makefile
   src/gui/Makefile
   src/byteio/Makefile
+  src/ukinterface/Makefile
   src/vnconv/Makefile
   src/xim/Makefile])
 AC_OUTPUT

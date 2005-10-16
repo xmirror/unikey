@@ -26666,7 +26666,7 @@ fi
 
 
 
-                                                                                          ac_config_files="$ac_config_files Makefile src/Makefile src/ukengine/Makefile src/unikey-gtk/Makefile src/IMdkit/Makefile src/gui/Makefile src/byteio/Makefile src/vnconv/Makefile src/xim/Makefile"
+                                                                                                    ac_config_files="$ac_config_files Makefile src/Makefile src/ukengine/Makefile src/unikey-gtk/Makefile src/IMdkit/Makefile src/gui/Makefile src/byteio/Makefile src/ukinterface/Makefile src/vnconv/Makefile src/xim/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -27260,6 +27260,7 @@ do
   "src/IMdkit/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/IMdkit/Makefile" ;;
   "src/gui/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/gui/Makefile" ;;
   "src/byteio/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/byteio/Makefile" ;;
+  "src/ukinterface/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/ukinterface/Makefile" ;;
   "src/vnconv/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/vnconv/Makefile" ;;
   "src/xim/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/xim/Makefile" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;

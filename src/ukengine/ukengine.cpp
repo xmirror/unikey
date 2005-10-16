@@ -25,7 +25,6 @@
 #include <string.h>
 #include <iostream>
 #include "keycons.h"
-#include "unikey.h"
 
 /*
 #if defined(_WIN32)

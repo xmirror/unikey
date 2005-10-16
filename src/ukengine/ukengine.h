@@ -23,7 +23,6 @@
 #ifndef __UKENGINE_H
 #define __UKENGINE_H
 
-#include "unikey.h"
 #include "charset.h"
 #include "vnlexi.h"
 #include "inputproc.h"
