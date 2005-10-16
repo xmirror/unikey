@@ -169,18 +169,17 @@ unikey_gtk = @unikey_gtk@
 AM_CPPFLAGS = -Wall -I../vnconv -I../byteio
 
 noinst_LTLIBRARIES = libUnikey.la
+libUnikey_la_LIBADD = ../vnconv/libvnconv.la
 
 libUnikey_la_SOURCES = \
 	ukengine.cpp \
 	ukengine.h \
-	unikey.cpp \
 	mactab.cpp \
 	mactab.h \
 	inputproc.cpp \
 	usrkeymap.cpp \
 	usrkeymap.h \
 	vnlexi.h \
-	unikey.h \
 	keycons.h \
 	inputproc.h
 
@@ -192,8 +191,8 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 
 libUnikey_la_LDFLAGS =
-libUnikey_la_LIBADD =
-am_libUnikey_la_OBJECTS = ukengine.lo unikey.lo mactab.lo inputproc.lo \
+libUnikey_la_DEPENDENCIES = ../vnconv/libvnconv.la
+am_libUnikey_la_OBJECTS = ukengine.lo mactab.lo inputproc.lo \
 	usrkeymap.lo
 libUnikey_la_OBJECTS = $(am_libUnikey_la_OBJECTS)
 
@@ -201,8 +200,7 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/inputproc.Plo ./$(DEPDIR)/mactab.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/ukengine.Plo ./$(DEPDIR)/unikey.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/usrkeymap.Plo
+@AMDEP_TRUE@	./$(DEPDIR)/ukengine.Plo ./$(DEPDIR)/usrkeymap.Plo
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -252,7 +250,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inputproc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mactab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ukengine.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unikey.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/usrkeymap.Plo@am__quote@
 
 .cpp.o:
