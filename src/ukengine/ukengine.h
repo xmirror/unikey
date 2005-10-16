@@ -61,21 +61,6 @@ struct UkSharedMem {
 #define CTRL_SHIFT_SW 0
 #define ALT_Z_SW 1
 
-/*
-struct HookMacroDef
-{
-	int keyOffset;
-	int textOffset;
-};
-
-struct UkMacroInfo {
-  HookMacroDef macroTable[MAX_MACRO_ITEMS];
-  char macroMem[MACRO_MEM_SIZE];
-  int macroCount;
-};
-*/
-
-
 #define MAX_UK_ENGINE 128
 
 enum VnWordForm {vnw_nonVn, vnw_empty, vnw_c, vnw_v, vnw_cv, vnw_vc, vnw_cvc};

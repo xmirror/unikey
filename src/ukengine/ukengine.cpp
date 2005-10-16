@@ -20,16 +20,18 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
+#include "stdafx.h"
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
 #include "keycons.h"
 #include "unikey.h"
 
+/*
 #if defined(_WIN32)
 #include "keyhook.h"
 #endif
+*/
 
 #include "vnlexi.h"
 #include "ukengine.h"

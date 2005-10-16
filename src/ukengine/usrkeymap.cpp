@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-
+#include "stdafx.h"
 #include <iostream>
 using namespace std;
 
@@ -127,7 +127,8 @@ int UkLoadKeyMap(const char *fileName, UkKeyEvName keyMap[256])
   FILE *f;
   char *buf;
   char *name, *value;
-  int bufSize, len, i, lineCount;
+  size_t len;
+  int i, bufSize, lineCount;
   unsigned char c;
 
   f = fopen(fileName, "r");
