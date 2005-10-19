@@ -115,12 +115,20 @@ void CreateDefaultUnikeyOptions(UnikeyOptions *pOpt)
 }
 
 //--------------------------------------------
+void UnikeyCheckKbCase(int *pShiftPressed, int *pCapsLockOn)
+{
+  *pShiftPressed = UnikeyShiftPressed;
+  *pCapsLockOn = UnikeyCapsLockOn;
+}
+
+//--------------------------------------------
 void UnikeySetup()
 {
   pShMem = new UkSharedMem;
   pShMem->vietKey = 1;
   pShMem->usrKeyMapLoaded = 0;
   MyKbEngine.setCtrlInfo(pShMem);
+  MyKbEngine.setCheckKbCaseFunc(&UnikeyCheckKbCase);
   UnikeySetInputMethod(UkTelex);
   UnikeySetOutputCharset(CONV_CHARSET_UNIUTF8);
   pShMem->initialized = 1;
