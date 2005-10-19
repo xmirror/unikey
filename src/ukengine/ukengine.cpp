@@ -44,8 +44,10 @@ bool IsVnVowel[vnl_lastChar];
 extern VnLexiName AZLexiUpper[]; //defined in inputproc.cpp
 extern VnLexiName AZLexiLower[];
 
+/*
 extern int UnikeyCapsLockOn; //defined in unikey.cpp
 extern int UnikeyShiftPressed; //defined in unikey.cpp
+*/
 
 struct VowelSeqInfo {
   int len;
@@ -960,14 +962,19 @@ inline VnLexiName vnToLower(VnLexiName x)
 //----------------------------------------------------------
 int UkEngine::processMapChar(UkKeyEvent & ev)
 {
-  if (UnikeyCapsLockOn)
-    ev.vnSym = changeCase(ev.vnSym);
+    int capsLockOn = 0;
+    int shiftPressed = 0;
+    if (m_keyCheckFunc)
+        m_keyCheckFunc(&shiftPressed, &capsLockOn);
 
-  int ret = processAppend(ev);
-  if (m_current >= 0 && m_buffer[m_current].form != vnw_empty &&
-      m_buffer[m_current].form != vnw_nonVn) {
-    return 1;
-  }
+    if (capsLockOn)
+        ev.vnSym = changeCase(ev.vnSym);
+
+    int ret = processAppend(ev);
+    if (m_current >= 0 && m_buffer[m_current].form != vnw_empty &&
+          m_buffer[m_current].form != vnw_nonVn) {
+        return 1;
+    }
 
   if (m_current < 0)
     return 0;
@@ -1031,16 +1038,21 @@ int UkEngine::processTelexW(UkKeyEvent & ev)
   //cout << "Process telex W\n"; //DEBUG
   int ret;
   static bool usedAsMapChar = false;
+  int capsLockOn = 0;
+  int shiftPressed = 0;
+  if (m_keyCheckFunc)
+    m_keyCheckFunc(&shiftPressed, &capsLockOn);
+
   if (usedAsMapChar) {
     ev.evType = vneMapChar;
     ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
-    if (UnikeyCapsLockOn)
+    if (capsLockOn)
       ev.vnSym = changeCase(ev.vnSym);
     ev.chType = ukcVn;
     ret = processMapChar(ev);
     if (ret == 0) {
       if (m_current >= 0)
-	m_current--;
+	      m_current--;
       usedAsMapChar = false;
       ev.evType = vneHookAll;
       return processHook(ev);
@@ -1056,7 +1068,7 @@ int UkEngine::processTelexW(UkKeyEvent & ev)
       m_current--;
     ev.evType = vneMapChar;
     ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
-    if (UnikeyCapsLockOn)
+    if (capsLockOn)
       ev.vnSym = changeCase(ev.vnSym);
     ev.chType = ukcVn;
     usedAsMapChar = true;
@@ -1717,6 +1729,7 @@ UkEngine::UkEngine()
   m_current = -1;
   m_keyCurrent = -1;
   m_singleMode = false;
+  m_keyCheckFunc = 0;
 }
 
 //----------------------------------------------------
@@ -1757,7 +1770,12 @@ void UkEngine::prepareBuffer()
 //----------------------------------------------------
 int UkEngine::macroMatch(UkKeyEvent & ev)
 {
-  if (UnikeyShiftPressed && (ev.keyCode ==' ' || ev.keyCode == ENTER_CHAR))
+  int capsLockOn = 0;
+  int shiftPressed = 0;
+  if (m_keyCheckFunc)
+    m_keyCheckFunc(&shiftPressed, &capsLockOn);
+
+  if (shiftPressed && (ev.keyCode ==' ' || ev.keyCode == ENTER_CHAR))
     return 0;
 
   const StdVnChar *pMacText = NULL;

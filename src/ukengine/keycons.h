@@ -46,6 +46,7 @@ typedef enum {UkTelex, UkVni, UkViqr, UkUsrIM} UkInputMethod;
     int useUnicodeClipboard;
     int alwaysMacro;
     int strictSpellCheck;
+    int useIME; //for Win32 only
   };
 
 #endif

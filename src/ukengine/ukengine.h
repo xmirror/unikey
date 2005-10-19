@@ -64,6 +64,8 @@ struct UkSharedMem {
 
 enum VnWordForm {vnw_nonVn, vnw_empty, vnw_c, vnw_v, vnw_cv, vnw_vc, vnw_cvc};
 
+typedef void (* CheckKeyboardCaseCb)(int *pShiftPressed, int *pCapslockOn);
+
 class UkEngine
 {
 public:
@@ -72,6 +74,12 @@ public:
   {
     m_pCtrl = p;
   }
+
+  void setCheckKbCaseFunc(CheckKeyboardCaseCb pFunc) 
+  {
+      m_keyCheckFunc = pFunc;
+  }
+
 
   int process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize);
   void pass(int keyCode); //just pass through without filtering
@@ -95,6 +103,7 @@ public:
 
 protected:
   static bool m_classInit;
+  CheckKeyboardCaseCb m_keyCheckFunc;
   UkSharedMem *m_pCtrl;
 
   int m_changePos;
