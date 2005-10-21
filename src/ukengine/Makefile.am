@@ -10,8 +10,10 @@ libUnikey_la_SOURCES = \
 	mactab.h \
 	inputproc.cpp \
 	usrkeymap.cpp \
+	stdafx.cpp \
 	usrkeymap.h \
 	vnlexi.h \
 	keycons.h \
-	inputproc.h
+	inputproc.h \
+	stdafx.h
 
