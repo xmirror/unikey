@@ -439,7 +439,7 @@ Bool isShortcut(XIMS ims, IMForwardEventStruct *call_data)
 	  fixUnikeyToSyncMethod(GlobalOpt.inputMethod);
 	break;
       case SC_UNICODE_CHARSET:
-	v = UnikeyToSyncCharset(CONV_CHARSET_UNIUTF8);
+	v = UnikeyToSyncCharset(CONV_CHARSET_XUTF8);
 	UkSetPropValue(AIMCharset, v);
 	break;
       case SC_VIQR_CHARSET:
@@ -576,7 +576,7 @@ void commitBuf(XIMS ims, IMForwardEventStruct *call_data)
 
   char *utfBuf;
 
-  if (GlobalOpt.charset != CONV_CHARSET_UNIUTF8) {
+  if (GlobalOpt.charset != CONV_CHARSET_XUTF8) {
     int outLeft = sizeof(buf);
     if (!latinToUtf(buf, UnikeyBuf, UnikeyBufChars, &outLeft))
       return; //not enough memory

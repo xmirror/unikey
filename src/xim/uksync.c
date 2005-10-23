@@ -38,7 +38,7 @@ typedef struct {
 } SyncMap;
 
 SyncMap UkToSyncCharsetList[] ={
-  {CONV_CHARSET_UNIUTF8, VKC_UTF8},
+  {CONV_CHARSET_XUTF8, VKC_UTF8},
   {CONV_CHARSET_VIQR, VKC_VIQR},
   {CONV_CHARSET_TCVN3, VKC_TCVN},
   {CONV_CHARSET_VNIWIN, VKC_VNI},
@@ -46,7 +46,7 @@ SyncMap UkToSyncCharsetList[] ={
 };
 
 SyncMap SyncToUkCharsetList[] = {
-  {VKC_UTF8, CONV_CHARSET_UNIUTF8},
+  {VKC_UTF8, CONV_CHARSET_XUTF8},
   {VKC_VIQR, CONV_CHARSET_VIQR},
   {VKC_TCVN, CONV_CHARSET_TCVN3},
   {VKC_VNI, CONV_CHARSET_VNIWIN},
@@ -96,7 +96,7 @@ int SyncToUnikeyCharset(int sync)
   return SyncTranslate(sync,
 		       SyncToUkCharsetList,
 		       sizeof(SyncToUkCharsetList)/sizeof(SyncMap),
-		       CONV_CHARSET_UNIUTF8);
+		       CONV_CHARSET_XUTF8);
 }
 
 //--------------------------------------------

@@ -235,7 +235,7 @@ void UkSetDefOptions(UkXimOpt *options)
   CreateDefaultUnikeyOptions(&options->uk);
 
   options->inputMethod = UkTelex;
-  options->charset = CONV_CHARSET_UNIUTF8;
+  options->charset = CONV_CHARSET_XUTF8;
   options->enabled = 1;
   options->xvnkbSync = 0;
   options->bellNotify = 1;
