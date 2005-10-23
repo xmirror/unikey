@@ -510,7 +510,7 @@ static gboolean checkShortcuts(GtkIMContext *context, GdkEventKey *event)
 	}
 	break;
       case SC_UNICODE_CHARSET:
-	setOutputCharset(CONV_CHARSET_UNIUTF8);
+	setOutputCharset(CONV_CHARSET_XUTF8);
 	break;
       case SC_VIQR_CHARSET:
 	setOutputCharset(CONV_CHARSET_VIQR);
@@ -556,7 +556,7 @@ static void commitString(GtkIMContext *context)
   static char buf[1024];
 
   char *utfBuf;
-  if (GlobalOpt.charset != CONV_CHARSET_UNIUTF8) {
+  if (GlobalOpt.charset != CONV_CHARSET_XUTF8) {
     int outLeft = sizeof(buf);
     if (!latinToUtf(buf, UnikeyBuf, UnikeyBufChars, &outLeft))
       return; //not enough memory
@@ -889,7 +889,6 @@ static int readContext(GtkIMContext *context)
     return 0;
 
   
-  //  VnConvert(CONV_CHARSET_UNIUTF8, CONV_CHARSET_TCVNT3, (BYTE *)start, inLen, 
   g_free(buf);
 }
 */

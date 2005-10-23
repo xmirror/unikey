@@ -77,7 +77,6 @@ int UnikeySetOutputCharset(int charset)
     pShMem->pCharset = pCharset;
     pShMem->charsetId = charset;
     MyKbEngine.reset();
-    pShMem->xutf8 = (charset == CONV_CHARSET_UNIUTF8);
     return 1;
   }
   return 0;
@@ -130,7 +129,7 @@ void UnikeySetup()
   MyKbEngine.setCtrlInfo(pShMem);
   MyKbEngine.setCheckKbCaseFunc(&UnikeyCheckKbCase);
   UnikeySetInputMethod(UkTelex);
-  UnikeySetOutputCharset(CONV_CHARSET_UNIUTF8);
+  UnikeySetOutputCharset(CONV_CHARSET_XUTF8);
   pShMem->initialized = 1;
   CreateDefaultUnikeyOptions(&pShMem->options);
 }
