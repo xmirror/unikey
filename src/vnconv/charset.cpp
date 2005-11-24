@@ -1059,6 +1059,7 @@ VnCharset * CVnCharsetLib::getVnCharset(int charsetIdx)
 			m_pUniCompCharset = new UnicodeCompCharset(UnicodeTable, UnicodeComposite);
 		return m_pUniCompCharset;
 	case CONV_CHARSET_UNIUTF8:
+  case CONV_CHARSET_XUTF8:
 		if (m_pUniUTF8 == NULL)
 			m_pUniUTF8 = new UnicodeUTF8Charset(UnicodeTable);
 		return m_pUniUTF8;

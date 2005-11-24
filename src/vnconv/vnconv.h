@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 --------------------------------------------------------------------------------*/
-//This library is shared among x-unikey and win-unikey modules
 //
 #ifndef __VN_CONVERT_H
 #define __VN_CONVERT_H
@@ -32,10 +31,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONV_CHARSET_UNI_CSTRING 6
 #define CONV_CHARSET_VNSTANDARD 7
 
-
 #define CONV_CHARSET_VIQR		10
 #define CONV_CHARSET_UTF8VIQR 11
-
+#define CONV_CHARSET_XUTF8  12
 
 #define CONV_CHARSET_TCVN3		20
 #define CONV_CHARSET_VPS		21
