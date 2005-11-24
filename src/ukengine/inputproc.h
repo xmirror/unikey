@@ -56,8 +56,12 @@ struct UkKeyEvent {
 class UkInputProcessor {
 
 public:
-  UkInputProcessor();
-  UkInputProcessor(int map[256]);
+  //don't do anything with constructor, because
+  //this object can be allocated in shared memory
+  //Use init method instead
+  //UkInputProcessor();
+  
+  void init();
 
   UkInputMethod getIM()
   {
@@ -84,6 +88,7 @@ protected:
 
 void UkResetKeyMap(UkKeyEvName keyMap[256]);
 VnLexiName IsoToVnLexi(int keyCode);
+void SetupInputClassifierTable();
 
 #endif
 

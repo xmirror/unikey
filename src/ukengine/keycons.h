@@ -35,18 +35,45 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CP_US_ANSI 1252
 
 typedef enum {UkTelex, UkVni, UkViqr, UkUsrIM} UkInputMethod;
-  typedef struct _UnikeyOptions UnikeyOptions;
+typedef struct _UnikeyOptions UnikeyOptions;
 
-  struct _UnikeyOptions
-  {
-    int freeMarking;
-    int toneNextToVowel;
-    int modernStyle;
-    int macroEnabled;
-    int useUnicodeClipboard;
-    int alwaysMacro;
-    int strictSpellCheck;
-    int useIME; //for Win32 only
-  };
+struct _UnikeyOptions
+{
+  int freeMarking;
+  int toneNextToVowel;
+  int modernStyle;
+  int macroEnabled;
+  int useUnicodeClipboard;
+  int alwaysMacro;
+  int strictSpellCheck;
+  int useIME; //for Win32 only
+};
+
+#define UKOPT_FLAG_ALL                   0xFFFFFFFF
+#define UKOPT_FLAG_FREE_STYLE            0x00000001
+//#define UKOPT_FLAG_MANUAL_TONE           0x00000002
+#define UKOPT_FLAG_MODERN                0x00000004
+#define UKOPT_FLAG_MACRO_ENABLED         0x00000008
+#define UKOPT_FLAG_USE_CLIPBOARD         0x00000010
+#define UKOPT_FLAG_ALWAYS_MACRO          0x00000020
+#define UKOPT_FLAG_STRICT_SPELL          0x00000040
+#define UKOPT_FLAG_USE_IME               0x00000080
+
+
+#define TOTAL_INPUT_METHOD 4
+#if defined(WIN32)
+#define TOTAL_CHARSET 17 //supported by Unikey keyboard driver
+typedef struct _UnikeySysInfo UnikeySysInfo;
+struct _UnikeySysInfo
+{
+  int switchKey;
+  HHOOK keyHook,mouseHook;
+  HWND hMainDlg;
+  UINT iconMsgId;
+  HICON hVietIcon,hEnIcon;
+  int unicodePlatform;
+  DWORD winMajorVersion, winMinorVersion;
+};
+#endif
 
 #endif

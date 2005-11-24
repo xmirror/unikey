@@ -28,32 +28,22 @@
 #include "inputproc.h"
 #include "mactab.h"
 
+//This is a shared object among processes, do not put any pointer in it
 struct UkSharedMem {
   //states
   int initialized;
   int vietKey;
   int iconShown;
-  int switchKey;
-
 
   UnikeyOptions options;
   UkInputProcessor input;
   int usrKeyMapLoaded;
   UkKeyEvName usrKeyMap[256];
   int charsetId;
-  VnCharset *pCharset;
-  int xutf8;
 
 #if defined(WIN32)
-  // system
-  HHOOK keyHook,mouseHook;
-  HWND hMainDlg;
-  UINT iconMsgId;
-  HICON hVietIcon,hEnIcon;
-  int unicodePlatform;
-  DWORD winMajorVersion, winMinorVersion;
+  UnikeySysInfo sysInfo;
 #endif
-
   CMacroTable macStore;
 };
 
@@ -146,12 +136,14 @@ protected:
   void markChange(int pos);
   void prepareBuffer(); //make sure we have a least 10 entries available
   int writeOutput(unsigned char *outBuf, int & outSize);
-  int getSeqLength(int first, int last);
+  //int getSeqLength(int first, int last);
+  int getSeqSteps(int first, int last);
   int getTonePosition(VowelSeq vs, bool terminated);
   void resetKeyBuf();
   int checkEscapeVIQR(UkKeyEvent & ev);
 
 };
 
+void SetupUnikeyEngine();
 
 #endif

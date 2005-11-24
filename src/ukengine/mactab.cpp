@@ -31,20 +31,11 @@
 using namespace std;
 
 //---------------------------------------------------------------
-CMacroTable::CMacroTable(int memSize)
+void CMacroTable::init()
 {
+  m_memSize = MACRO_MEM_SIZE;
   m_count = 0;
-  m_table = new MacroDef[MAX_MACRO_ITEMS];
-  m_macroMem = new char[MACRO_MEM_SIZE];
-  m_memSize = memSize;
   m_occupied = 0;
-}
-
-//---------------------------------------------------------------
-CMacroTable::~CMacroTable()
-{
-  delete [] m_macroMem;
-  delete [] m_table;
 }
 
 //---------------------------------------------------------------

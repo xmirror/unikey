@@ -47,17 +47,16 @@ typedef char TCHAR;
 
 class CMacroTable
 {
- public:
-  CMacroTable(int memSize = MACRO_MEM_SIZE);
+public:
+  void init();
   int loadFromFile(const TCHAR *fname);
   int writeToFile(const TCHAR *fname);
 
   const StdVnChar *lookup(StdVnChar *key);
-  ~CMacroTable();
 
- protected:
-  MacroDef *m_table;
-  char *m_macroMem;
+protected:
+  MacroDef m_table[MAX_MACRO_ITEMS];
+  char m_macroMem[MACRO_MEM_SIZE];
 
   int m_count;
   int m_memSize, m_occupied;

@@ -43,12 +43,12 @@ VnLexiName AZLexiLower[] =
 
 UkCharType UkcMap[256];
 
-bool UkInputProcessor::m_classInit = false;
+//bool UkInputProcessor::m_classInit = false;
+bool ClassifierTableInitialized = false;
 
 //-------------------------------------------
-void initClassifierTable()
+void SetupInputClassifierTable()
 {
-  //cout << "initClassifierTable\n"; //DEBUG
   unsigned int c;
   for (c=0; c<256; c++)
     UkcMap[c] = ukcReset;
@@ -74,11 +74,11 @@ void initClassifierTable()
 }
 
 //-------------------------------------------
-UkInputProcessor::UkInputProcessor()
+void UkInputProcessor::init()
 {
-  if (!m_classInit) {
-    initClassifierTable();
-    m_classInit = true;
+  if (!ClassifierTableInitialized) {
+    SetupInputClassifierTable();
+    ClassifierTableInitialized = true;
   }
   setIM(UkTelex);
 }

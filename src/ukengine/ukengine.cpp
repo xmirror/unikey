@@ -1237,8 +1237,8 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
     entry.vseq = lookupVSeq(canSym);
     
     if (ev.evType == vneNormal &&
-	((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
-	 (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
+	      ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
+	      (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
       return 0;
     markChange(m_current);
     return 1;
@@ -1524,24 +1524,19 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
   m_pOutSize = &outSize;
   m_outputWritten = false;
   m_pCtrl->input.keyCodeToEvent(keyCode, ev);
-  /*  
-  cout << "  event: " << ev.evType 
-       << " key: " << (unsigned char) ev.keyCode 
-       << " vnsym: " << ev.vnSym << endl;
-  */
-  int ret = (this->*UkKeyProcList[ev.evType])(ev);
 
+  int ret = (this->*UkKeyProcList[ev.evType])(ev);
   if (ret == 0) {
     backs = 0;
     outSize = 0;
-    //cout << "-> After process, m_current = " << m_current << endl; //DEBUG
     return 0;
   }
 
   backs = m_backs;
-  if (!m_outputWritten)
+  if (!m_outputWritten) {
     writeOutput(outBuf, outSize);
-  //cout << "--> After process, m_current = " << m_current << endl; //DEBUG
+  }
+
   return ret;
 }
 
@@ -1559,22 +1554,19 @@ int UkEngine::writeOutput(unsigned char *outBuf, int & outSize)
   int i, bytesWritten;
   int ret = 1;
   StringBOStream os(outBuf, outSize);
-
-  VnCharset *pCharset = m_pCtrl->pCharset;
+  VnCharset *pCharset = VnCharsetLibObj.getVnCharset(m_pCtrl->charsetId);
   pCharset->startOutput();
 
   for (i = m_changePos; i <= m_current; i++) {
     if (m_buffer[i].vnSym != vnl_nonVnChar) {
-      //cout << "output vnchar" << endl; //DEBUG
       //process vn symbol
       stdChar = m_buffer[i].vnSym + VnStdCharOffset;
       if (m_buffer[i].caps)
-	stdChar--;
+        stdChar--;
       if (m_buffer[i].tone != 0)
-	stdChar += m_buffer[i].tone * 2;
+        stdChar += m_buffer[i].tone * 2;
     }
     else {
-      //cout << "output non-vnchar" << endl; //DEBUG
       stdChar = m_buffer[i].keyCode;
     }
     
@@ -1587,23 +1579,24 @@ int UkEngine::writeOutput(unsigned char *outBuf, int & outSize)
 }
 
 //---------------------------------------------
-// Returns the length in bytes of the sequence
-// [first,last] in the buffer
+// Returns the number of backspaces needed to
+// go back from last to first
 //---------------------------------------------
-int UkEngine::getSeqLength(int first, int last)
+int UkEngine::getSeqSteps(int first, int last)
 {
   StdVnChar stdChar;
 
   if (last < first)
     return 0;
 
-  if (m_pCtrl->charsetId == CONV_CHARSET_UNIUTF8 && m_pCtrl->xutf8)
+  if (m_pCtrl->charsetId == CONV_CHARSET_XUTF8 || 
+      m_pCtrl->charsetId == CONV_CHARSET_UNICODE)
     return (last - first +  1);
 
   StringBOStream os(0, 0);
   int i, bytesWritten;
 
-  VnCharset *pCharset = m_pCtrl->pCharset;
+  VnCharset *pCharset = VnCharsetLibObj.getVnCharset(m_pCtrl->charsetId);
   pCharset->startOutput();
 
   for (i = first; i <= last; i++) {
@@ -1612,9 +1605,9 @@ int UkEngine::getSeqLength(int first, int last)
       //process vn symbol
       stdChar = m_buffer[i].vnSym + VnStdCharOffset;
       if (m_buffer[i].caps)
-	stdChar--;
+        stdChar--;
       if (m_buffer[i].tone != 0)
-	stdChar += m_buffer[i].tone*2;
+        stdChar += m_buffer[i].tone*2;
     }
     else {
       stdChar = m_buffer[i].keyCode;
@@ -1623,15 +1616,18 @@ int UkEngine::getSeqLength(int first, int last)
     if (stdChar != INVALID_STD_CHAR)
       pCharset->putChar(os, stdChar, bytesWritten);
   }
-
-  return os.getOutBytes();
+  
+  int len = os.getOutBytes();
+  if (m_pCtrl->charsetId == CONV_CHARSET_UNIDECOMPOSED)
+    len = len / 2;
+  return len;
 }
 
 //---------------------------------------------
 void UkEngine::markChange(int pos)
 {
   if (pos < m_changePos) {
-    m_backs += getSeqLength(pos, m_changePos-1);
+    m_backs += getSeqSteps(pos, m_changePos-1);
     m_changePos = pos;
   }
 }
@@ -1791,24 +1787,24 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
 
     if (i>=0) {
       if (m_buffer[i].vnSym != vnl_nonVnChar) {
-	key[0] = m_buffer[i].vnSym + VnStdCharOffset;
-	if (m_buffer[i].caps)
-	  key[0]--;
-	key[0] += m_buffer[i].tone*2;
+        key[0] = m_buffer[i].vnSym + VnStdCharOffset;
+        if (m_buffer[i].caps)
+          key[0]--;
+        key[0] += m_buffer[i].tone*2;
       }
       else
-	key[0] = m_buffer[i].keyCode;
+        key[0] = m_buffer[i].keyCode;
     }
 
     for (j=i+1; j<=m_current; j++) {
       if (m_buffer[j].vnSym != vnl_nonVnChar) {
-	key[j-i] = m_buffer[j].vnSym + VnStdCharOffset;
-	if (m_buffer[j].caps)
-	  key[j-i]--;
-	key[j-i] += m_buffer[j].tone*2;
+        key[j-i] = m_buffer[j].vnSym + VnStdCharOffset;
+        if (m_buffer[j].caps)
+          key[j-i]--;
+        key[j-i] += m_buffer[j].tone*2;
       }
       else
-	key[j-i] = m_buffer[j].keyCode;
+        key[j-i] = m_buffer[j].keyCode;
     }
     key[m_current-i+1] = 0;
 
@@ -1821,7 +1817,7 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
     if (i>=0) {
       pMacText = m_pCtrl->macStore.lookup(key);
       if (pMacText)
-	break;
+      break;
     }
     i--;
   }
@@ -1896,4 +1892,10 @@ int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSiz
 void UkEngine::setSingleMode()
 {
   m_singleMode = true;
+}
+
+//--------------------------------------------------
+void SetupUnikeyEngine()
+{
+  SetupInputClassifierTable();
 }
