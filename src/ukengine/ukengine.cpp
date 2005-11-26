@@ -1780,7 +1780,7 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
 
   i = m_current;
   while (i >= 0) {
-    while (i>=0 && m_buffer[i].form != vnw_empty && (m_current-i + 1) <= MAX_MACRO_KEY_LEN)
+    while (i>=0 && m_buffer[i].form != vnw_empty && (m_current-i + 1) < MAX_MACRO_KEY_LEN)
       i--;
     if (i>=0 && m_buffer[i].form != vnw_empty)
       return 0;
