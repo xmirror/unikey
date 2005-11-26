@@ -151,7 +151,7 @@ char *ConfigFile = NULL;
 char *MacroFile = NULL;
 
 static void reloadConfig();
-static int latinToUtf(char *dst, char *src, int inSize, int * pOutSize);
+static int latinToUtf(unsigned char *dst, unsigned char *src, int inSize, int * pOutSize);
 
 //------------------------------------------
 static void getBackspaceInfo()
@@ -851,7 +851,7 @@ static void reloadConfig(int useSyncProp)
 }
 
 //----------------------------------------------------
-int latinToUtf(char *dst, char *src, int inSize, int * pOutSize)
+int latinToUtf(unsigned char *dst, unsigned char *src, int inSize, int * pOutSize)
 {
   int i;
   int outLeft;
