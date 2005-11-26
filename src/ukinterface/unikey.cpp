@@ -1,4 +1,4 @@
-// -*- coding:unix; mode:c++ -*-
+// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 /*------------------------------------------------------------------------------
 UniKey - Open-source Vietnamese Keyboard
 Copyright (C) 1998-2004 Pham Kim Long
@@ -71,15 +71,9 @@ void UnikeySetCapsState(int shiftPressed, int CapsLockOn)
 //--------------------------------------------
 int UnikeySetOutputCharset(int charset)
 {
-  VnCharset *pCharset = VnCharsetLibObj.getVnCharset(charset);
-  if (pCharset) {
-    //cout << "Charset changed to: " << charset << endl; //DEBUG
-    pShMem->pCharset = pCharset;
     pShMem->charsetId = charset;
     MyKbEngine.reset();
     return 1;
-  }
-  return 0;
 }
 
 //--------------------------------------------
@@ -123,15 +117,18 @@ void UnikeyCheckKbCase(int *pShiftPressed, int *pCapsLockOn)
 //--------------------------------------------
 void UnikeySetup()
 {
-  pShMem = new UkSharedMem;
-  pShMem->vietKey = 1;
-  pShMem->usrKeyMapLoaded = 0;
-  MyKbEngine.setCtrlInfo(pShMem);
-  MyKbEngine.setCheckKbCaseFunc(&UnikeyCheckKbCase);
-  UnikeySetInputMethod(UkTelex);
-  UnikeySetOutputCharset(CONV_CHARSET_XUTF8);
-  pShMem->initialized = 1;
-  CreateDefaultUnikeyOptions(&pShMem->options);
+    SetupUnikeyEngine();
+    pShMem = new UkSharedMem;
+    pShMem->input.init();
+    pShMem->macStore.init();
+    pShMem->vietKey = 1;
+    pShMem->usrKeyMapLoaded = 0;
+    MyKbEngine.setCtrlInfo(pShMem);
+    MyKbEngine.setCheckKbCaseFunc(&UnikeyCheckKbCase);
+    UnikeySetInputMethod(UkTelex);
+    UnikeySetOutputCharset(CONV_CHARSET_XUTF8);
+    pShMem->initialized = 1;
+    CreateDefaultUnikeyOptions(&pShMem->options);
 }
 
 //--------------------------------------------

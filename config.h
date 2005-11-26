@@ -144,13 +144,13 @@
 #define PACKAGE_NAME "Unikey X Input Method"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Unikey X Input Method 1.0.3"
+#define PACKAGE_STRING "Unikey X Input Method 1.0.3b"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "x-unikey"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.0.3"
+#define PACKAGE_VERSION "1.0.3b"
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
@@ -167,7 +167,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.0.3"
+#define VERSION "1.0.3b"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
