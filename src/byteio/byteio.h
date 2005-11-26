@@ -1,3 +1,4 @@
+// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 #ifndef BYTE_IO_STREAM_H
 #define BYTE_IO_STREAM_H
 

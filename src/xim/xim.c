@@ -1,4 +1,4 @@
-// -*- coding:unix -*-
+// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 /******************************************************************
  
          Copyright 1994, 1995 by Sun Microsystems, Inc.

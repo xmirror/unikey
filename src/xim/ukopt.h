@@ -1,3 +1,4 @@
+// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 #ifndef __UNIKEY_OPT_H
 #define __UNIKEY_OPT_H
 

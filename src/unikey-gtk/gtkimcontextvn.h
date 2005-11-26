@@ -1,4 +1,4 @@
-// -*- coding:unix -*-
+// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 /* GTK Unikey Vietnamese Input Method
  * Copyright (C) 2004 Pham Kim Long
  * Contact:

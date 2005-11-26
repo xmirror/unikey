@@ -1,4 +1,4 @@
-// -*- coding:unix; mode:c++ -*-
+// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 /*------------------------------------------------------------------------------
 UniKey - Open-source Vietnamese Keyboard
 Copyright (C) 2000-2005 Pham Kim Long
