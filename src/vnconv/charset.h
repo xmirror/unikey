@@ -27,6 +27,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   #include <stdint.h>
 #endif
 
+#if defined(_WIN32)
+    #if defined(VNCHARLIB)
+        #define DllInterface   __declspec( dllexport )
+    #else
+        #define DllInterface   __declspec( dllimport )
+    #endif
+#else
+    #define DllInterface //not used
+    #define DllExport
+    #define DllImport
+#endif
+
 #include "vnconv.h"
 #include "byteio.h"
 #include "pattern.h"
@@ -72,7 +84,7 @@ const unsigned char PadStartQuote = '\"';
 const unsigned char PadEndQuote = '\"';
 const unsigned char PadEllipsis = '.';
 
-class VnCharset {
+class DllInterface VnCharset {
 public:
 	virtual void startInput() {};
 	virtual void startOutput() {};
@@ -244,7 +256,7 @@ public:
 
 
 //--------------------------------------------------
-class CVnCharsetLib {
+class DllInterface CVnCharsetLib {
 protected:
 	SingleByteCharset * m_sgCharsets[CONV_TOTAL_SINGLE_CHARSETS];
 	DoubleByteCharset * m_dbCharsets[CONV_TOTAL_DOUBLE_CHARSETS];
@@ -275,11 +287,11 @@ extern UKDWORD UnicodeComposite[TOTAL_VNCHARS];
 extern UKWORD WinCP1258[TOTAL_VNCHARS];
 extern UKWORD WinCP1258Pre[TOTAL_VNCHARS];
 
-extern CVnCharsetLib VnCharsetLibObj;
+extern DllInterface CVnCharsetLib VnCharsetLibObj;
 extern VnConvOptions VnConvGlobalOptions;
 extern int StdVnNoTone[TOTAL_VNCHARS];
 
-int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output);
+DllInterface int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output);
 
 StdVnChar StdVnToUpper(StdVnChar ch);
 StdVnChar StdVnToLower(StdVnChar ch);

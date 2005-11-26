@@ -23,9 +23,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __PATTERN_H
 #define __PATTERN_H
 
+#if defined(_WIN32)
+    #if defined(VNCHARLIB)
+        #define DllInterface   __declspec( dllexport )
+    #else
+        #define DllInterface   __declspec( dllimport )
+    #endif
+#else
+    #define DllInterface //not used
+#endif
+
 #define MAX_PATTERN_LEN 40
 
-class PatternState
+class DllInterface PatternState
 {
 public:
 	char *m_pattern;
@@ -37,7 +47,7 @@ public:
 	int foundAtNextChar(char ch); //get next input char, returns 1 if pattern is found.
 };
 
-class PatternList
+class DllInterface PatternList
 {
 public:
 	PatternState *m_patterns;

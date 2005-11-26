@@ -56,7 +56,8 @@ Steps to add a 2-byte charset:
 - Double-byte characters are represented as a word in which the
   low byte is base character, high byte is tone mark (if present).
 */
-
+extern CharsetNameId CharsetIdMap[];
+extern const int CharsetCount;
 
 CharsetNameId CharsetIdMap[] = {
 	{"BKHCM1",		CONV_CHARSET_BKHCM1},

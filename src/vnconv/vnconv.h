@@ -23,6 +23,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __VN_CONVERT_H
 #define __VN_CONVERT_H
 
+#if defined(_WIN32)
+    #if defined(VNCHARLIB)
+        #define DllInterface   __declspec( dllexport )
+    #else
+        #define DllInterface   __declspec( dllimport )
+    #endif
+    #define DllExport   __declspec( dllexport )
+    #define DllImport   __declspec( dllimport )
+#else
+    #define DllInterface //not used
+    #define DllExport
+    #define DllImport
+#endif
+
 #define CONV_CHARSET_UNICODE	0
 #define CONV_CHARSET_UNIUTF8    1
 #define CONV_CHARSET_UNIREF     2  //&#D;
@@ -60,16 +74,16 @@ typedef unsigned char UKBYTE;
 #if defined(__cplusplus)
 extern "C" {
 #endif
-  int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
+DllInterface  int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
 		int * pInLen, int * pMaxOutLen);
 
-int VnFileConvert(int inCharset, int outCharset, const char *inFile, const char *outFile);
+DllInterface  int VnFileConvert(int inCharset, int outCharset, const char *inFile, const char *outFile);
 
 #if defined(__cplusplus)
 }
 #endif
 
-const char * VnConvErrMsg(int errCode);
+DllInterface const char * VnConvErrMsg(int errCode);
 
 enum VnConvError {
 	VNCONV_NO_ERROR,
@@ -99,12 +113,8 @@ struct _VnConvOptions {
 	int removeTone;
 };
 
-void VnConvSetOptions(VnConvOptions *pOptions);
-void VnConvGetOptions(VnConvOptions *pOptions);
-void VnConvResetOptions(VnConvOptions *pOptions);
-
-extern CharsetNameId CharsetIdMap[];
-extern const int CharsetCount;
-
+DllInterface void VnConvSetOptions(VnConvOptions *pOptions);
+DllInterface void VnConvGetOptions(VnConvOptions *pOptions);
+DllInterface void VnConvResetOptions(VnConvOptions *pOptions);
 
 #endif

@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int vnFileStreamConvert(int inCharset, int outCharset, FILE * inf, FILE *outf);
 
-int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output)
+DllExport int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output)
 {
 	StdVnChar stdChar;
 	int bytesRead, bytesWritten;
@@ -77,7 +77,7 @@ int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOu
 //----------------------------------------------
 //int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, int & inLen, int & maxOutLen)
 
-int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
+DllExport int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output, 
 	      int * pInLen, int * pMaxOutLen)
 {
 	int inLen, maxOutLen;
@@ -112,7 +112,7 @@ int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *output,
 //     0: successful
 //     errCode: if failed
 //---------------------------------------
-int VnFileConvert(int inCharset, int outCharset, const char *inFile, const char *outFile)
+DllExport int VnFileConvert(int inCharset, int outCharset, const char *inFile, const char *outFile)
 {
 	FILE *inf = NULL;
 	FILE *outf = NULL;

@@ -38,7 +38,7 @@ int HiVowel['Z'-'A'+1];
 SingleByteCharset *SgCharsets[CONV_TOTAL_SINGLE_CHARSETS];
 DoubleByteCharset *DbCharsets[CONV_TOTAL_DOUBLE_CHARSETS];
 
-CVnCharsetLib VnCharsetLibObj;
+DllExport CVnCharsetLib VnCharsetLibObj;
 
 //-------------------------------------------
 int VnInternalCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead)
@@ -1125,19 +1125,19 @@ VnCharset * CVnCharsetLib::getVnCharset(int charsetIdx)
 
 
 //-------------------------------------------------
-void VnConvSetOptions(VnConvOptions *pOptions)
+DllExport void VnConvSetOptions(VnConvOptions *pOptions)
 {
 	VnCharsetLibObj.m_options = *pOptions;
 }
 
 //-------------------------------------------------
-void VnConvGetOptions(VnConvOptions *pOptions)
+DllExport void VnConvGetOptions(VnConvOptions *pOptions)
 {
 	*pOptions = VnCharsetLibObj.m_options;
 }
 
 //-------------------------------------------------
-void VnConvResetOptions(VnConvOptions *pOptions)
+DllExport void VnConvResetOptions(VnConvOptions *pOptions)
 {
 	pOptions->viqrEsc = 1;
 	pOptions->viqrMixed = 0;
