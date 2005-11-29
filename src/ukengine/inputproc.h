@@ -52,6 +52,11 @@ struct UkKeyEvent {
   int tone; //meaningful only when this is a vowel
 };
 
+struct UkKeyMapping {
+    unsigned char key;
+    UkKeyEvName action;
+};
+
 ///////////////////////////////////////////
 class UkInputProcessor {
 
@@ -71,6 +76,8 @@ public:
   void keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev);
   int setIM(UkInputMethod im);
   int setIM(UkKeyEvName map[256]);
+  void getKeyMap(UkKeyEvName map[256]);
+
   UkCharType getCharType(unsigned int keyCode);
 
 protected:
@@ -79,10 +86,7 @@ protected:
   UkInputMethod m_im;
   UkKeyEvName m_keyMap[256];
 
-  void buildTelex();
-  void buildVni();
-  void buildViqr();
-  //  void resetKeyMap();
+  void useBuiltIn(UkKeyMapping *map);
 
 };
 

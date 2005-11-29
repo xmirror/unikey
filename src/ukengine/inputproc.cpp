@@ -43,8 +43,94 @@ VnLexiName AZLexiLower[] =
 
 UkCharType UkcMap[256];
 
-//bool UkInputProcessor::m_classInit = false;
 bool ClassifierTableInitialized = false;
+
+UkKeyMapping TelexMethodMapping[] = {
+    {'z', vneTone0},
+    {'Z', vneTone0},
+    {'s', vneTone1},
+    {'S', vneTone1},
+    {'f', vneTone2},
+    {'F', vneTone2},
+    {'r', vneTone3},
+    {'R', vneTone3},
+    {'x', vneTone4},
+    {'X', vneTone4},
+    {'j', vneTone5},
+    {'J', vneTone5},
+    {'w', vne_telex_w},
+    {'W', vne_telex_w},
+    {'a', vneRoof_a},
+    {'A', vneRoof_a},
+    {'e', vneRoof_e},
+    {'E', vneRoof_e},
+    {'o', vneRoof_o},
+    {'O', vneRoof_o},
+    {'d', vneDd},
+    {'D', vneDd},
+    {'[', (UkKeyEvName)(vneCount + vnl_uh)},
+    {']', (UkKeyEvName)(vneCount + vnl_oh)},
+    {'{', (UkKeyEvName)(vneCount + vnl_Uh)},
+    {'}', (UkKeyEvName)(vneCount + vnl_Oh)},
+    {0, vneNormal}
+};
+
+UkKeyMapping VniMethodMapping[] = {
+    {'0', vneTone0},
+    {'1', vneTone1},
+    {'2', vneTone2},
+    {'3', vneTone3},
+    {'4', vneTone4},
+    {'5', vneTone5},
+    {'6', vneRoofAll},
+    {'7', vneHook_uo},
+    {'8', vneBowl},
+    {'9', vneDd},
+    {0, vneNormal}
+};
+
+UkKeyMapping VIQRMethodMapping[] = {
+    {'0', vneTone0},
+    {'\'', vneTone1},
+    {'`', vneTone2},
+    {'?', vneTone3},
+    {'~', vneTone4},
+    {'.', vneTone5},
+    {'^', vneRoofAll},
+    {'+', vneHook_uo},
+    {'*', vneHook_uo},
+    {'(', vneBowl},
+    {'d', vneDd},
+    {0, vneNormal}
+};
+
+UkKeyMapping MsViMethodMapping[] = {
+    {'1', (UkKeyEvName)(vneCount + vnl_ab)},
+    {'!', (UkKeyEvName)(vneCount + vnl_Ab)},
+    {'2', (UkKeyEvName)(vneCount + vnl_ar)},
+    {'@', (UkKeyEvName)(vneCount + vnl_Ar)},
+    {'3', (UkKeyEvName)(vneCount + vnl_er)},
+    {'#', (UkKeyEvName)(vneCount + vnl_Er)},
+    {'4', (UkKeyEvName)(vneCount + vnl_or)},
+    {'$', (UkKeyEvName)(vneCount + vnl_Or)},
+    {'5', vneTone2},
+    {'%', vneTone2},
+    {'6', vneTone3},
+    {'^', vneTone3},
+    {'7', vneTone4},
+    {'&', vneTone4},
+    {'8', vneTone1},
+    {'*', vneTone1},
+    {'9', vneTone5},
+    {'(', vneTone5},
+    {'0', (UkKeyEvName)(vneCount + vnl_dd)},
+    {')', (UkKeyEvName)(vneCount + vnl_DD)},
+    {'[', (UkKeyEvName)(vneCount + vnl_uh)},
+    {']', (UkKeyEvName)(vneCount + vnl_oh)},
+    {'{', (UkKeyEvName)(vneCount + vnl_Uh)},
+    {'}', (UkKeyEvName)(vneCount + vnl_Oh)},
+    {0, vneNormal}
+};
 
 //-------------------------------------------
 void SetupInputClassifierTable()
@@ -86,22 +172,25 @@ void UkInputProcessor::init()
 //-------------------------------------------
 int UkInputProcessor::setIM(UkInputMethod im)
 {
-  m_im = im;
-  switch (im) {
-  case UkTelex:
-    buildTelex();
-    break;
-  case UkVni:
-    buildVni();
-    break;
-  case UkViqr:
-    buildViqr();
-    break;
-  default:
-    m_im = UkTelex;
-    buildTelex();
-  }
-  return 1;
+    m_im = im;
+    switch (im) {
+        case UkTelex:
+            useBuiltIn(TelexMethodMapping);
+            break;
+        case UkVni:
+            useBuiltIn(VniMethodMapping);
+            break;
+        case UkViqr:
+            useBuiltIn(VIQRMethodMapping);
+            break;
+        case UkMsVi:
+            useBuiltIn(MsViMethodMapping);
+            break;
+        default:
+            m_im = UkTelex;
+            useBuiltIn(TelexMethodMapping);
+    }
+    return 1;
 }
 
 //-------------------------------------------
@@ -124,67 +213,12 @@ void UkResetKeyMap(UkKeyEvName keyMap[256])
 }
 
 //-------------------------------------------
-void UkInputProcessor::buildTelex()
+void UkInputProcessor::useBuiltIn(UkKeyMapping *map)
 {
-  //cout << "Building TELEX mode\n"; //DEBUG
-  UkResetKeyMap(m_keyMap);
-
-  m_keyMap[(unsigned char)'z'] = m_keyMap[(unsigned char)'Z'] = vneTone0;
-  m_keyMap[(unsigned char)'s'] = m_keyMap[(unsigned char)'S'] = vneTone1;
-  m_keyMap[(unsigned char)'f'] = m_keyMap[(unsigned char)'F'] = vneTone2;
-  m_keyMap[(unsigned char)'r'] = m_keyMap[(unsigned char)'R'] = vneTone3;
-  m_keyMap[(unsigned char)'x'] = m_keyMap[(unsigned char)'X'] = vneTone4;
-  m_keyMap[(unsigned char)'j'] = m_keyMap[(unsigned char)'J'] = vneTone5;
-
-  m_keyMap[(unsigned char)'w'] = m_keyMap[(unsigned char)'W'] = vne_telex_w;
-  m_keyMap[(unsigned char)'a'] = m_keyMap[(unsigned char)'A'] = vneRoof_a;
-  m_keyMap[(unsigned char)'e'] = m_keyMap[(unsigned char)'E'] = vneRoof_e;
-  m_keyMap[(unsigned char)'o'] = m_keyMap[(unsigned char)'O'] = vneRoof_o;
-  m_keyMap[(unsigned char)'d'] = m_keyMap[(unsigned char)'D'] = vneDd;
-
-  m_keyMap[(unsigned char)'['] = (UkKeyEvName)(vneCount + vnl_uh);
-  m_keyMap[(unsigned char)']'] = (UkKeyEvName)(vneCount + vnl_oh);
-  m_keyMap[(unsigned char)'{'] = (UkKeyEvName)(vneCount + vnl_Uh);
-  m_keyMap[(unsigned char)'}'] = (UkKeyEvName)(vneCount + vnl_Oh);
-}
-
-//-------------------------------------------
-void UkInputProcessor::buildVni()
-{
-  UkResetKeyMap(m_keyMap);
-
-  m_keyMap[(unsigned char)'0'] = vneTone0;
-  m_keyMap[(unsigned char)'1'] = vneTone1;
-  m_keyMap[(unsigned char)'2'] = vneTone2;
-  m_keyMap[(unsigned char)'3'] = vneTone3;
-  m_keyMap[(unsigned char)'4'] = vneTone4;
-  m_keyMap[(unsigned char)'5'] = vneTone5;
-
-  m_keyMap[(unsigned char)'6'] = vneRoofAll;
-  m_keyMap[(unsigned char)'7'] = vneHook_uo;
-  m_keyMap[(unsigned char)'8'] = vneBowl;
-  m_keyMap[(unsigned char)'9'] = vneDd;
-
-}
-
-//-------------------------------------------
-void UkInputProcessor::buildViqr()
-{
-  UkResetKeyMap(m_keyMap);
-
-  m_keyMap[(unsigned char)'0'] = vneTone0;
-  m_keyMap[(unsigned char)'\''] = vneTone1;
-  m_keyMap[(unsigned char)'`'] = vneTone2;
-  m_keyMap[(unsigned char)'?'] = vneTone3;
-  m_keyMap[(unsigned char)'~'] = vneTone4;
-  m_keyMap[(unsigned char)'.'] = vneTone5;
-
-  m_keyMap[(unsigned char)'^'] = vneRoofAll;
-  m_keyMap[(unsigned char)'+'] = vneHook_uo;
-  m_keyMap[(unsigned char)'*'] = vneHook_uo;
-  m_keyMap[(unsigned char)'('] = vneBowl;
-  m_keyMap[(unsigned char)'d'] = vneDd;
-
+    UkResetKeyMap(m_keyMap);
+    for (int i=0; map[i].key; i++) {
+        m_keyMap[map[i].key] = map[i].action;
+    }
 }
 
 //-------------------------------------------
@@ -224,6 +258,14 @@ UkCharType UkInputProcessor::getCharType(unsigned int keyCode)
   if (keyCode > 255)
     return (IsoToVnLexi(keyCode) == vnl_nonVnChar) ? ukcNonVn : ukcVn;
   return UkcMap[keyCode];
+}
+
+//-------------------------------------------
+void UkInputProcessor::getKeyMap(UkKeyEvName map[256])
+{
+  int i;
+  for (i=0; i<256; i++)
+    map[i] = m_keyMap[i];
 }
 
 //-------------------------------------------

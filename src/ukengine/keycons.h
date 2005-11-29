@@ -34,13 +34,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define CP_US_ANSI 1252
 
-typedef enum {UkTelex, UkVni, UkViqr, UkUsrIM} UkInputMethod;
+typedef enum {UkTelex, UkVni, UkViqr, UkMsVi, UkUsrIM} UkInputMethod;
 typedef struct _UnikeyOptions UnikeyOptions;
 
 struct _UnikeyOptions
 {
   int freeMarking;
-  int toneNextToVowel;
   int modernStyle;
   int macroEnabled;
   int useUnicodeClipboard;
@@ -59,10 +58,7 @@ struct _UnikeyOptions
 #define UKOPT_FLAG_STRICT_SPELL          0x00000040
 #define UKOPT_FLAG_USE_IME               0x00000080
 
-
-#define TOTAL_INPUT_METHOD 4
 #if defined(WIN32)
-#define TOTAL_CHARSET 17 //supported by Unikey keyboard driver
 typedef struct _UnikeySysInfo UnikeySysInfo;
 struct _UnikeySysInfo
 {
