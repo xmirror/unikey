@@ -80,7 +80,6 @@ int UnikeySetOutputCharset(int charset)
 void UnikeySetOptions(UnikeyOptions *pOpt)
 {
   pShMem->options.freeMarking = pOpt->freeMarking;
-  pShMem->options.toneNextToVowel = pOpt->toneNextToVowel;
   pShMem->options.modernStyle = pOpt->modernStyle;
   pShMem->options.macroEnabled = pOpt->macroEnabled;
   pShMem->options.useUnicodeClipboard = pOpt->useUnicodeClipboard;
@@ -98,7 +97,6 @@ void UnikeyGetOptions(UnikeyOptions *pOpt)
 void CreateDefaultUnikeyOptions(UnikeyOptions *pOpt)
 {
   pOpt->freeMarking = 1;
-  pOpt->toneNextToVowel = 0;
   pOpt->modernStyle = 0;
   pOpt->macroEnabled = 0;
   pOpt->useUnicodeClipboard = 0;
