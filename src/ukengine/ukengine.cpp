@@ -1766,99 +1766,98 @@ void UkEngine::prepareBuffer()
 //----------------------------------------------------
 int UkEngine::macroMatch(UkKeyEvent & ev)
 {
-  int capsLockOn = 0;
-  int shiftPressed = 0;
-  if (m_keyCheckFunc)
-    m_keyCheckFunc(&shiftPressed, &capsLockOn);
+    int capsLockOn = 0;
+    int shiftPressed = 0;
+    if (m_keyCheckFunc)
+        m_keyCheckFunc(&shiftPressed, &capsLockOn);
 
-  if (shiftPressed && (ev.keyCode ==' ' || ev.keyCode == ENTER_CHAR))
-    return 0;
+    if (shiftPressed && (ev.keyCode ==' ' || ev.keyCode == ENTER_CHAR))
+        return 0;
 
-  const StdVnChar *pMacText = NULL;
-  StdVnChar key[MAX_MACRO_KEY_LEN+1];
-  int i, j;
+    const StdVnChar *pMacText = NULL;
+    StdVnChar key[MAX_MACRO_KEY_LEN+1];
+    int i, j;
 
-  i = m_current;
-  while (i >= 0) {
-    while (i>=0 && m_buffer[i].form != vnw_empty && (m_current-i + 1) < MAX_MACRO_KEY_LEN)
-      i--;
-    if (i>=0 && m_buffer[i].form != vnw_empty)
-      return 0;
+    i = m_current;
+    while (i >= 0 && (m_current-i + 1) < MAX_MACRO_KEY_LEN) {
+        while (i>=0 && m_buffer[i].form != vnw_empty && (m_current-i + 1) < MAX_MACRO_KEY_LEN)
+            i--;
+        if (i>=0 && m_buffer[i].form != vnw_empty)
+            return 0;
 
-    if (i>=0) {
-      if (m_buffer[i].vnSym != vnl_nonVnChar) {
-        key[0] = m_buffer[i].vnSym + VnStdCharOffset;
-        if (m_buffer[i].caps)
-          key[0]--;
-        key[0] += m_buffer[i].tone*2;
-      }
-      else
-        key[0] = m_buffer[i].keyCode;
+        if (i>=0) {
+            if (m_buffer[i].vnSym != vnl_nonVnChar) {
+                key[0] = m_buffer[i].vnSym + VnStdCharOffset;
+                if (m_buffer[i].caps)
+                    key[0]--;
+                key[0] += m_buffer[i].tone*2;
+            }
+            else
+                key[0] = m_buffer[i].keyCode;
+        }
+
+        for (j=i+1; j<=m_current; j++) {
+            if (m_buffer[j].vnSym != vnl_nonVnChar) {
+                key[j-i] = m_buffer[j].vnSym + VnStdCharOffset;
+                if (m_buffer[j].caps)
+                    key[j-i]--;
+                key[j-i] += m_buffer[j].tone*2;
+            }
+            else
+                key[j-i] = m_buffer[j].keyCode;
+        }
+        key[m_current-i+1] = 0;
+        //search macro table
+        pMacText = m_pCtrl->macStore.lookup(key+1);
+        if (pMacText) {
+            i++; //mark the position where change is needed
+            break;
+        }
+        if (i>=0) {
+            pMacText = m_pCtrl->macStore.lookup(key);
+            if (pMacText)
+                break;
+        }
+        i--;
     }
 
-    for (j=i+1; j<=m_current; j++) {
-      if (m_buffer[j].vnSym != vnl_nonVnChar) {
-        key[j-i] = m_buffer[j].vnSym + VnStdCharOffset;
-        if (m_buffer[j].caps)
-          key[j-i]--;
-        key[j-i] += m_buffer[j].tone*2;
-      }
-      else
-        key[j-i] = m_buffer[j].keyCode;
+    if (!pMacText) {
+        return 0;
     }
-    key[m_current-i+1] = 0;
 
-    //search macro table
-    pMacText = m_pCtrl->macStore.lookup(key+1);
-    if (pMacText) {
-      i++; //mark the position where change is needed
-      break;
-    }
-    if (i>=0) {
-      pMacText = m_pCtrl->macStore.lookup(key);
-      if (pMacText)
-      break;
-    }
-    i--;
-  }
+    markChange(i);
+    int inLen = 0;
+    while (pMacText[inLen] != 0)
+        inLen++;
+    inLen = inLen * sizeof(StdVnChar);
 
-  if (!pMacText) {
-    return 0;
-  }
-
-  markChange(i);
-  int inLen = 0;
-  while (pMacText[inLen] != 0)
-    inLen++;
-  inLen = inLen * sizeof(StdVnChar);
-
-  int outSize;
-  int maxOutSize = *m_pOutSize;
-  VnConvert(CONV_CHARSET_VNSTANDARD, m_pCtrl->charsetId,
-	    (UKBYTE *) pMacText, (UKBYTE *)m_pOutBuf,
-	    &inLen, &maxOutSize);
-  outSize = maxOutSize;
-
-  //write the last input character
-  StdVnChar vnChar;
-  if (outSize < *m_pOutSize) {
-    maxOutSize = *m_pOutSize - outSize;
-    if (ev.vnSym != vnl_nonVnChar)
-      vnChar = ev.vnSym + VnStdCharOffset;
-    else
-      vnChar = ev.keyCode;
-    inLen = sizeof(StdVnChar);
+    int outSize;
+    int maxOutSize = *m_pOutSize;
     VnConvert(CONV_CHARSET_VNSTANDARD, m_pCtrl->charsetId,
-	      (UKBYTE *) &vnChar, ((UKBYTE *)m_pOutBuf) + outSize,
-	      &inLen, &maxOutSize);
-    outSize += maxOutSize;
-  }
-  int backs = m_backs; //store m_backs before calling reset
-  reset();
-  m_outputWritten = true;
-  m_backs = backs;
-  *m_pOutSize = outSize;
-  return 1;
+	        (UKBYTE *) pMacText, (UKBYTE *)m_pOutBuf,
+	        &inLen, &maxOutSize);
+    outSize = maxOutSize;
+
+    //write the last input character
+    StdVnChar vnChar;
+    if (outSize < *m_pOutSize) {
+        maxOutSize = *m_pOutSize - outSize;
+        if (ev.vnSym != vnl_nonVnChar)
+            vnChar = ev.vnSym + VnStdCharOffset;
+        else
+            vnChar = ev.keyCode;
+        inLen = sizeof(StdVnChar);
+        VnConvert(CONV_CHARSET_VNSTANDARD, m_pCtrl->charsetId,
+	            (UKBYTE *) &vnChar, ((UKBYTE *)m_pOutBuf) + outSize,
+	            &inLen, &maxOutSize);
+        outSize += maxOutSize;
+    }
+    int backs = m_backs; //store m_backs before calling reset
+    reset();
+    m_outputWritten = true;
+    m_backs = backs;
+    *m_pOutSize = outSize;
+    return 1;
 }
 
 
