@@ -1,3 +1,9 @@
+1.12.2005: 1.0.3b
+  + unified with Win-Unikey.
+  + Fixed some bugs found during porting new engine to Win-Unikey:
+	+ macro matching causes the engine to crash (array out of range).
+  + Removed some unused options
+
 1.10.2005:
   + Fixed bug in GTK module with latest Evolution 
    (not possible to type chars with 2 decorators: a^', o+`...)
