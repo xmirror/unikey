@@ -1375,130 +1375,152 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
 {
   //cout << "appendConsonannt" << endl; //DEBUG
 
-  m_current++;
-  WordInfo & entry = m_buffer[m_current];
+    m_current++;
+    WordInfo & entry = m_buffer[m_current];
 
-  VnLexiName lowerSym = vnToLower(ev.vnSym);
+    VnLexiName lowerSym = vnToLower(ev.vnSym);
 
-  entry.vnSym = lowerSym;
-  entry.caps = (lowerSym != ev.vnSym);
-  entry.keyCode = ev.keyCode;
-  entry.tone = 0;
+    entry.vnSym = lowerSym;
+    entry.caps = (lowerSym != ev.vnSym);
+    entry.keyCode = ev.keyCode;
+    entry.tone = 0;
 
-  if (m_current == 0) {
-    entry.form = vnw_c;
-    entry.c1Offset = 0;
-    entry.c2Offset = -1;
-    entry.vOffset = -1;
-    entry.cseq = lookupCSeq(lowerSym);
-    return 0;
-  }
-
-  ConSeq cs, newCs;
-  VowelSeq vs;
-
-  WordInfo & prev = m_buffer[m_current-1];
-
-  switch (prev.form) {
-  case vnw_nonVn:
-    entry.form = vnw_nonVn;
-    entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-    return 0;
-  case vnw_empty:
-    entry.form = vnw_c;
-    entry.c1Offset = 0;
-    entry.c2Offset = -1;
-    entry.vOffset = -1;
-    entry.cseq = lookupCSeq(lowerSym);
-    return 0;
-  case vnw_v:
-  case vnw_cv:
-    vs = prev.vseq;
-    newCs = lookupCSeq(lowerSym);
-    if (CSeqList[newCs].suffix && isValidVC(vs, newCs, &m_pCtrl->options)) {
-
-      if (prev.form == vnw_v) {
-	entry.form = vnw_vc;
-	entry.c1Offset = -1;
-	entry.c2Offset = 0;
-	entry.vOffset = 1;
-      }
-      else { //prev == vnw_cv
-	entry.form = vnw_cvc;
-	entry.c1Offset = prev.c1Offset + 1;
-	entry.c2Offset = 0;
-	entry.vOffset = 1;
-      }
-      entry.cseq = newCs;
-
-      //reposition tone if needed
-      int oldIdx = (m_current-1) - (VSeqList[vs].len - 1) + getTonePosition(vs, true);
-      if (m_buffer[oldIdx].tone != 0) {
-	int newIdx = (m_current-1) - (VSeqList[vs].len - 1) + getTonePosition(vs, false);
-	if (newIdx != oldIdx) {
-	  markChange(newIdx);
-	  m_buffer[newIdx].tone = m_buffer[oldIdx].tone;
-	  markChange(oldIdx);
-	  m_buffer[oldIdx].tone = 0;
-	  return 1;
-	}
-      }
-    }
-    else {
-      entry.form = vnw_nonVn;
-      entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-    }
-    return 0;
-  case vnw_c:
-  case vnw_vc:
-  case vnw_cvc:
-    cs = prev.cseq;
-    if (CSeqList[cs].len == 3)
-      newCs = cs_nil;
-    else if (CSeqList[cs].len == 2)
-      newCs = lookupCSeq(CSeqList[cs].c[0], CSeqList[cs].c[1], lowerSym);
-    else
-      newCs = lookupCSeq(CSeqList[cs].c[0], lowerSym);
-
-    if (newCs != cs_nil && (prev.form == vnw_vc || prev.form == vnw_cvc)) {
-      if (CSeqList[newCs].suffix) {
-	//check VC combination
-	int vIdx = (m_current - 1) - prev.vOffset;
-	vs = m_buffer[vIdx].vseq;
-	if (!isValidVC(vs, newCs, &m_pCtrl->options))
-	  newCs = cs_nil;
-      }
-      else newCs = cs_nil;
+    if (m_current == 0) {
+        entry.form = vnw_c;
+        entry.c1Offset = 0;
+        entry.c2Offset = -1;
+        entry.vOffset = -1;
+        entry.cseq = lookupCSeq(lowerSym);
+        return 0;
     }
 
-    if (newCs == cs_nil) {
-      entry.form = vnw_nonVn;
-      entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-    }
-    else {
-      if (prev.form == vnw_c) {
-	entry.form = vnw_c;
-	entry.c1Offset = 0;
-	entry.c2Offset = -1;
-	entry.vOffset = -1;
-      }
-      else if (prev.form == vnw_vc) {
-	entry.form = vnw_vc;
-	entry.c1Offset = -1;
-	entry.c2Offset = 0;
-	entry.vOffset = prev.vOffset + 1;
-      }
-      else { //vnw_cvc
-	entry.form = vnw_cvc;
-	entry.c1Offset = prev.c1Offset + 1;
-	entry.c2Offset = 0;
-	entry.vOffset = prev.vOffset + 1;
-      }
-      entry.cseq = newCs;
+    ConSeq cs, newCs;
+    VowelSeq vs;
+    bool isValid;
+
+    WordInfo & prev = m_buffer[m_current-1];
+
+    switch (prev.form) {
+    case vnw_nonVn:
+        entry.form = vnw_nonVn;
+        entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+        return 0;
+    case vnw_empty:
+        entry.form = vnw_c;
+        entry.c1Offset = 0;
+        entry.c2Offset = -1;
+        entry.vOffset = -1;
+        entry.cseq = lookupCSeq(lowerSym);
+        return 0;
+    case vnw_v:
+    case vnw_cv:
+        vs = prev.vseq;
+        newCs = lookupCSeq(lowerSym);
+        isValid = false;
+        if (CSeqList[newCs].suffix && isValidVC(vs, newCs, &m_pCtrl->options))
+            isValid = true;
+        else {
+            // check for exception: [quyn] is considered valid, because it can become [quynh]
+            if (prev.form == vnw_cv &&
+                m_buffer[m_current-2].cseq == cs_qu &&
+                vs == vs_y && newCs == cs_n)
+                isValid = true;
+        }
+        if (isValid) {
+            if (prev.form == vnw_v) {
+                entry.form = vnw_vc;
+                entry.c1Offset = -1;
+                entry.c2Offset = 0;
+                entry.vOffset = 1;
+            }
+            else { //prev == vnw_cv
+                entry.form = vnw_cvc;
+                entry.c1Offset = prev.c1Offset + 1;
+                entry.c2Offset = 0;
+                entry.vOffset = 1;
+            }
+            entry.cseq = newCs;
+
+            //reposition tone if needed
+            int oldIdx = (m_current-1) - (VSeqList[vs].len - 1) + getTonePosition(vs, true);
+            if (m_buffer[oldIdx].tone != 0) {
+                int newIdx = (m_current-1) - (VSeqList[vs].len - 1) + getTonePosition(vs, false);
+                if (newIdx != oldIdx) {
+                    markChange(newIdx);
+                    m_buffer[newIdx].tone = m_buffer[oldIdx].tone;
+                    markChange(oldIdx);
+                    m_buffer[oldIdx].tone = 0;
+                    return 1;
+                }
+            }
+        }
+        else {
+            entry.form = vnw_nonVn;
+            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+        }
+        return 0;
+    case vnw_c:
+    case vnw_vc:
+    case vnw_cvc:
+        cs = prev.cseq;
+        if (CSeqList[cs].len == 3)
+            newCs = cs_nil;
+        else if (CSeqList[cs].len == 2)
+            newCs = lookupCSeq(CSeqList[cs].c[0], CSeqList[cs].c[1], lowerSym);
+        else
+            newCs = lookupCSeq(CSeqList[cs].c[0], lowerSym);
+        
+        if (newCs != cs_nil && (prev.form == vnw_vc || prev.form == vnw_cvc)) {
+            if (CSeqList[newCs].suffix) {
+                //check VC combination
+                int vIdx = (m_current - 1) - prev.vOffset;
+                vs = m_buffer[vIdx].vseq;
+
+                isValid = false;
+                if (isValidVC(vs, newCs, &m_pCtrl->options))
+                    isValid = true;
+                else {
+                    if (newCs == cs_nh &&
+                        prev.form == vnw_cvc &&
+                        m_buffer[m_current-2].vseq == vs_y &&
+                        m_buffer[m_current-3].cseq == cs_qu)
+                        isValid = true;
+                }
+
+                if (!isValid)
+                    newCs = cs_nil;
+            }
+            else newCs = cs_nil;
+        }
+
+        if (newCs == cs_nil) {
+            entry.form = vnw_nonVn;
+            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+        }
+        else {
+            if (prev.form == vnw_c) {
+                entry.form = vnw_c;
+                entry.c1Offset = 0;
+                entry.c2Offset = -1;
+                entry.vOffset = -1;
+            }
+            else if (prev.form == vnw_vc) {
+                entry.form = vnw_vc;
+                entry.c1Offset = -1;
+                entry.c2Offset = 0;
+                entry.vOffset = prev.vOffset + 1;
+            }
+            else { //vnw_cvc
+                entry.form = vnw_cvc;
+                entry.c1Offset = prev.c1Offset + 1;
+                entry.c2Offset = 0;
+                entry.vOffset = prev.vOffset + 1;
+            }
+            entry.cseq = newCs;
+        }
+        return 0;
     }
     return 0;
-  }
-  return 0;
 }
 
 //----------------------------------------------------------
