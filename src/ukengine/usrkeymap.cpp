@@ -178,7 +178,7 @@ int UkLoadKeyMap(const char *fileName, UkKeyEvName keyMap[256])
       }
     }
   }
-  delete buf;
+  delete [] buf;
   fclose(f);
   return 1;
 }
