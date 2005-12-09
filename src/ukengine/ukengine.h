@@ -1,4 +1,4 @@
-// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+// -*- mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 /* Unikey Vietnamese Input Method
  * Copyright (C) 2000-2005 Pham Kim Long
  * Contact:
@@ -30,21 +30,21 @@
 
 //This is a shared object among processes, do not put any pointer in it
 struct UkSharedMem {
-  //states
-  int initialized;
-  int vietKey;
-  int iconShown;
+    //states
+    int initialized;
+    int vietKey;
+    int iconShown;
 
-  UnikeyOptions options;
-  UkInputProcessor input;
-  int usrKeyMapLoaded;
-  UkKeyEvName usrKeyMap[256];
-  int charsetId;
+    UnikeyOptions options;
+    UkInputProcessor input;
+    int usrKeyMapLoaded;
+    UkKeyEvName usrKeyMap[256];
+    int charsetId;
 
 #if defined(WIN32)
-  UnikeySysInfo sysInfo;
+    UnikeySysInfo sysInfo;
 #endif
-  CMacroTable macStore;
+    CMacroTable macStore;
 };
 
 #define CTRL_SHIFT_SW 0
@@ -59,89 +59,89 @@ typedef void (* CheckKeyboardCaseCb)(int *pShiftPressed, int *pCapslockOn);
 class UkEngine
 {
 public:
-  UkEngine();
-  void setCtrlInfo(UkSharedMem *p)
-  {
-    m_pCtrl = p;
-  }
+    UkEngine();
+    void setCtrlInfo(UkSharedMem *p)
+    {
+        m_pCtrl = p;
+    }
 
-  void setCheckKbCaseFunc(CheckKeyboardCaseCb pFunc) 
-  {
-      m_keyCheckFunc = pFunc;
-  }
+    void setCheckKbCaseFunc(CheckKeyboardCaseCb pFunc) 
+    {
+        m_keyCheckFunc = pFunc;
+    }
 
-  bool atWordBeginning();
+    bool atWordBeginning();
 
-  int process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize);
-  void pass(int keyCode); //just pass through without filtering
-  void setSingleMode();
+    int process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize);
+    void pass(int keyCode); //just pass through without filtering
+    void setSingleMode();
 
-  int processBackspace(int & backs, unsigned char *outBuf, int & outSize);
-  void reset();
-  int restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize);
+    int processBackspace(int & backs, unsigned char *outBuf, int & outSize);
+    void reset();
+    int restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize);
 
-  //following methods must be public just to enable the use of pointers to them
-  //they should not be called from outside.
-  int processTone(UkKeyEvent & ev);
-  int processRoof(UkKeyEvent & ev);
-  int processHook(UkKeyEvent & ev);
-  int processAppend(UkKeyEvent & ev);
-  int appendVowel(UkKeyEvent & ev);
-  int appendConsonnant(UkKeyEvent & ev);
-  int processDd(UkKeyEvent & ev);
-  int processMapChar(UkKeyEvent & ev);
-  int processTelexW(UkKeyEvent & ev);
+    //following methods must be public just to enable the use of pointers to them
+    //they should not be called from outside.
+    int processTone(UkKeyEvent & ev);
+    int processRoof(UkKeyEvent & ev);
+    int processHook(UkKeyEvent & ev);
+    int processAppend(UkKeyEvent & ev);
+    int appendVowel(UkKeyEvent & ev);
+    int appendConsonnant(UkKeyEvent & ev);
+    int processDd(UkKeyEvent & ev);
+    int processMapChar(UkKeyEvent & ev);
+    int processTelexW(UkKeyEvent & ev);
 
 protected:
-  static bool m_classInit;
-  CheckKeyboardCaseCb m_keyCheckFunc;
-  UkSharedMem *m_pCtrl;
+    static bool m_classInit;
+    CheckKeyboardCaseCb m_keyCheckFunc;
+    UkSharedMem *m_pCtrl;
 
-  int m_changePos;
-  int m_backs;
-  int m_bufSize;
-  int m_current;
-  int m_singleMode;
+    int m_changePos;
+    int m_backs;
+    int m_bufSize;
+    int m_current;
+    int m_singleMode;
 
-  int m_keyBufSize;
-  unsigned int m_keyStrokes[MAX_UK_ENGINE];
-  int m_keyCurrent;
+    int m_keyBufSize;
+    unsigned int m_keyStrokes[MAX_UK_ENGINE];
+    int m_keyCurrent;
 
-  //varables valid in one session
-  unsigned char *m_pOutBuf;
-  int *m_pOutSize;
-  bool m_outputWritten;
+    //varables valid in one session
+    unsigned char *m_pOutBuf;
+    int *m_pOutSize;
+    bool m_outputWritten;
   
-  struct WordInfo {
-    //info for word ending at this position
-    VnWordForm form;
-    int c1Offset, vOffset, c2Offset;
+    struct WordInfo {
+        //info for word ending at this position
+        VnWordForm form;
+        int c1Offset, vOffset, c2Offset;
 
-    union {
-      VowelSeq vseq;
-      ConSeq cseq;
+        union {
+            VowelSeq vseq;
+            ConSeq cseq;
+        };
+
+        //info for current symbol
+        int caps, tone;
+        //canonical symbol, after caps, tone are removed
+        //for non-Vn, vnSym == -1
+        VnLexiName vnSym;
+        int keyCode;
     };
 
-    //info for current symbol
-    int caps, tone;
-    //canonical symbol, after caps, tone are removed
-    //for non-Vn, vnSym == -1
-    VnLexiName vnSym;
-    int keyCode;
-  };
+    WordInfo m_buffer[MAX_UK_ENGINE];
 
-  WordInfo m_buffer[MAX_UK_ENGINE];
-
-  int processHookWithUO(UkKeyEvent & ev);
-  int macroMatch(UkKeyEvent & ev);
-  void markChange(int pos);
-  void prepareBuffer(); //make sure we have a least 10 entries available
-  int writeOutput(unsigned char *outBuf, int & outSize);
-  //int getSeqLength(int first, int last);
-  int getSeqSteps(int first, int last);
-  int getTonePosition(VowelSeq vs, bool terminated);
-  void resetKeyBuf();
-  int checkEscapeVIQR(UkKeyEvent & ev);
+    int processHookWithUO(UkKeyEvent & ev);
+    int macroMatch(UkKeyEvent & ev);
+    void markChange(int pos);
+    void prepareBuffer(); //make sure we have a least 10 entries available
+    int writeOutput(unsigned char *outBuf, int & outSize);
+    //int getSeqLength(int first, int last);
+    int getSeqSteps(int first, int last);
+    int getTonePosition(VowelSeq vs, bool terminated);
+    void resetKeyBuf();
+    int checkEscapeVIQR(UkKeyEvent & ev);
 
 };
 

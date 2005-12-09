@@ -1,4 +1,4 @@
-// -*- coding:unix; mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
+// -*- mode:c++; tab-width:4; c-basic-offset:4; indent-tabs-mode:nil -*-
 /* Unikey Vietnamese Input Method
  * Copyright (C) 2000-2005 Pham Kim Long
  * Contact:
@@ -50,146 +50,146 @@ extern int UnikeyShiftPressed; //defined in unikey.cpp
 */
 
 struct VowelSeqInfo {
-  int len;
-  int complete;
-  int conSuffix; //allow consonnant suffix
-  VnLexiName v[3];
-  VowelSeq sub[3];
+    int len;
+    int complete;
+    int conSuffix; //allow consonnant suffix
+    VnLexiName v[3];
+    VowelSeq sub[3];
 
-  int roofPos;
-  VowelSeq withRoof;
+    int roofPos;
+    VowelSeq withRoof;
 
-  int hookPos;
-  VowelSeq withHook; //hook & bowl
+    int hookPos;
+    VowelSeq withHook; //hook & bowl
 };
 
 VowelSeqInfo VSeqList[] = {
-  {1, 1, 1, {vnl_a, vnl_nonVnChar, vnl_nonVnChar}, {vs_a, vs_nil, vs_nil}, -1, vs_ar, -1, vs_ab},
-  {1, 1, 1, {vnl_ar, vnl_nonVnChar, vnl_nonVnChar}, {vs_ar, vs_nil, vs_nil}, 0, vs_nil, -1, vs_ab},
-  {1, 1, 1, {vnl_ab, vnl_nonVnChar, vnl_nonVnChar}, {vs_ab, vs_nil, vs_nil}, -1, vs_ar, 0, vs_nil},
-  {1, 1, 1, {vnl_e, vnl_nonVnChar, vnl_nonVnChar}, {vs_e, vs_nil, vs_nil}, -1, vs_er, -1, vs_nil},
-  {1, 1, 1, {vnl_er, vnl_nonVnChar, vnl_nonVnChar}, {vs_er, vs_nil, vs_nil}, 0, vs_nil, -1, vs_nil},
-  {1, 1, 1, {vnl_i, vnl_nonVnChar, vnl_nonVnChar}, {vs_i, vs_nil, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {1, 1, 1, {vnl_o, vnl_nonVnChar, vnl_nonVnChar}, {vs_o, vs_nil, vs_nil}, -1, vs_or, -1, vs_oh},
-  {1, 1, 1, {vnl_or, vnl_nonVnChar, vnl_nonVnChar}, {vs_or, vs_nil, vs_nil}, 0, vs_nil, -1, vs_oh},
-  {1, 1, 1, {vnl_oh, vnl_nonVnChar, vnl_nonVnChar}, {vs_oh, vs_nil, vs_nil}, -1, vs_or, 0, vs_nil},
-  {1, 1, 1, {vnl_u, vnl_nonVnChar, vnl_nonVnChar}, {vs_u, vs_nil, vs_nil}, -1, vs_nil, -1, vs_uh},
-  {1, 1, 1, {vnl_uh, vnl_nonVnChar, vnl_nonVnChar}, {vs_uh, vs_nil, vs_nil}, -1, vs_nil, 0, vs_nil},
-  {1, 1, 1, {vnl_y, vnl_nonVnChar, vnl_nonVnChar}, {vs_y, vs_nil, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_a, vnl_i, vnl_nonVnChar}, {vs_a, vs_ai, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_a, vnl_o, vnl_nonVnChar}, {vs_a, vs_ao, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_a, vnl_u, vnl_nonVnChar}, {vs_a, vs_au, vs_nil}, -1, vs_aru, -1, vs_nil},
-  {2, 1, 0, {vnl_a, vnl_y, vnl_nonVnChar}, {vs_a, vs_ay, vs_nil}, -1, vs_ary, -1, vs_nil},
-  {2, 1, 0, {vnl_ar, vnl_u, vnl_nonVnChar}, {vs_ar, vs_aru, vs_nil}, 0, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_ar, vnl_y, vnl_nonVnChar}, {vs_ar, vs_ary, vs_nil}, 0, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_e, vnl_o, vnl_nonVnChar}, {vs_e, vs_eo, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 0, 0, {vnl_e, vnl_u, vnl_nonVnChar}, {vs_e, vs_eu, vs_nil}, -1, vs_eru, -1, vs_nil},
-  {2, 1, 0, {vnl_er, vnl_u, vnl_nonVnChar}, {vs_er, vs_eru, vs_nil}, 0, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_i, vnl_a, vnl_nonVnChar}, {vs_i, vs_ia, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 0, 1, {vnl_i, vnl_e, vnl_nonVnChar}, {vs_i, vs_ie, vs_nil}, -1, vs_ier, -1, vs_nil},
-  {2, 1, 1, {vnl_i, vnl_er, vnl_nonVnChar}, {vs_i, vs_ier, vs_nil}, 1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_i, vnl_u, vnl_nonVnChar}, {vs_i, vs_iu, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 1, 1, {vnl_o, vnl_a, vnl_nonVnChar}, {vs_o, vs_oa, vs_nil}, -1, vs_nil, -1, vs_oab},
-  {2, 1, 1, {vnl_o, vnl_ab, vnl_nonVnChar}, {vs_o, vs_oab, vs_nil}, -1, vs_nil, 1, vs_nil},
-  {2, 1, 1, {vnl_o, vnl_e, vnl_nonVnChar}, {vs_o, vs_oe, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_o, vnl_i, vnl_nonVnChar}, {vs_o, vs_oi, vs_nil}, -1, vs_ori, -1, vs_ohi},
-  {2, 1, 0, {vnl_or, vnl_i, vnl_nonVnChar}, {vs_or, vs_ori, vs_nil}, 0, vs_nil, -1, vs_ohi},
-  {2, 1, 0, {vnl_oh, vnl_i, vnl_nonVnChar}, {vs_oh, vs_ohi, vs_nil}, -1, vs_ori, 0, vs_nil},
-  {2, 1, 1, {vnl_u, vnl_a, vnl_nonVnChar}, {vs_u, vs_ua, vs_nil}, -1, vs_uar, -1, vs_uha},
-  {2, 1, 1, {vnl_u, vnl_ar, vnl_nonVnChar}, {vs_u, vs_uar, vs_nil}, 1, vs_nil, -1, vs_nil},
-  {2, 0, 0, {vnl_u, vnl_e, vnl_nonVnChar}, {vs_u, vs_ue, vs_nil}, -1, vs_uer, -1, vs_nil},
-  {2, 1, 0, {vnl_u, vnl_er, vnl_nonVnChar}, {vs_u, vs_uer, vs_nil}, 1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_u, vnl_i, vnl_nonVnChar}, {vs_u, vs_ui, vs_nil}, -1, vs_nil, -1, vs_uhi},
-  {2, 0, 1, {vnl_u, vnl_o, vnl_nonVnChar}, {vs_u, vs_uo, vs_nil}, -1, vs_uor, -1, vs_uho},
-  {2, 1, 1, {vnl_u, vnl_or, vnl_nonVnChar}, {vs_u, vs_uor, vs_nil}, 1, vs_nil, -1, vs_uoh},
-  {2, 1, 1, {vnl_u, vnl_oh, vnl_nonVnChar}, {vs_u, vs_uoh, vs_nil}, -1, vs_uor, 1, vs_uhoh},
-  {2, 0, 0, {vnl_u, vnl_u, vnl_nonVnChar}, {vs_u, vs_uu, vs_nil}, -1, vs_nil, -1, vs_uhu},
-  {2, 1, 1, {vnl_u, vnl_y, vnl_nonVnChar}, {vs_u, vs_uy, vs_nil}, -1, vs_nil, -1, vs_nil},
-  {2, 1, 0, {vnl_uh, vnl_a, vnl_nonVnChar}, {vs_uh, vs_uha, vs_nil}, -1, vs_nil, 0, vs_nil},
-  {2, 1, 0, {vnl_uh, vnl_i, vnl_nonVnChar}, {vs_uh, vs_uhi, vs_nil}, -1, vs_nil, 0, vs_nil},
-  {2, 0, 1, {vnl_uh, vnl_o, vnl_nonVnChar}, {vs_uh, vs_uho, vs_nil}, -1, vs_nil, 0, vs_uhoh},
-  {2, 1, 1, {vnl_uh, vnl_oh, vnl_nonVnChar}, {vs_uh, vs_uhoh, vs_nil}, -1, vs_nil, 0, vs_nil},
-  {2, 1, 0, {vnl_uh, vnl_u, vnl_nonVnChar}, {vs_uh, vs_uhu, vs_nil}, -1, vs_nil, 0, vs_nil},
-  {2, 0, 1, {vnl_y, vnl_e, vnl_nonVnChar}, {vs_y, vs_ye, vs_nil}, -1, vs_yer, -1, vs_nil},
-  {2, 1, 1, {vnl_y, vnl_er, vnl_nonVnChar}, {vs_y, vs_yer, vs_nil}, 1, vs_nil, -1, vs_nil},
-  {3, 0, 0, {vnl_i, vnl_e, vnl_u}, {vs_i, vs_ie, vs_ieu}, -1, vs_ieru, -1, vs_nil},
-  {3, 1, 0, {vnl_i, vnl_er, vnl_u}, {vs_i, vs_ier, vs_ieru}, 1, vs_nil, -1, vs_nil},
-  {3, 1, 0, {vnl_o, vnl_a, vnl_i}, {vs_o, vs_oa, vs_oai}, -1, vs_nil, -1, vs_nil},
-  {3, 1, 0, {vnl_o, vnl_a, vnl_y}, {vs_o, vs_oa, vs_oay}, -1, vs_nil, -1, vs_nil},  
-  {3, 1, 0, {vnl_o, vnl_e, vnl_o}, {vs_o, vs_oe, vs_oeo}, -1, vs_nil, -1, vs_nil},
-  {3, 1, 0, {vnl_u, vnl_a, vnl_y}, {vs_u, vs_ua, vs_uay}, -1, vs_uary, -1, vs_nil},
-  {3, 1, 0, {vnl_u, vnl_ar, vnl_y}, {vs_u, vs_uar, vs_uary}, -1, vs_nil, -1, vs_nil},
-  {3, 0, 0, {vnl_u, vnl_o, vnl_i}, {vs_u, vs_uo, vs_uoi}, -1, vs_uori, -1, vs_uhoi},
-  {3, 0, 0, {vnl_u, vnl_o, vnl_u}, {vs_u, vs_uo, vs_uou}, -1, vs_nil, -1, vs_uhou},
-  {3, 1, 0, {vnl_u, vnl_or, vnl_i}, {vs_u, vs_uor, vs_uori}, 1, vs_nil, -1, vs_uohi},
-  {3, 0, 0, {vnl_u, vnl_oh, vnl_i}, {vs_u, vs_uoh, vs_uohi}, -1, vs_uori, 1, vs_nil},
-  {3, 1, 0, {vnl_u, vnl_y, vnl_a}, {vs_u, vs_uy, vs_uya}, -1, vs_nil, -1, vs_nil},
-  {3, 0, 1, {vnl_u, vnl_y, vnl_e}, {vs_u, vs_uy, vs_uye}, -1, vs_uyer, -1, vs_nil},
-  {3, 1, 1, {vnl_u, vnl_y, vnl_er}, {vs_u, vs_uy, vs_uyer}, 2, vs_nil, -1, vs_nil},
-  {3, 1, 0, {vnl_u, vnl_y, vnl_u}, {vs_u, vs_uy, vs_uyu}, -1, vs_nil, -1, vs_nil},
-  {3, 0, 0, {vnl_uh, vnl_o, vnl_i}, {vs_uh, vs_uho, vs_uhoi}, -1, vs_nil, 0, vs_uhohi},
-  {3, 0, 0, {vnl_uh, vnl_o, vnl_u}, {vs_uh, vs_uho, vs_uhou}, -1, vs_nil, 0, vs_uhohu},
-  {3, 1, 0, {vnl_uh, vnl_oh, vnl_i}, {vs_uh, vs_uhoh, vs_uhohi}, -1, vs_nil, 0, vs_nil},
-  {3, 1, 0, {vnl_uh, vnl_oh, vnl_u}, {vs_uh, vs_uhoh, vs_uhohu}, -1, vs_nil, 0, vs_nil},
-  {3, 0, 0, {vnl_y, vnl_e, vnl_u}, {vs_y, vs_ye, vs_yeu}, -1, vs_yeru, -1, vs_nil},
-  {3, 1, 0, {vnl_y, vnl_er, vnl_u}, {vs_y, vs_yer, vs_yeru}, 1, vs_nil, -1, vs_nil}
+    {1, 1, 1, {vnl_a, vnl_nonVnChar, vnl_nonVnChar}, {vs_a, vs_nil, vs_nil}, -1, vs_ar, -1, vs_ab},
+    {1, 1, 1, {vnl_ar, vnl_nonVnChar, vnl_nonVnChar}, {vs_ar, vs_nil, vs_nil}, 0, vs_nil, -1, vs_ab},
+    {1, 1, 1, {vnl_ab, vnl_nonVnChar, vnl_nonVnChar}, {vs_ab, vs_nil, vs_nil}, -1, vs_ar, 0, vs_nil},
+    {1, 1, 1, {vnl_e, vnl_nonVnChar, vnl_nonVnChar}, {vs_e, vs_nil, vs_nil}, -1, vs_er, -1, vs_nil},
+    {1, 1, 1, {vnl_er, vnl_nonVnChar, vnl_nonVnChar}, {vs_er, vs_nil, vs_nil}, 0, vs_nil, -1, vs_nil},
+    {1, 1, 1, {vnl_i, vnl_nonVnChar, vnl_nonVnChar}, {vs_i, vs_nil, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {1, 1, 1, {vnl_o, vnl_nonVnChar, vnl_nonVnChar}, {vs_o, vs_nil, vs_nil}, -1, vs_or, -1, vs_oh},
+    {1, 1, 1, {vnl_or, vnl_nonVnChar, vnl_nonVnChar}, {vs_or, vs_nil, vs_nil}, 0, vs_nil, -1, vs_oh},
+    {1, 1, 1, {vnl_oh, vnl_nonVnChar, vnl_nonVnChar}, {vs_oh, vs_nil, vs_nil}, -1, vs_or, 0, vs_nil},
+    {1, 1, 1, {vnl_u, vnl_nonVnChar, vnl_nonVnChar}, {vs_u, vs_nil, vs_nil}, -1, vs_nil, -1, vs_uh},
+    {1, 1, 1, {vnl_uh, vnl_nonVnChar, vnl_nonVnChar}, {vs_uh, vs_nil, vs_nil}, -1, vs_nil, 0, vs_nil},
+    {1, 1, 1, {vnl_y, vnl_nonVnChar, vnl_nonVnChar}, {vs_y, vs_nil, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_a, vnl_i, vnl_nonVnChar}, {vs_a, vs_ai, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_a, vnl_o, vnl_nonVnChar}, {vs_a, vs_ao, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_a, vnl_u, vnl_nonVnChar}, {vs_a, vs_au, vs_nil}, -1, vs_aru, -1, vs_nil},
+    {2, 1, 0, {vnl_a, vnl_y, vnl_nonVnChar}, {vs_a, vs_ay, vs_nil}, -1, vs_ary, -1, vs_nil},
+    {2, 1, 0, {vnl_ar, vnl_u, vnl_nonVnChar}, {vs_ar, vs_aru, vs_nil}, 0, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_ar, vnl_y, vnl_nonVnChar}, {vs_ar, vs_ary, vs_nil}, 0, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_e, vnl_o, vnl_nonVnChar}, {vs_e, vs_eo, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 0, 0, {vnl_e, vnl_u, vnl_nonVnChar}, {vs_e, vs_eu, vs_nil}, -1, vs_eru, -1, vs_nil},
+    {2, 1, 0, {vnl_er, vnl_u, vnl_nonVnChar}, {vs_er, vs_eru, vs_nil}, 0, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_i, vnl_a, vnl_nonVnChar}, {vs_i, vs_ia, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 0, 1, {vnl_i, vnl_e, vnl_nonVnChar}, {vs_i, vs_ie, vs_nil}, -1, vs_ier, -1, vs_nil},
+    {2, 1, 1, {vnl_i, vnl_er, vnl_nonVnChar}, {vs_i, vs_ier, vs_nil}, 1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_i, vnl_u, vnl_nonVnChar}, {vs_i, vs_iu, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 1, 1, {vnl_o, vnl_a, vnl_nonVnChar}, {vs_o, vs_oa, vs_nil}, -1, vs_nil, -1, vs_oab},
+    {2, 1, 1, {vnl_o, vnl_ab, vnl_nonVnChar}, {vs_o, vs_oab, vs_nil}, -1, vs_nil, 1, vs_nil},
+    {2, 1, 1, {vnl_o, vnl_e, vnl_nonVnChar}, {vs_o, vs_oe, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_o, vnl_i, vnl_nonVnChar}, {vs_o, vs_oi, vs_nil}, -1, vs_ori, -1, vs_ohi},
+    {2, 1, 0, {vnl_or, vnl_i, vnl_nonVnChar}, {vs_or, vs_ori, vs_nil}, 0, vs_nil, -1, vs_ohi},
+    {2, 1, 0, {vnl_oh, vnl_i, vnl_nonVnChar}, {vs_oh, vs_ohi, vs_nil}, -1, vs_ori, 0, vs_nil},
+    {2, 1, 1, {vnl_u, vnl_a, vnl_nonVnChar}, {vs_u, vs_ua, vs_nil}, -1, vs_uar, -1, vs_uha},
+    {2, 1, 1, {vnl_u, vnl_ar, vnl_nonVnChar}, {vs_u, vs_uar, vs_nil}, 1, vs_nil, -1, vs_nil},
+    {2, 0, 0, {vnl_u, vnl_e, vnl_nonVnChar}, {vs_u, vs_ue, vs_nil}, -1, vs_uer, -1, vs_nil},
+    {2, 1, 0, {vnl_u, vnl_er, vnl_nonVnChar}, {vs_u, vs_uer, vs_nil}, 1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_u, vnl_i, vnl_nonVnChar}, {vs_u, vs_ui, vs_nil}, -1, vs_nil, -1, vs_uhi},
+    {2, 0, 1, {vnl_u, vnl_o, vnl_nonVnChar}, {vs_u, vs_uo, vs_nil}, -1, vs_uor, -1, vs_uho},
+    {2, 1, 1, {vnl_u, vnl_or, vnl_nonVnChar}, {vs_u, vs_uor, vs_nil}, 1, vs_nil, -1, vs_uoh},
+    {2, 1, 1, {vnl_u, vnl_oh, vnl_nonVnChar}, {vs_u, vs_uoh, vs_nil}, -1, vs_uor, 1, vs_uhoh},
+    {2, 0, 0, {vnl_u, vnl_u, vnl_nonVnChar}, {vs_u, vs_uu, vs_nil}, -1, vs_nil, -1, vs_uhu},
+    {2, 1, 1, {vnl_u, vnl_y, vnl_nonVnChar}, {vs_u, vs_uy, vs_nil}, -1, vs_nil, -1, vs_nil},
+    {2, 1, 0, {vnl_uh, vnl_a, vnl_nonVnChar}, {vs_uh, vs_uha, vs_nil}, -1, vs_nil, 0, vs_nil},
+    {2, 1, 0, {vnl_uh, vnl_i, vnl_nonVnChar}, {vs_uh, vs_uhi, vs_nil}, -1, vs_nil, 0, vs_nil},
+    {2, 0, 1, {vnl_uh, vnl_o, vnl_nonVnChar}, {vs_uh, vs_uho, vs_nil}, -1, vs_nil, 0, vs_uhoh},
+    {2, 1, 1, {vnl_uh, vnl_oh, vnl_nonVnChar}, {vs_uh, vs_uhoh, vs_nil}, -1, vs_nil, 0, vs_nil},
+    {2, 1, 0, {vnl_uh, vnl_u, vnl_nonVnChar}, {vs_uh, vs_uhu, vs_nil}, -1, vs_nil, 0, vs_nil},
+    {2, 0, 1, {vnl_y, vnl_e, vnl_nonVnChar}, {vs_y, vs_ye, vs_nil}, -1, vs_yer, -1, vs_nil},
+    {2, 1, 1, {vnl_y, vnl_er, vnl_nonVnChar}, {vs_y, vs_yer, vs_nil}, 1, vs_nil, -1, vs_nil},
+    {3, 0, 0, {vnl_i, vnl_e, vnl_u}, {vs_i, vs_ie, vs_ieu}, -1, vs_ieru, -1, vs_nil},
+    {3, 1, 0, {vnl_i, vnl_er, vnl_u}, {vs_i, vs_ier, vs_ieru}, 1, vs_nil, -1, vs_nil},
+    {3, 1, 0, {vnl_o, vnl_a, vnl_i}, {vs_o, vs_oa, vs_oai}, -1, vs_nil, -1, vs_nil},
+    {3, 1, 0, {vnl_o, vnl_a, vnl_y}, {vs_o, vs_oa, vs_oay}, -1, vs_nil, -1, vs_nil},  
+    {3, 1, 0, {vnl_o, vnl_e, vnl_o}, {vs_o, vs_oe, vs_oeo}, -1, vs_nil, -1, vs_nil},
+    {3, 1, 0, {vnl_u, vnl_a, vnl_y}, {vs_u, vs_ua, vs_uay}, -1, vs_uary, -1, vs_nil},
+    {3, 1, 0, {vnl_u, vnl_ar, vnl_y}, {vs_u, vs_uar, vs_uary}, -1, vs_nil, -1, vs_nil},
+    {3, 0, 0, {vnl_u, vnl_o, vnl_i}, {vs_u, vs_uo, vs_uoi}, -1, vs_uori, -1, vs_uhoi},
+    {3, 0, 0, {vnl_u, vnl_o, vnl_u}, {vs_u, vs_uo, vs_uou}, -1, vs_nil, -1, vs_uhou},
+    {3, 1, 0, {vnl_u, vnl_or, vnl_i}, {vs_u, vs_uor, vs_uori}, 1, vs_nil, -1, vs_uohi},
+    {3, 0, 0, {vnl_u, vnl_oh, vnl_i}, {vs_u, vs_uoh, vs_uohi}, -1, vs_uori, 1, vs_nil},
+    {3, 1, 0, {vnl_u, vnl_y, vnl_a}, {vs_u, vs_uy, vs_uya}, -1, vs_nil, -1, vs_nil},
+    {3, 0, 1, {vnl_u, vnl_y, vnl_e}, {vs_u, vs_uy, vs_uye}, -1, vs_uyer, -1, vs_nil},
+    {3, 1, 1, {vnl_u, vnl_y, vnl_er}, {vs_u, vs_uy, vs_uyer}, 2, vs_nil, -1, vs_nil},
+    {3, 1, 0, {vnl_u, vnl_y, vnl_u}, {vs_u, vs_uy, vs_uyu}, -1, vs_nil, -1, vs_nil},
+    {3, 0, 0, {vnl_uh, vnl_o, vnl_i}, {vs_uh, vs_uho, vs_uhoi}, -1, vs_nil, 0, vs_uhohi},
+    {3, 0, 0, {vnl_uh, vnl_o, vnl_u}, {vs_uh, vs_uho, vs_uhou}, -1, vs_nil, 0, vs_uhohu},
+    {3, 1, 0, {vnl_uh, vnl_oh, vnl_i}, {vs_uh, vs_uhoh, vs_uhohi}, -1, vs_nil, 0, vs_nil},
+    {3, 1, 0, {vnl_uh, vnl_oh, vnl_u}, {vs_uh, vs_uhoh, vs_uhohu}, -1, vs_nil, 0, vs_nil},
+    {3, 0, 0, {vnl_y, vnl_e, vnl_u}, {vs_y, vs_ye, vs_yeu}, -1, vs_yeru, -1, vs_nil},
+    {3, 1, 0, {vnl_y, vnl_er, vnl_u}, {vs_y, vs_yer, vs_yeru}, 1, vs_nil, -1, vs_nil}
 };
 
 struct ConSeqInfo {
-  int len;
-  VnLexiName c[3];
-  bool suffix;
+    int len;
+    VnLexiName c[3];
+    bool suffix;
 };
 
 ConSeqInfo CSeqList[] = {
-  {1, {vnl_b, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {1, {vnl_c, vnl_nonVnChar, vnl_nonVnChar}, true},
-  {2, {vnl_c, vnl_h, vnl_nonVnChar}, true},
-  {1, {vnl_d, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {1, {vnl_dd, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {2, {vnl_d, vnl_z, vnl_nonVnChar}, false},
-  {1, {vnl_g, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {2, {vnl_g, vnl_h, vnl_nonVnChar}, false},
-  {2, {vnl_g, vnl_i, vnl_nonVnChar}, false},
-  {3, {vnl_g, vnl_i, vnl_n}, false},
-  {1, {vnl_k, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {2, {vnl_k, vnl_h, vnl_nonVnChar}, false},
-  {1, {vnl_l, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {1, {vnl_m, vnl_nonVnChar, vnl_nonVnChar}, true},
-  {1, {vnl_n, vnl_nonVnChar, vnl_nonVnChar}, true},
-  {2, {vnl_n, vnl_g, vnl_nonVnChar}, true},
-  {3, {vnl_n, vnl_g, vnl_h}, false},
-  {2, {vnl_n, vnl_h, vnl_nonVnChar}, true},
-  {1, {vnl_p, vnl_nonVnChar, vnl_nonVnChar}, true},
-  {2, {vnl_p, vnl_h, vnl_nonVnChar}, false},
-  {1, {vnl_q, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {2, {vnl_q, vnl_u, vnl_nonVnChar}, false},
-  {1, {vnl_r, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {1, {vnl_s, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {1, {vnl_t, vnl_nonVnChar, vnl_nonVnChar}, true},
-  {2, {vnl_t, vnl_h, vnl_nonVnChar}, false},
-  {2, {vnl_t, vnl_r, vnl_nonVnChar}, false},
-  {1, {vnl_v, vnl_nonVnChar, vnl_nonVnChar}, false},
-  {1, {vnl_x, vnl_nonVnChar, vnl_nonVnChar}, false}
+    {1, {vnl_b, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {1, {vnl_c, vnl_nonVnChar, vnl_nonVnChar}, true},
+    {2, {vnl_c, vnl_h, vnl_nonVnChar}, true},
+    {1, {vnl_d, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {1, {vnl_dd, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {2, {vnl_d, vnl_z, vnl_nonVnChar}, false},
+    {1, {vnl_g, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {2, {vnl_g, vnl_h, vnl_nonVnChar}, false},
+    {2, {vnl_g, vnl_i, vnl_nonVnChar}, false},
+    {3, {vnl_g, vnl_i, vnl_n}, false},
+    {1, {vnl_k, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {2, {vnl_k, vnl_h, vnl_nonVnChar}, false},
+    {1, {vnl_l, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {1, {vnl_m, vnl_nonVnChar, vnl_nonVnChar}, true},
+    {1, {vnl_n, vnl_nonVnChar, vnl_nonVnChar}, true},
+    {2, {vnl_n, vnl_g, vnl_nonVnChar}, true},
+    {3, {vnl_n, vnl_g, vnl_h}, false},
+    {2, {vnl_n, vnl_h, vnl_nonVnChar}, true},
+    {1, {vnl_p, vnl_nonVnChar, vnl_nonVnChar}, true},
+    {2, {vnl_p, vnl_h, vnl_nonVnChar}, false},
+    {1, {vnl_q, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {2, {vnl_q, vnl_u, vnl_nonVnChar}, false},
+    {1, {vnl_r, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {1, {vnl_s, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {1, {vnl_t, vnl_nonVnChar, vnl_nonVnChar}, true},
+    {2, {vnl_t, vnl_h, vnl_nonVnChar}, false},
+    {2, {vnl_t, vnl_r, vnl_nonVnChar}, false},
+    {1, {vnl_v, vnl_nonVnChar, vnl_nonVnChar}, false},
+    {1, {vnl_x, vnl_nonVnChar, vnl_nonVnChar}, false}
 };
 
 const int VSeqCount = sizeof(VSeqList)/sizeof(VowelSeqInfo);
 struct VSeqPair {
-  VnLexiName v[3];
-  VowelSeq vs;
+    VnLexiName v[3];
+    VowelSeq vs;
 };
 VSeqPair SortedVSeqList[VSeqCount];
 
 const int CSeqCount = sizeof(CSeqList)/sizeof(ConSeqInfo);
 struct CSeqPair {
-  VnLexiName c[3];
-  ConSeq cs;
+    VnLexiName c[3];
+    ConSeq cs;
 };
 CSeqPair SortedCSeqList[CSeqCount];
 
 struct VCPair {
-  VowelSeq v;
-  ConSeq c;
+    VowelSeq v;
+    ConSeq c;
 };
 
 VCPair VCPairList [] = {
@@ -250,25 +250,25 @@ const int VCPairCount = sizeof(VCPairList)/sizeof(VCPair);
 typedef int (UkEngine::* UkKeyProc)(UkKeyEvent & ev);
 
 UkKeyProc UkKeyProcList[vneCount] = {
-  &UkEngine::processRoof,    //vneRoofAll
-  &UkEngine::processRoof,    //vneRoof_a
-  &UkEngine::processRoof,    //vneRoof_e
-  &UkEngine::processRoof,    //vneRoof_o
-  &UkEngine::processHook,    //vneHookAll
-  &UkEngine::processHook,    //vneHook_uo
-  &UkEngine::processHook,    //vneHook_u
-  &UkEngine::processHook,    //vneHook_o
-  &UkEngine::processHook,    //vneBowl
-  &UkEngine::processDd,      //vneDd
-  &UkEngine::processTone,    //vneTone0
-  &UkEngine::processTone,    //vneTone1
-  &UkEngine::processTone,    //vneTone2
-  &UkEngine::processTone,    //vneTone3
-  &UkEngine::processTone,    //vneTone4
-  &UkEngine::processTone,    //vneTone5
-  &UkEngine::processTelexW,  //vne_telex_w
-  &UkEngine::processMapChar, //vneMapChar
-  &UkEngine::processAppend   //vneNormal
+    &UkEngine::processRoof,    //vneRoofAll
+    &UkEngine::processRoof,    //vneRoof_a
+    &UkEngine::processRoof,    //vneRoof_e
+    &UkEngine::processRoof,    //vneRoof_o
+    &UkEngine::processHook,    //vneHookAll
+    &UkEngine::processHook,    //vneHook_uo
+    &UkEngine::processHook,    //vneHook_u
+    &UkEngine::processHook,    //vneHook_o
+    &UkEngine::processHook,    //vneBowl
+    &UkEngine::processDd,      //vneDd
+    &UkEngine::processTone,    //vneTone0
+    &UkEngine::processTone,    //vneTone1
+    &UkEngine::processTone,    //vneTone2
+    &UkEngine::processTone,    //vneTone3
+    &UkEngine::processTone,    //vneTone4
+    &UkEngine::processTone,    //vneTone5
+    &UkEngine::processTelexW,  //vne_telex_w
+    &UkEngine::processMapChar, //vneMapChar
+    &UkEngine::processAppend   //vneNormal
 };
 
 
@@ -280,84 +280,84 @@ bool UkEngine::m_classInit = false;
 //------------------------------------------------
 int tripleVowelCompare(const void *p1, const void *p2)
 {
-  VSeqPair *t1 = (VSeqPair *)p1;
-  VSeqPair *t2 = (VSeqPair *)p2;
+    VSeqPair *t1 = (VSeqPair *)p1;
+    VSeqPair *t2 = (VSeqPair *)p2;
 
-  for (int i=0; i<3; i++) {
-    if (t1->v[i] < t2->v[i])
-      return -1;
-    if (t1->v[i] > t2->v[i])
-      return 1;
-  }
-  return 0;
+    for (int i=0; i<3; i++) {
+        if (t1->v[i] < t2->v[i])
+            return -1;
+        if (t1->v[i] > t2->v[i])
+            return 1;
+    }
+    return 0;
 }
 
 //------------------------------------------------
 int tripleConCompare(const void *p1, const void *p2)
 {
-  CSeqPair *t1 = (CSeqPair *)p1;
-  CSeqPair *t2 = (CSeqPair *)p2;
+    CSeqPair *t1 = (CSeqPair *)p1;
+    CSeqPair *t2 = (CSeqPair *)p2;
 
-  for (int i=0; i<3; i++) {
-    if (t1->c[i] < t2->c[i])
-      return -1;
-    if (t1->c[i] > t2->c[i])
-      return 1;
-  }
-  return 0;
+    for (int i=0; i<3; i++) {
+        if (t1->c[i] < t2->c[i])
+            return -1;
+        if (t1->c[i] > t2->c[i])
+            return 1;
+    }
+    return 0;
 }
 
 //------------------------------------------------
 int VCPairCompare(const void *p1, const void *p2)
 {
-  VCPair *t1 = (VCPair *)p1;
-  VCPair *t2 = (VCPair *)p2;
+    VCPair *t1 = (VCPair *)p1;
+    VCPair *t2 = (VCPair *)p2;
 
-  if (t1->v < t2->v)
-    return -1;
-  if (t1->v > t2->v)
-    return 1;
+    if (t1->v < t2->v)
+        return -1;
+    if (t1->v > t2->v)
+      return 1;
   
-  if (t1->c < t2->c)
-    return -1;
-  if (t1->c > t2->c)
-    return 1;
-  return 0;
+    if (t1->c < t2->c)
+        return -1;
+    if (t1->c > t2->c)
+        return 1;
+    return 0;
 }
 
 //----------------------------------------------------------
 bool isValidCV(ConSeq c, VowelSeq v)
 {
-  //ConSeqInfo & cInfo = CSeqList[c];
-  VowelSeqInfo & vInfo = VSeqList[v];
+    //ConSeqInfo & cInfo = CSeqList[c];
+    VowelSeqInfo & vInfo = VSeqList[v];
+
+    if ((c == cs_gi && vInfo.v[0] == vnl_i) ||
+        (c == cs_qu && vInfo.v[0] == vnl_u))
+        return false; // gi doesn't go with i, qu doesn't go with u
   
-  if ((c == cs_gi && vInfo.v[0] == vnl_i) ||
-      (c == cs_qu && vInfo.v[0] == vnl_u))
-    return false; // gi doesn't go with i, qu doesn't go with u
-  
-  //more checks here
-  return true;
+    //more checks here
+    return true;
 }
 
 //----------------------------------------------------------
 bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
 {
-  VowelSeqInfo & vInfo = VSeqList[v];
-  if (!vInfo.conSuffix)
-    return false;
+    VowelSeqInfo & vInfo = VSeqList[v];
+    if (!vInfo.conSuffix)
+        return false;
 
-  if (!pOpt->strictSpellCheck)
-    return true;
+    if (!pOpt->strictSpellCheck)
+        return true;
   /*
   if (vInfo.roofPos != -1 || vInfo.hookPos != -1)
     return true; //if v already has roof or hook, there's no point in spell-checking
   */
-  VCPair p;
-  p.v = v;
-  p.c = c;
-  if (bsearch(&p, VCPairList, VCPairCount, sizeof(VCPair), VCPairCompare))
-    return true;
-  return false;
+    VCPair p;
+    p.v = v;
+    p.c = c;
+    if (bsearch(&p, VCPairList, VCPairCount, sizeof(VCPair), VCPairCompare))
+        return true;
+    return false;
 }
 
 //----------------------------------------------------------
@@ -367,596 +367,596 @@ bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
 //----------------------------------------------------------
 VnLexiName vnRemoveTone(VnLexiName x)
 {
-  return x;
+    return x;
 }
 
 //------------------------------------------------
 void engineClassInit()
 {
-  int i, j;
+    int i, j;
 
-  for (i=0; i < VSeqCount; i++) {
-    for (j=0; j<3; j++)
-      SortedVSeqList[i].v[j] = VSeqList[i].v[j];
-    SortedVSeqList[i].vs = (VowelSeq)i;
-  }
-
-  for (i=0; i < CSeqCount; i++) {
-    for (j=0; j<3; j++)
-      SortedCSeqList[i].c[j] = CSeqList[i].c[j];
-    SortedCSeqList[i].cs = (ConSeq)i;
-  }
-
-  qsort(SortedVSeqList, VSeqCount, sizeof(VSeqPair), tripleVowelCompare);
-  qsort(SortedCSeqList, CSeqCount, sizeof(CSeqPair), tripleConCompare);
-  qsort(VCPairList, VCPairCount, sizeof(VCPair), VCPairCompare);
-
-  for (i=0; i<vnl_lastChar; i++)
-    IsVnVowel[i] = true;
-
-  unsigned char ch;
-  for (ch='a'; ch <= 'z'; ch++) {
-    if (ch != 'a' && ch != 'e' && ch != 'i' &&
-	ch != 'o' && ch != 'u' && ch != 'y') {
-      IsVnVowel[AZLexiLower[ch-'a']] = false;
-      IsVnVowel[AZLexiUpper[ch-'a']] = false;
+    for (i=0; i < VSeqCount; i++) {
+        for (j=0; j<3; j++)
+            SortedVSeqList[i].v[j] = VSeqList[i].v[j];
+        SortedVSeqList[i].vs = (VowelSeq)i;
     }
-  }
-  IsVnVowel[vnl_dd] = false;
-  IsVnVowel[vnl_DD] = false;
+
+    for (i=0; i < CSeqCount; i++) {
+        for (j=0; j<3; j++)
+            SortedCSeqList[i].c[j] = CSeqList[i].c[j];
+        SortedCSeqList[i].cs = (ConSeq)i;
+    }
+
+    qsort(SortedVSeqList, VSeqCount, sizeof(VSeqPair), tripleVowelCompare);
+    qsort(SortedCSeqList, CSeqCount, sizeof(CSeqPair), tripleConCompare);
+    qsort(VCPairList, VCPairCount, sizeof(VCPair), VCPairCompare);
+
+    for (i=0; i<vnl_lastChar; i++)
+        IsVnVowel[i] = true;
+
+    unsigned char ch;
+    for (ch='a'; ch <= 'z'; ch++) {
+        if (ch != 'a' && ch != 'e' && ch != 'i' &&
+            ch != 'o' && ch != 'u' && ch != 'y') {
+            IsVnVowel[AZLexiLower[ch-'a']] = false;
+            IsVnVowel[AZLexiUpper[ch-'a']] = false;
+        }
+    }
+    IsVnVowel[vnl_dd] = false;
+    IsVnVowel[vnl_DD] = false;
 }
 
 //------------------------------------------------
 VowelSeq lookupVSeq(VnLexiName v1, VnLexiName v2, VnLexiName v3)
 {
-  VSeqPair key;
-  key.v[0] = v1;
-  key.v[1] = v2;
-  key.v[2] = v3;
+    VSeqPair key;
+    key.v[0] = v1;
+    key.v[1] = v2;
+    key.v[2] = v3;
 
-  VSeqPair *pInfo = (VSeqPair *)bsearch(&key, SortedVSeqList, VSeqCount, sizeof(VSeqPair), tripleVowelCompare);
-  if (pInfo == 0)
-    return vs_nil;
-  return pInfo->vs;
+    VSeqPair *pInfo = (VSeqPair *)bsearch(&key, SortedVSeqList, VSeqCount, sizeof(VSeqPair), tripleVowelCompare);
+    if (pInfo == 0)
+        return vs_nil;
+    return pInfo->vs;
 }
 
 //------------------------------------------------
 ConSeq lookupCSeq(VnLexiName c1, VnLexiName c2, VnLexiName c3)
 {
-  CSeqPair key;
-  key.c[0] = c1;
-  key.c[1] = c2;
-  key.c[2] = c3;
+    CSeqPair key;
+    key.c[0] = c1;
+    key.c[1] = c2;
+    key.c[2] = c3;
 
-  CSeqPair *pInfo = (CSeqPair *)bsearch(&key, SortedCSeqList, CSeqCount, sizeof(CSeqPair), tripleConCompare);
-  if (pInfo == 0)
-    return cs_nil;
-  return pInfo->cs;
+    CSeqPair *pInfo = (CSeqPair *)bsearch(&key, SortedCSeqList, CSeqCount, sizeof(CSeqPair), tripleConCompare);
+    if (pInfo == 0)
+        return cs_nil;
+    return pInfo->cs;
 }
 
 //------------------------------------------------------------------
 int UkEngine::processRoof(UkKeyEvent & ev)
 {
-  if (m_current < 0 || m_buffer[m_current].vOffset < 0)
-    return processAppend(ev);
-  /*
-  if (!m_pCtrl->options.freeMarking) {
-    if (m_buffer[m_current].vOffset != 0)
+    if (m_current < 0 || m_buffer[m_current].vOffset < 0)
+        return processAppend(ev);
+    /*
+      if (!m_pCtrl->options.freeMarking) {
+      if (m_buffer[m_current].vOffset != 0)
       return processAppend(ev);
-  }
-  */
-  //cout << "Process roof!" << endl; //DEBUG
+      }
+    */
+    //cout << "Process roof!" << endl; //DEBUG
 
-  VnLexiName target;
-  switch (ev.evType) {
-  case vneRoof_a:
-    target = vnl_ar;
-    break;
-  case vneRoof_e:
-    target = vnl_er;
-    break;
-  case vneRoof_o:
-    target = vnl_or;
-    break;
-  default:
-    target = vnl_nonVnChar;
-  }
+    VnLexiName target;
+    switch (ev.evType) {
+    case vneRoof_a:
+        target = vnl_ar;
+        break;
+    case vneRoof_e:
+        target = vnl_er;
+        break;
+    case vneRoof_o:
+        target = vnl_or;
+        break;
+    default:
+        target = vnl_nonVnChar;
+    }
 
 
-  VowelSeq vs, newVs;
-  int i, vStart, vEnd;
-  int curTonePos, newTonePos, tone;
-  int changePos;
-  bool roofRemoved = false;
+    VowelSeq vs, newVs;
+    int i, vStart, vEnd;
+    int curTonePos, newTonePos, tone;
+    int changePos;
+    bool roofRemoved = false;
 
-  vEnd = m_current - m_buffer[m_current].vOffset;
-  vs = m_buffer[vEnd].vseq;
-  vStart = vEnd - (VSeqList[vs].len - 1);
-  curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
-  tone = m_buffer[curTonePos].tone;
+    vEnd = m_current - m_buffer[m_current].vOffset;
+    vs = m_buffer[vEnd].vseq;
+    vStart = vEnd - (VSeqList[vs].len - 1);
+    curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
+    tone = m_buffer[curTonePos].tone;
 
-  newVs = VSeqList[vs].withRoof;
+    newVs = VSeqList[vs].withRoof;
 
-  VowelSeqInfo *pInfo;
+    VowelSeqInfo *pInfo;
 
-  if (newVs == vs_nil) {
-    if (VSeqList[vs].roofPos == -1)
-      return processAppend(ev); //roof is not applicable
+    if (newVs == vs_nil) {
+        if (VSeqList[vs].roofPos == -1)
+            return processAppend(ev); //roof is not applicable
     
-    //a roof already exists -> undo roof
-    VnLexiName curCh = m_buffer[vStart + VSeqList[vs].roofPos].vnSym;
-    if (target != vnl_nonVnChar && curCh != target)
-      return processAppend(ev); //specific roof and the roof character don't match
+        //a roof already exists -> undo roof
+        VnLexiName curCh = m_buffer[vStart + VSeqList[vs].roofPos].vnSym;
+        if (target != vnl_nonVnChar && curCh != target)
+            return processAppend(ev); //specific roof and the roof character don't match
 
-    VnLexiName newCh = (curCh == vnl_ar)? vnl_a : ((curCh == vnl_er)? vnl_e : vnl_o);
-    changePos = vStart + VSeqList[vs].roofPos;
+        VnLexiName newCh = (curCh == vnl_ar)? vnl_a : ((curCh == vnl_er)? vnl_e : vnl_o);
+        changePos = vStart + VSeqList[vs].roofPos;
 
-    if (!m_pCtrl->options.freeMarking && changePos != m_current)
-      return processAppend(ev);
+        if (!m_pCtrl->options.freeMarking && changePos != m_current)
+            return processAppend(ev);
 
-    markChange(changePos);
-    m_buffer[changePos].vnSym = newCh;
+        markChange(changePos);
+        m_buffer[changePos].vnSym = newCh;
 
-    if (VSeqList[vs].len == 3)
-      newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym, m_buffer[vStart+2].vnSym);
-    else if (VSeqList[vs].len == 2)
-      newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym);
-    else
-      newVs = lookupVSeq(m_buffer[vStart].vnSym);
+        if (VSeqList[vs].len == 3)
+            newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym, m_buffer[vStart+2].vnSym);
+        else if (VSeqList[vs].len == 2)
+            newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym);
+        else
+            newVs = lookupVSeq(m_buffer[vStart].vnSym);
 
-    pInfo = &VSeqList[newVs];
-    roofRemoved = true;
+        pInfo = &VSeqList[newVs];
+        roofRemoved = true;
  
-  }
-  else {
-    pInfo = &VSeqList[newVs];
-    if (target != vnl_nonVnChar &&  pInfo->v[pInfo->roofPos] != target)
-      return processAppend(ev);
-
-    //check validity of new VC and CV
-    bool valid = true;
-    if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
-      valid = isValidVC(newVs, m_buffer[m_current].cseq, &m_pCtrl->options);
     }
-    if (valid && (m_buffer[m_current].form == vnw_cv || m_buffer[m_current].form == vnw_cvc)) {
-      valid = isValidCV(m_buffer[m_current-m_buffer[m_current].c1Offset].cseq, newVs);
+    else {
+        pInfo = &VSeqList[newVs];
+        if (target != vnl_nonVnChar &&  pInfo->v[pInfo->roofPos] != target)
+            return processAppend(ev);
+
+        //check validity of new VC and CV
+        bool valid = true;
+        if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
+            valid = isValidVC(newVs, m_buffer[m_current].cseq, &m_pCtrl->options);
+        }
+        if (valid && (m_buffer[m_current].form == vnw_cv || m_buffer[m_current].form == vnw_cvc)) {
+            valid = isValidCV(m_buffer[m_current-m_buffer[m_current].c1Offset].cseq, newVs);
+        }
+        if (!valid)
+            return processAppend(ev);
+
+        changePos = vStart + pInfo->roofPos;
+        if (!m_pCtrl->options.freeMarking && changePos != m_current)
+            return processAppend(ev);
+        markChange(changePos);
+        m_buffer[changePos].vnSym = pInfo->v[pInfo->roofPos];
     }
-    if (!valid)
-      return processAppend(ev);
 
-    changePos = vStart + pInfo->roofPos;
-    if (!m_pCtrl->options.freeMarking && changePos != m_current)
-      return processAppend(ev);
-    markChange(changePos);
-    m_buffer[changePos].vnSym = pInfo->v[pInfo->roofPos];
-  }
+    for (i=0; i < pInfo->len; i++) { //update sub-sequences
+        m_buffer[vStart+i].vseq = pInfo->sub[i];
+    }
 
-  for (i=0; i < pInfo->len; i++) { //update sub-sequences
-    m_buffer[vStart+i].vseq = pInfo->sub[i];
-  }
+    //check if tone re-position is needed
+    newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
+    if (roofRemoved && tone != 0 &&
+        (!pInfo->complete || changePos == curTonePos)) {
+        //remove tone if the vowel sequence becomes incomplete as a result of roof removal OR
+        //if removed roof is at the same position as the current tone
+        markChange(curTonePos);
+        m_buffer[curTonePos].tone = 0;
+    }
+    else if (curTonePos != newTonePos && tone != 0) {
+        markChange(newTonePos);
+        m_buffer[newTonePos].tone = tone;
+        markChange(curTonePos);
+        m_buffer[curTonePos].tone = 0;
+    }
 
-  //check if tone re-position is needed
-  newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
-  if (roofRemoved && tone != 0 &&
-      (!pInfo->complete || changePos == curTonePos)) {
-    //remove tone if the vowel sequence becomes incomplete as a result of roof removal OR
-    //if removed roof is at the same position as the current tone
-    markChange(curTonePos);
-    m_buffer[curTonePos].tone = 0;
-  }
-  else if (curTonePos != newTonePos && tone != 0) {
-    markChange(newTonePos);
-    m_buffer[newTonePos].tone = tone;
-    markChange(curTonePos);
-    m_buffer[curTonePos].tone = 0;
-  }
-
-  if (roofRemoved)
-    processAppend(ev);
-  return 1;
+    if (roofRemoved)
+        processAppend(ev);
+    return 1;
 }
 
 //------------------------------------------------------------------
 // can only be called from processHook
 int UkEngine::processHookWithUO(UkKeyEvent & ev)
 {
-  VowelSeq vs, newVs;
-  int i, vStart, vEnd;
-  int curTonePos, newTonePos, tone;
-  bool hookRemoved = false;
-  bool removeWithUndo = true;
-  bool toneRemoved = false;
+    VowelSeq vs, newVs;
+    int i, vStart, vEnd;
+    int curTonePos, newTonePos, tone;
+    bool hookRemoved = false;
+    bool removeWithUndo = true;
+    bool toneRemoved = false;
 
-  VnLexiName *v;
+    VnLexiName *v;
 
-  //cout << "Process HookWithUO!" << endl; //DEBUG
-  if (!m_pCtrl->options.freeMarking && m_buffer[m_current].vOffset != 0)
-    return processAppend(ev);    
+    //cout << "Process HookWithUO!" << endl; //DEBUG
+    if (!m_pCtrl->options.freeMarking && m_buffer[m_current].vOffset != 0)
+        return processAppend(ev);    
 
-  vEnd = m_current - m_buffer[m_current].vOffset;
-  vs = m_buffer[vEnd].vseq;
-  vStart = vEnd - (VSeqList[vs].len - 1);
-  v = VSeqList[vs].v;
-  curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
-  tone = m_buffer[curTonePos].tone;
+    vEnd = m_current - m_buffer[m_current].vOffset;
+    vs = m_buffer[vEnd].vseq;
+    vStart = vEnd - (VSeqList[vs].len - 1);
+    v = VSeqList[vs].v;
+    curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
+    tone = m_buffer[curTonePos].tone;
 
-  switch (ev.evType) {
-  case vneHook_u:
-    if (v[0] == vnl_u) {
-      newVs = VSeqList[vs].withHook;
-      markChange(vStart);
-      m_buffer[vStart].vnSym = vnl_uh;
+    switch (ev.evType) {
+    case vneHook_u:
+        if (v[0] == vnl_u) {
+            newVs = VSeqList[vs].withHook;
+            markChange(vStart);
+            m_buffer[vStart].vnSym = vnl_uh;
+        }
+        else {// v[0] = vnl_uh
+            newVs = lookupVSeq(vnl_u, v[1], v[2]);
+            markChange(vStart);
+            m_buffer[vStart].vnSym = vnl_u;
+            hookRemoved = true;
+            toneRemoved =  (m_buffer[vStart].tone != 0);
+        }
+        break;
+    case vneHook_o:
+        if (v[1] == vnl_o) {
+            newVs = lookupVSeq(v[0], vnl_oh, v[2]);
+            markChange(vStart+1);
+            m_buffer[vStart+1].vnSym = vnl_oh;
+        }
+        else {// v[1] = vnl_oh
+            newVs = lookupVSeq(v[0], vnl_o, v[2]);
+            markChange(vStart+1);
+            m_buffer[vStart+1].vnSym = vnl_o;
+            hookRemoved = true;
+            toneRemoved = (m_buffer[vStart+1].tone != 0);
+        }
+        break;
+    default:  //vneHookAll:
+        if (v[0] == vnl_u) {
+            if (v[1] == vnl_o) {
+                newVs = VSeqList[vs].withHook;
+                markChange(vStart);
+                m_buffer[vStart].vnSym = vnl_uh;
+                newVs = VSeqList[newVs].withHook;
+                m_buffer[vStart+1].vnSym = vnl_oh;
+            }
+            else if (vEnd == m_current) { //vs_uoh -> vs_uo [ev]
+                newVs = vs_uo;
+                markChange(vStart+1);
+                m_buffer[vStart+1].vnSym = vnl_o;
+                hookRemoved = true;
+                toneRemoved = (m_buffer[vStart+1].tone != 0);
+            }
+            else {
+                newVs = VSeqList[vs].withHook;
+                markChange(vStart);
+                m_buffer[vStart].vnSym = vnl_uh;
+            }
+        }
+        else {//v[0] == vnl_uh
+            if (v[1] == vnl_o) {
+                newVs = lookupVSeq(v[0], vnl_oh, v[2]);
+                markChange(vStart+1);
+                m_buffer[vStart+1].vnSym = vnl_oh;
+            }
+            else { //v[1] == vnl_oh
+                if (vEnd == m_current) {//vs_uhoh -> vs_uoh
+                    newVs = vs_uoh;
+                    markChange(vStart);
+                    m_buffer[vStart].vnSym = vnl_u;
+                    hookRemoved = true;
+                    removeWithUndo = false;
+                    toneRemoved = (m_buffer[vStart].tone != 0);
+                }
+                else {
+                    newVs = lookupVSeq(vnl_u, vnl_o, v[2]);
+                    markChange(vStart);
+                    m_buffer[vStart].vnSym = vnl_u;
+                    m_buffer[vStart+1].vnSym = vnl_o;
+                    hookRemoved = true;
+                    toneRemoved = (m_buffer[vStart].tone != 0 || m_buffer[vStart+1].tone != 0);
+                }
+            }
+        }
+        break;
     }
-    else {// v[0] = vnl_uh
-      newVs = lookupVSeq(vnl_u, v[1], v[2]);
-      markChange(vStart);
-      m_buffer[vStart].vnSym = vnl_u;
-      hookRemoved = true;
-      toneRemoved =  (m_buffer[vStart].tone != 0);
-    }
-    break;
-  case vneHook_o:
-    if (v[1] == vnl_o) {
-      newVs = lookupVSeq(v[0], vnl_oh, v[2]);
-      markChange(vStart+1);
-      m_buffer[vStart+1].vnSym = vnl_oh;
-    }
-    else {// v[1] = vnl_oh
-      newVs = lookupVSeq(v[0], vnl_o, v[2]);
-      markChange(vStart+1);
-      m_buffer[vStart+1].vnSym = vnl_o;
-      hookRemoved = true;
-      toneRemoved = (m_buffer[vStart+1].tone != 0);
-    }
-    break;
-  default:  //vneHookAll:
-    if (v[0] == vnl_u) {
-      if (v[1] == vnl_o) {
-	newVs = VSeqList[vs].withHook;
-	markChange(vStart);
-	m_buffer[vStart].vnSym = vnl_uh;
-	newVs = VSeqList[newVs].withHook;
-	m_buffer[vStart+1].vnSym = vnl_oh;
-      }
-      else if (vEnd == m_current) { //vs_uoh -> vs_uo [ev]
-	newVs = vs_uo;
-	markChange(vStart+1);
-	m_buffer[vStart+1].vnSym = vnl_o;
-	hookRemoved = true;
-	toneRemoved = (m_buffer[vStart+1].tone != 0);
-      }
-      else {
-	newVs = VSeqList[vs].withHook;
-	markChange(vStart);
-	m_buffer[vStart].vnSym = vnl_uh;
-      }
-    }
-    else {//v[0] == vnl_uh
-      if (v[1] == vnl_o) {
-	newVs = lookupVSeq(v[0], vnl_oh, v[2]);
-	markChange(vStart+1);
-	m_buffer[vStart+1].vnSym = vnl_oh;
-      }
-      else { //v[1] == vnl_oh
-	if (vEnd == m_current) {//vs_uhoh -> vs_uoh
-	  newVs = vs_uoh;
-	  markChange(vStart);
-	  m_buffer[vStart].vnSym = vnl_u;
-	  hookRemoved = true;
-	  removeWithUndo = false;
-	  toneRemoved = (m_buffer[vStart].tone != 0);
-	}
-	else {
-	  newVs = lookupVSeq(vnl_u, vnl_o, v[2]);
-	  markChange(vStart);
-	  m_buffer[vStart].vnSym = vnl_u;
-	  m_buffer[vStart+1].vnSym = vnl_o;
-	  hookRemoved = true;
-	  toneRemoved = (m_buffer[vStart].tone != 0 || m_buffer[vStart+1].tone != 0);
-	}
-      }
-    }
-    break;
-  }
-  
-  VowelSeqInfo *p = &VSeqList[newVs];
-  for (i=0; i < p->len; i++) { //update sub-sequences
-    m_buffer[vStart+i].vseq = p->sub[i];
-  }
 
-  //check if tone re-position is needed
-  newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
-  if (hookRemoved && tone != 0 && (!p->complete || toneRemoved)) {
-    //remove tone if the vowel sequence becomes incomplete as a result of hook removal
-    //OR if a removed hook is at the same position as the current tone
-    markChange(curTonePos);
-    m_buffer[curTonePos].tone = 0;
-  }
-  else if (curTonePos != newTonePos && tone != 0) {
-    markChange(newTonePos);
-    m_buffer[newTonePos].tone = tone;
-    markChange(curTonePos);
-    m_buffer[curTonePos].tone = 0;
-  }
+    VowelSeqInfo *p = &VSeqList[newVs];
+    for (i=0; i < p->len; i++) { //update sub-sequences
+        m_buffer[vStart+i].vseq = p->sub[i];
+    }
 
-  if (hookRemoved && removeWithUndo)
-    processAppend(ev);
-  return 1;
+    //check if tone re-position is needed
+    newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
+    if (hookRemoved && tone != 0 && (!p->complete || toneRemoved)) {
+        //remove tone if the vowel sequence becomes incomplete as a result of hook removal
+        //OR if a removed hook is at the same position as the current tone
+        markChange(curTonePos);
+        m_buffer[curTonePos].tone = 0;
+    }
+    else if (curTonePos != newTonePos && tone != 0) {
+        markChange(newTonePos);
+        m_buffer[newTonePos].tone = tone;
+        markChange(curTonePos);
+        m_buffer[curTonePos].tone = 0;
+    }
+
+    if (hookRemoved && removeWithUndo)
+        processAppend(ev);
+    return 1;
 }
 
 //------------------------------------------------------------------
 int UkEngine::processHook(UkKeyEvent & ev)
 {
-  if (m_current < 0 || m_buffer[m_current].vOffset < 0)
-    return processAppend(ev);
-  //cout << "Process hook!" << endl; //DEBUG
+    if (m_current < 0 || m_buffer[m_current].vOffset < 0)
+        return processAppend(ev);
+    //cout << "Process hook!" << endl; //DEBUG
+
+    VowelSeq vs, newVs;
+    int i, vStart, vEnd;
+    int curTonePos, newTonePos, tone;
+    int changePos;
+    bool hookRemoved = false;
+    VowelSeqInfo *pInfo;
+    VnLexiName *v;
+
+    vEnd = m_current - m_buffer[m_current].vOffset;
+    vs = m_buffer[vEnd].vseq;
+
+    v = VSeqList[vs].v;
   
-  VowelSeq vs, newVs;
-  int i, vStart, vEnd;
-  int curTonePos, newTonePos, tone;
-  int changePos;
-  bool hookRemoved = false;
-  VowelSeqInfo *pInfo;
-  VnLexiName *v;
-
-  vEnd = m_current - m_buffer[m_current].vOffset;
-  vs = m_buffer[vEnd].vseq;
-
-  v = VSeqList[vs].v;
-  
-  if (VSeqList[vs].len > 1 && 
-      ev.evType != vneBowl &&
-      (v[0] == vnl_u || v[0] == vnl_uh) &&
-      (v[1] == vnl_o || v[1] == vnl_oh))
-    return processHookWithUO(ev);
+    if (VSeqList[vs].len > 1 && 
+        ev.evType != vneBowl &&
+        (v[0] == vnl_u || v[0] == vnl_uh) &&
+        (v[1] == vnl_o || v[1] == vnl_oh))
+        return processHookWithUO(ev);
 
 
-  vStart = vEnd - (VSeqList[vs].len - 1);
-  curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
-  tone = m_buffer[curTonePos].tone;
+    vStart = vEnd - (VSeqList[vs].len - 1);
+    curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
+    tone = m_buffer[curTonePos].tone;
 
-  newVs = VSeqList[vs].withHook;
-  if (newVs == vs_nil) {
-    if (VSeqList[vs].hookPos == -1)
-      return processAppend(ev); //hook is not applicable
+    newVs = VSeqList[vs].withHook;
+    if (newVs == vs_nil) {
+        if (VSeqList[vs].hookPos == -1)
+            return processAppend(ev); //hook is not applicable
 
-    //a hook already exists -> undo hook
-    VnLexiName curCh = m_buffer[vStart + VSeqList[vs].hookPos].vnSym;
-    VnLexiName newCh = (curCh == vnl_ab)? vnl_a : ((curCh == vnl_uh)? vnl_u : vnl_o);
-    changePos = vStart + VSeqList[vs].hookPos;
-    if (!m_pCtrl->options.freeMarking && changePos != m_current)
-      return processAppend(ev);
+        //a hook already exists -> undo hook
+        VnLexiName curCh = m_buffer[vStart + VSeqList[vs].hookPos].vnSym;
+        VnLexiName newCh = (curCh == vnl_ab)? vnl_a : ((curCh == vnl_uh)? vnl_u : vnl_o);
+        changePos = vStart + VSeqList[vs].hookPos;
+        if (!m_pCtrl->options.freeMarking && changePos != m_current)
+            return processAppend(ev);
 
-    switch (ev.evType) {
-    case vneHook_u:
-      if (curCh != vnl_uh)
-	return processAppend(ev);
-      break;
-    case vneHook_o:
-      if (curCh != vnl_oh)
-	return processAppend(ev);
-      break;
-    case vneBowl:
-      if (curCh != vnl_ab)
-	return processAppend(ev);
-      break;
-    default:
-      if (ev.evType == vneHook_uo && curCh == vnl_ab)
-	return processAppend(ev);
+        switch (ev.evType) {
+        case vneHook_u:
+            if (curCh != vnl_uh)
+                return processAppend(ev);
+            break;
+        case vneHook_o:
+            if (curCh != vnl_oh)
+                return processAppend(ev);
+            break;
+        case vneBowl:
+            if (curCh != vnl_ab)
+                return processAppend(ev);
+            break;
+        default:
+            if (ev.evType == vneHook_uo && curCh == vnl_ab)
+                return processAppend(ev);
+        }
+        markChange(changePos);
+        m_buffer[changePos].vnSym = newCh;
+
+        if (VSeqList[vs].len == 3)
+            newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym, m_buffer[vStart+2].vnSym);
+        else if (VSeqList[vs].len == 2)
+            newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym);
+        else
+            newVs = lookupVSeq(m_buffer[vStart].vnSym);
+
+        pInfo = &VSeqList[newVs];
+        hookRemoved = true;
     }
-    markChange(changePos);
-    m_buffer[changePos].vnSym = newCh;
+    else {
+        pInfo = &VSeqList[newVs];
 
-    if (VSeqList[vs].len == 3)
-      newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym, m_buffer[vStart+2].vnSym);
-    else if (VSeqList[vs].len == 2)
-      newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym);
-    else
-      newVs = lookupVSeq(m_buffer[vStart].vnSym);
+        VnLexiName newChar;
 
-    pInfo = &VSeqList[newVs];
-    hookRemoved = true;
-  }
-  else {
-    pInfo = &VSeqList[newVs];
+        switch (ev.evType) {
+        case vneHook_u:
+            if (pInfo->v[pInfo->hookPos] != vnl_u)
+                return processAppend(ev);
+            newChar = vnl_uh;
+            break;
+        case vneHook_o:
+            if (pInfo->v[pInfo->hookPos] != vnl_o)
+                return processAppend(ev);
+            newChar = vnl_oh;
+            break;
+        case vneBowl:
+            if (pInfo->v[pInfo->hookPos] != vnl_ab)
+                return processAppend(ev);
+            newChar = vnl_ab;
+            break;
+        default: //vneHook_uo, vneHookAll
+            if (ev.evType == vneHook_uo && pInfo->v[pInfo->hookPos] == vnl_ab)
+                return processAppend(ev);
+            newChar = pInfo->v[pInfo->hookPos];
+        }
 
-    VnLexiName newChar;
+        //check validity of new VC and CV
+        bool valid = true;
+        if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
+            valid = isValidVC(newVs, m_buffer[m_current].cseq, &m_pCtrl->options);
+        }
+        if (valid && (m_buffer[m_current].form == vnw_cv || m_buffer[m_current].form == vnw_cvc)) {
+            valid = isValidCV(m_buffer[m_current-m_buffer[m_current].c1Offset].cseq, newVs);
+        }
+        if (!valid)
+            return processAppend(ev);
+        //
 
-    switch (ev.evType) {
-    case vneHook_u:
-      if (pInfo->v[pInfo->hookPos] != vnl_u)
-	return processAppend(ev);
-      newChar = vnl_uh;
-      break;
-    case vneHook_o:
-      if (pInfo->v[pInfo->hookPos] != vnl_o)
-	return processAppend(ev);
-      newChar = vnl_oh;
-      break;
-    case vneBowl:
-      if (pInfo->v[pInfo->hookPos] != vnl_ab)
-	return processAppend(ev);
-      newChar = vnl_ab;
-      break;
-    default: //vneHook_uo, vneHookAll
-      if (ev.evType == vneHook_uo && pInfo->v[pInfo->hookPos] == vnl_ab)
-	return processAppend(ev);
-      newChar = pInfo->v[pInfo->hookPos];
+        changePos = vStart + pInfo->hookPos;
+        if (!m_pCtrl->options.freeMarking && changePos != m_current)
+            return processAppend(ev);
+        markChange(changePos);
+        m_buffer[changePos].vnSym = newChar;
     }
-
-    //check validity of new VC and CV
-    bool valid = true;
-    if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
-      valid = isValidVC(newVs, m_buffer[m_current].cseq, &m_pCtrl->options);
-    }
-    if (valid && (m_buffer[m_current].form == vnw_cv || m_buffer[m_current].form == vnw_cvc)) {
-      valid = isValidCV(m_buffer[m_current-m_buffer[m_current].c1Offset].cseq, newVs);
-    }
-    if (!valid)
-      return processAppend(ev);
-    //
-
-    changePos = vStart + pInfo->hookPos;
-    if (!m_pCtrl->options.freeMarking && changePos != m_current)
-      return processAppend(ev);
-    markChange(changePos);
-    m_buffer[changePos].vnSym = newChar;
-  }
    
-  for (i=0; i < pInfo->len; i++) { //update sub-sequences
-    m_buffer[vStart+i].vseq = pInfo->sub[i];
-  }
+    for (i=0; i < pInfo->len; i++) { //update sub-sequences
+        m_buffer[vStart+i].vseq = pInfo->sub[i];
+    }
 
-  //check if tone re-position is needed
-  newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
-  if (hookRemoved && tone != 0 && 
-      (!pInfo->complete || (hookRemoved && curTonePos == changePos))) {
-    //remove tone if the vowel sequence becomes incomplete as a result of hook removal
-    //OR if a removed hook was at the same position as the current tone
-    markChange(curTonePos);
-    m_buffer[curTonePos].tone = 0;
-  }
-  else if (curTonePos != newTonePos && tone != 0) {
-    markChange(newTonePos);
-    m_buffer[newTonePos].tone = tone;
-    markChange(curTonePos);
-    m_buffer[curTonePos].tone = 0;
-  }
+    //check if tone re-position is needed
+    newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
+    if (hookRemoved && tone != 0 && 
+        (!pInfo->complete || (hookRemoved && curTonePos == changePos))) {
+        //remove tone if the vowel sequence becomes incomplete as a result of hook removal
+        //OR if a removed hook was at the same position as the current tone
+        markChange(curTonePos);
+        m_buffer[curTonePos].tone = 0;
+    }
+    else if (curTonePos != newTonePos && tone != 0) {
+        markChange(newTonePos);
+        m_buffer[newTonePos].tone = tone;
+        markChange(curTonePos);
+        m_buffer[curTonePos].tone = 0;
+    }
 
-  if (hookRemoved)
-    processAppend(ev);
-  return 1;
+    if (hookRemoved)
+        processAppend(ev);
+    return 1;
 }
 
 //----------------------------------------------------------
 int UkEngine::getTonePosition(VowelSeq vs, bool terminated)
 {
-  VowelSeqInfo & info = VSeqList[vs];
-  if (info.len == 1)
-    return 0;
+    VowelSeqInfo & info = VSeqList[vs];
+    if (info.len == 1)
+        return 0;
 
-  if (info.roofPos != -1)
-    return info.roofPos;
-  if (info.hookPos != -1) {
-    if (vs == vs_uhoh || vs == vs_uhohi || vs == vs_uhohu) //u+o+, u+o+u, u+o+i
-      return 1;
-    return info.hookPos;
-  }
+    if (info.roofPos != -1)
+        return info.roofPos;
+    if (info.hookPos != -1) {
+        if (vs == vs_uhoh || vs == vs_uhohi || vs == vs_uhohu) //u+o+, u+o+u, u+o+i
+            return 1;
+        return info.hookPos;
+    }
   
-  if (info.len == 3)
-    return 1;
+    if (info.len == 3)
+        return 1;
 
-  if (m_pCtrl->options.modernStyle &&
-      (vs == vs_oa || vs == vs_oe ||vs == vs_uy))
-    return 1;
+    if (m_pCtrl->options.modernStyle &&
+        (vs == vs_oa || vs == vs_oe ||vs == vs_uy))
+        return 1;
 
-  return terminated ? 0 : 1;
+    return terminated ? 0 : 1;
 }
 
 //----------------------------------------------------------
 int UkEngine::processTone(UkKeyEvent & ev)
 {
-  //cout << "Process tone!" << endl; //DEBUG
-  if (m_current < 0)
-    return processAppend(ev);
+    //cout << "Process tone!" << endl; //DEBUG
+    if (m_current < 0)
+        return processAppend(ev);
 
-  if (m_buffer[m_current].form == vnw_c && 
-      (m_buffer[m_current].cseq == cs_gi || m_buffer[m_current].cseq == cs_gin)) {
-    int p = (m_buffer[m_current].cseq == cs_gi)? m_current : m_current - 1;
-    if (m_buffer[p].tone == 0 && ev.tone == 0)
-      return processAppend(ev);
-    markChange(p);
-    if (m_buffer[p].tone == ev.tone) {
-      m_buffer[p].tone = 0;
-      processAppend(ev);
-      return 1;
+    if (m_buffer[m_current].form == vnw_c && 
+        (m_buffer[m_current].cseq == cs_gi || m_buffer[m_current].cseq == cs_gin)) {
+        int p = (m_buffer[m_current].cseq == cs_gi)? m_current : m_current - 1;
+        if (m_buffer[p].tone == 0 && ev.tone == 0)
+            return processAppend(ev);
+        markChange(p);
+        if (m_buffer[p].tone == ev.tone) {
+            m_buffer[p].tone = 0;
+            processAppend(ev);
+            return 1;
+        }
+        m_buffer[p].tone = ev.tone;
+        return 1;
     }
-    m_buffer[p].tone = ev.tone;
-    return 1;
-  }
 
-  if (m_buffer[m_current].vOffset < 0)
-    return processAppend(ev);
+    if (m_buffer[m_current].vOffset < 0)
+        return processAppend(ev);
 
-  int vEnd;
-  VowelSeq vs;
+    int vEnd;
+    VowelSeq vs;
 
-  vEnd = m_current - m_buffer[m_current].vOffset;
-  vs = m_buffer[vEnd].vseq;
-  VowelSeqInfo & info = VSeqList[vs];
-  if (!info.complete)
-    return processAppend(ev);
+    vEnd = m_current - m_buffer[m_current].vOffset;
+    vs = m_buffer[vEnd].vseq;
+    VowelSeqInfo & info = VSeqList[vs];
+    if (!info.complete)
+        return processAppend(ev);
 
-  if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
-    ConSeq cs = m_buffer[m_current].cseq;
-    if ((cs == cs_c || cs == cs_ch || cs == cs_p || cs == cs_t) &&
-	(ev.tone == 2 || ev.tone == 3 || ev.tone == 4))
-      return processAppend(ev); // c, ch, p, t suffixes don't allow ` ? ~
-  }
+    if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
+        ConSeq cs = m_buffer[m_current].cseq;
+        if ((cs == cs_c || cs == cs_ch || cs == cs_p || cs == cs_t) &&
+            (ev.tone == 2 || ev.tone == 3 || ev.tone == 4))
+            return processAppend(ev); // c, ch, p, t suffixes don't allow ` ? ~
+    }
       
-  int toneOffset = getTonePosition(vs, vEnd == m_current);
-  int tonePos = vEnd - (info.len -1 ) + toneOffset;
-  if (m_buffer[tonePos].tone == 0 && ev.tone == 0)
-    return processAppend(ev);
+    int toneOffset = getTonePosition(vs, vEnd == m_current);
+    int tonePos = vEnd - (info.len -1 ) + toneOffset;
+    if (m_buffer[tonePos].tone == 0 && ev.tone == 0)
+        return processAppend(ev);
 
-  if (m_buffer[tonePos].tone == ev.tone) {
+    if (m_buffer[tonePos].tone == ev.tone) {
+        markChange(tonePos);
+        m_buffer[tonePos].tone = 0;
+        processAppend(ev);
+        return 1;
+    }
+
     markChange(tonePos);
-    m_buffer[tonePos].tone = 0;
-    processAppend(ev);
+    m_buffer[tonePos].tone = ev.tone;
     return 1;
-  }
-
-  markChange(tonePos);
-  m_buffer[tonePos].tone = ev.tone;
-  return 1;
 }
 
 //----------------------------------------------------------
 int UkEngine::processDd(UkKeyEvent & ev)
 {
-  //cout << "Process dd!" << endl; //DEBUG  
-  if (m_current < 0 || m_buffer[m_current].c1Offset < 0)
-    return processAppend(ev);
+    //cout << "Process dd!" << endl; //DEBUG  
+    if (m_current < 0 || m_buffer[m_current].c1Offset < 0)
+        return processAppend(ev);
 
-  int pos = m_current - m_buffer[m_current].c1Offset;
-  if (!m_pCtrl->options.freeMarking && pos != m_current)
-    return processAppend(ev);
+    int pos = m_current - m_buffer[m_current].c1Offset;
+    if (!m_pCtrl->options.freeMarking && pos != m_current)
+        return processAppend(ev);
 
-  if (m_buffer[pos].cseq == cs_d) {
-    markChange(pos);
-    m_buffer[pos].cseq = cs_dd;
-    m_buffer[pos].vnSym = vnl_dd;
-    return 1;
-  }
+    if (m_buffer[pos].cseq == cs_d) {
+        markChange(pos);
+        m_buffer[pos].cseq = cs_dd;
+        m_buffer[pos].vnSym = vnl_dd;
+        return 1;
+    }
 
-  if (m_buffer[pos].cseq == cs_dd) {
-    //undo dd
-    markChange(pos);
-    m_buffer[pos].cseq = cs_d;
-    m_buffer[pos].vnSym = vnl_d;
-    processAppend(ev);
-    return 1;
-  }
+    if (m_buffer[pos].cseq == cs_dd) {
+        //undo dd
+        markChange(pos);
+        m_buffer[pos].cseq = cs_d;
+        m_buffer[pos].vnSym = vnl_d;
+        processAppend(ev);
+        return 1;
+    }
   
-  return processAppend(ev);
+    return processAppend(ev);
 }
 
 //----------------------------------------------------------
 VnLexiName changeCase(VnLexiName x)
 {
-  if (x == vnl_nonVnChar)
-    return vnl_nonVnChar;
-  if (x == ((x >> 1) << 1)) //even
-    return (VnLexiName)(x+1);
-  return (VnLexiName)(x-1);
+    if (x == vnl_nonVnChar)
+        return vnl_nonVnChar;
+    if (x == ((x >> 1) << 1)) //even
+        return (VnLexiName)(x+1);
+    return (VnLexiName)(x-1);
 }
 
 //----------------------------------------------------------
 inline VnLexiName vnToLower(VnLexiName x)
 {
-  if (x == ((x >> 1) << 1)) //even
-    return (VnLexiName)(x+1);
-  return x;
+    if (x == ((x >> 1) << 1)) //even
+        return (VnLexiName)(x+1);
+    return x;
 }
 
 //----------------------------------------------------------
@@ -972,408 +972,408 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
 
     int ret = processAppend(ev);
     if (m_current >= 0 && m_buffer[m_current].form != vnw_empty &&
-          m_buffer[m_current].form != vnw_nonVn) {
+        m_buffer[m_current].form != vnw_nonVn) {
         return 1;
     }
 
-  if (m_current < 0)
-    return 0;
+    if (m_current < 0)
+        return 0;
 
-  // mapChar doesn't apply
-  m_current--;
-  WordInfo & entry = m_buffer[m_current];
+    // mapChar doesn't apply
+    m_current--;
+    WordInfo & entry = m_buffer[m_current];
 
-  bool undo = false;
-  // test if undo is needed
-  if (entry.form != vnw_empty && entry.form != vnw_nonVn) {
-    VnLexiName prevSym = entry.vnSym;
-    if (entry.caps)
-      prevSym = (VnLexiName)(prevSym - 1);
-    if (prevSym == ev.vnSym) {
-      if (entry.form != vnw_c) {
-	int vStart, vEnd, curTonePos, newTonePos, tone;
-	VowelSeq vs, newVs;
+    bool undo = false;
+    // test if undo is needed
+    if (entry.form != vnw_empty && entry.form != vnw_nonVn) {
+        VnLexiName prevSym = entry.vnSym;
+        if (entry.caps)
+            prevSym = (VnLexiName)(prevSym - 1);
+        if (prevSym == ev.vnSym) {
+            if (entry.form != vnw_c) {
+                int vStart, vEnd, curTonePos, newTonePos, tone;
+                VowelSeq vs, newVs;
 
-	vEnd = m_current - entry.vOffset;
-	vs = m_buffer[vEnd].vseq;
-	vStart = vEnd - VSeqList[vs].len +1;
-	curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
-	tone = m_buffer[curTonePos].tone;
-	markChange(m_current);
-	m_current--;
+                vEnd = m_current - entry.vOffset;
+                vs = m_buffer[vEnd].vseq;
+                vStart = vEnd - VSeqList[vs].len +1;
+                curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
+                tone = m_buffer[curTonePos].tone;
+                markChange(m_current);
+                m_current--;
 
-	//check if tone position is needed
-	if (tone != 0 && m_current >= 0 &&
-	    (m_buffer[m_current].form == vnw_v || m_buffer[m_current].form == vnw_cv)) {
-	  newVs = m_buffer[m_current].vseq;
-	  newTonePos = vStart + getTonePosition(newVs, true);
-	  if (newTonePos != curTonePos) {
-	    markChange(newTonePos);
-	    m_buffer[newTonePos].tone = tone;
-	    markChange(curTonePos);
-	    m_buffer[curTonePos].tone = 0;
-	  }
-	}
-      }
-      else {
-	markChange(m_current);
-	m_current--;
-      }
-      undo = true;
+                //check if tone position is needed
+                if (tone != 0 && m_current >= 0 &&
+                    (m_buffer[m_current].form == vnw_v || m_buffer[m_current].form == vnw_cv)) {
+                    newVs = m_buffer[m_current].vseq;
+                    newTonePos = vStart + getTonePosition(newVs, true);
+                    if (newTonePos != curTonePos) {
+                        markChange(newTonePos);
+                        m_buffer[newTonePos].tone = tone;
+                        markChange(curTonePos);
+                        m_buffer[curTonePos].tone = 0;
+                    }
+                }
+            }
+            else {
+                markChange(m_current);
+                m_current--;
+            }
+            undo = true;
+        }
     }
-  }
 
-  ev.evType = vneNormal;
-  ev.chType = m_pCtrl->input.getCharType(ev.keyCode);
-  ev.vnSym = IsoToVnLexi(ev.keyCode);
-  ret = processAppend(ev);
-  if (undo)
-    return 1;
-  return ret;
+    ev.evType = vneNormal;
+    ev.chType = m_pCtrl->input.getCharType(ev.keyCode);
+    ev.vnSym = IsoToVnLexi(ev.keyCode);
+    ret = processAppend(ev);
+    if (undo)
+        return 1;
+    return ret;
 }
 
 //----------------------------------------------------------
 int UkEngine::processTelexW(UkKeyEvent & ev)
 {
-  //cout << "Process telex W\n"; //DEBUG
-  int ret;
-  static bool usedAsMapChar = false;
-  int capsLockOn = 0;
-  int shiftPressed = 0;
-  if (m_keyCheckFunc)
-    m_keyCheckFunc(&shiftPressed, &capsLockOn);
+    //cout << "Process telex W\n"; //DEBUG
+    int ret;
+    static bool usedAsMapChar = false;
+    int capsLockOn = 0;
+    int shiftPressed = 0;
+    if (m_keyCheckFunc)
+        m_keyCheckFunc(&shiftPressed, &capsLockOn);
 
-  if (usedAsMapChar) {
-    ev.evType = vneMapChar;
-    ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
-    if (capsLockOn)
-      ev.vnSym = changeCase(ev.vnSym);
-    ev.chType = ukcVn;
-    ret = processMapChar(ev);
+    if (usedAsMapChar) {
+        ev.evType = vneMapChar;
+        ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
+        if (capsLockOn)
+            ev.vnSym = changeCase(ev.vnSym);
+        ev.chType = ukcVn;
+        ret = processMapChar(ev);
+        if (ret == 0) {
+            if (m_current >= 0)
+                m_current--;
+            usedAsMapChar = false;
+            ev.evType = vneHookAll;
+            return processHook(ev);
+        }
+        return ret;
+    }
+
+    ev.evType = vneHookAll;
+    usedAsMapChar = false;
+    ret = processHook(ev);
     if (ret == 0) {
-      if (m_current >= 0)
-	      m_current--;
-      usedAsMapChar = false;
-      ev.evType = vneHookAll;
-      return processHook(ev);
+        if (m_current >= 0)
+            m_current--;
+        ev.evType = vneMapChar;
+        ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
+        if (capsLockOn)
+            ev.vnSym = changeCase(ev.vnSym);
+        ev.chType = ukcVn;
+        usedAsMapChar = true;
+        return processMapChar(ev);
     }
     return ret;
-  }
-
-  ev.evType = vneHookAll;
-  usedAsMapChar = false;
-  ret = processHook(ev);
-  if (ret == 0) {
-    if (m_current >= 0)
-      m_current--;
-    ev.evType = vneMapChar;
-    ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
-    if (capsLockOn)
-      ev.vnSym = changeCase(ev.vnSym);
-    ev.chType = ukcVn;
-    usedAsMapChar = true;
-    return processMapChar(ev);
-  }
-  return ret;
 }
 
 //----------------------------------------------------------
 int UkEngine::checkEscapeVIQR(UkKeyEvent & ev)
 {
-  if (m_current < 0)
-    return 0;
-  WordInfo & entry = m_buffer[m_current];
-  int escape = 0;
-  if (entry.form == vnw_v || entry.form == vnw_cv) {
-    switch (ev.keyCode) {
-    case '^':
-      escape = (entry.vnSym == vnl_a || entry.vnSym == vnl_o || entry.vnSym == vnl_e);
-      break;
-    case '(':
-      escape = (entry.vnSym == vnl_a);
-      break;
-    case '+':
-      escape = (entry.vnSym == vnl_o || entry.vnSym == vnl_u);
-      break;
-    case '\'':
-    case '`':
-    case '?':
-    case '~':
-    case '.':
-      escape = (entry.tone == 0);
-      break;
+    if (m_current < 0)
+        return 0;
+    WordInfo & entry = m_buffer[m_current];
+    int escape = 0;
+    if (entry.form == vnw_v || entry.form == vnw_cv) {
+        switch (ev.keyCode) {
+        case '^':
+            escape = (entry.vnSym == vnl_a || entry.vnSym == vnl_o || entry.vnSym == vnl_e);
+            break;
+        case '(':
+            escape = (entry.vnSym == vnl_a);
+            break;
+        case '+':
+            escape = (entry.vnSym == vnl_o || entry.vnSym == vnl_u);
+            break;
+        case '\'':
+        case '`':
+        case '?':
+        case '~':
+        case '.':
+            escape = (entry.tone == 0);
+            break;
+        }
     }
-  }
-  else if (entry.form == vnw_nonVn) {
-    unsigned char ch = toupper(entry.keyCode);
-    switch (ev.keyCode) {
-    case '^':
-      escape = (ch == 'A' || ch == 'O' || ch == 'E');
-      break;
-    case '(':
-      escape = (ch == 'A');
-      break;
-    case '+':
-      escape = (ch == 'O' || ch == 'U');
-      break;
-    case '\'':
-    case '`':
-    case '?':
-    case '~':
-    case '.':
-      escape = (ch == 'A' || ch == 'E' || ch == 'I' ||
-		ch == 'O' || ch == 'U' || ch == 'Y');
-      break;
+    else if (entry.form == vnw_nonVn) {
+        unsigned char ch = toupper(entry.keyCode);
+        switch (ev.keyCode) {
+        case '^':
+            escape = (ch == 'A' || ch == 'O' || ch == 'E');
+            break;
+        case '(':
+            escape = (ch == 'A');
+            break;
+        case '+':
+            escape = (ch == 'O' || ch == 'U');
+            break;
+        case '\'':
+        case '`':
+        case '?':
+        case '~':
+        case '.':
+            escape = (ch == 'A' || ch == 'E' || ch == 'I' ||
+                      ch == 'O' || ch == 'U' || ch == 'Y');
+            break;
+        }
     }
-  }
   
-  if (escape) {
-    m_current++;
-    WordInfo *p = &m_buffer[m_current];
-    p->form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
-    p->c1Offset = p->c2Offset = p->vOffset = -1;
-    p->keyCode = '?';
-    p->vnSym = vnl_nonVnChar;
+    if (escape) {
+        m_current++;
+        WordInfo *p = &m_buffer[m_current];
+        p->form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
+        p->c1Offset = p->c2Offset = p->vOffset = -1;
+        p->keyCode = '?';
+        p->vnSym = vnl_nonVnChar;
 
-    m_current++;
-    p++;
-    p->form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
-    p->c1Offset = p->c2Offset = p->vOffset = -1;
-    p->keyCode = ev.keyCode;
-    p->vnSym = vnl_nonVnChar;
+        m_current++;
+        p++;
+        p->form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
+        p->c1Offset = p->c2Offset = p->vOffset = -1;
+        p->keyCode = ev.keyCode;
+        p->vnSym = vnl_nonVnChar;
 
-    //write output
-    m_pOutBuf[0] = '\\';
-    m_pOutBuf[1] = ev.keyCode;
-    *m_pOutSize = 2;
-    m_outputWritten = true;
+        //write output
+        m_pOutBuf[0] = '\\';
+        m_pOutBuf[1] = ev.keyCode;
+        *m_pOutSize = 2;
+        m_outputWritten = true;
 
-  }
-  return escape;
+    }
+    return escape;
 }
 
 //----------------------------------------------------------
 int UkEngine::processAppend(UkKeyEvent & ev)
 {
-  //cout << "Process append!" << endl; //DEBUG
-  switch (ev.chType) {
-  case ukcReset:
-    reset();
-    return 0;
-  case ukcWordBreak:
-    m_singleMode = false;
-    if (m_pCtrl->options.macroEnabled && macroMatch(ev))
-      return 1;
-    resetKeyBuf();
-    //otherwise, process as ukcNonVn
-  case ukcNonVn:
-    {
-      if (m_pCtrl->charsetId == CONV_CHARSET_VIQR && checkEscapeVIQR(ev))
-	return 1;
+    //cout << "Process append!" << endl; //DEBUG
+    switch (ev.chType) {
+    case ukcReset:
+        reset();
+        return 0;
+    case ukcWordBreak:
+        m_singleMode = false;
+        if (m_pCtrl->options.macroEnabled && macroMatch(ev))
+            return 1;
+        resetKeyBuf();
+        //otherwise, process as ukcNonVn
+    case ukcNonVn:
+        {
+            if (m_pCtrl->charsetId == CONV_CHARSET_VIQR && checkEscapeVIQR(ev))
+                return 1;
 
-      m_current++;
-      WordInfo & entry = m_buffer[m_current];
-      entry.form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
-      entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-      entry.keyCode = ev.keyCode;
-      entry.vnSym = vnl_nonVnChar;
-      return 0;
+            m_current++;
+            WordInfo & entry = m_buffer[m_current];
+            entry.form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
+            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+            entry.keyCode = ev.keyCode;
+            entry.vnSym = vnl_nonVnChar;
+            return 0;
+        }
+    case ukcVn:
+        {
+            if (!m_singleMode || m_current < 0) {
+                if (IsVnVowel[ev.vnSym]) {
+                    VnLexiName v = vnRemoveTone(vnToLower(ev.vnSym));
+                    if (m_current >= 0 && m_buffer[m_current].form == vnw_c &&
+                        ((m_buffer[m_current].cseq == cs_q && v == vnl_u) ||
+                         (m_buffer[m_current].cseq == cs_g && v == vnl_i)))
+                        return appendConsonnant(ev); //process u after q, i after g as consonnants
+                    return appendVowel(ev);
+                }
+                return appendConsonnant(ev);
+            }
+            //single mode:
+            //set previous entry to vnw_empty, so other methods won't look back in the buffer
+            //After processing, restore it to original value
+            WordInfo w;
+            int ret;
+            WordInfo & entry = m_buffer[m_current];
+            w = entry;
+            entry.form = vnw_empty;
+            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+            entry.vnSym = vnl_nonVnChar;
+            if (IsVnVowel[ev.vnSym])
+                ret = appendVowel(ev);
+            else
+                ret = appendConsonnant(ev);
+            entry = w;
+            return ret;
+        }
+
     }
-  case ukcVn:
-    {
-      if (!m_singleMode || m_current < 0) {
-	if (IsVnVowel[ev.vnSym]) {
-	  VnLexiName v = vnRemoveTone(vnToLower(ev.vnSym));
-	  if (m_current >= 0 && m_buffer[m_current].form == vnw_c &&
-	      ((m_buffer[m_current].cseq == cs_q && v == vnl_u) ||
-	       (m_buffer[m_current].cseq == cs_g && v == vnl_i)))
-	    return appendConsonnant(ev); //process u after q, i after g as consonnants
-	  return appendVowel(ev);
-	}
-	return appendConsonnant(ev);
-      }
-      //single mode:
-      //set previous entry to vnw_empty, so other methods won't look back in the buffer
-      //After processing, restore it to original value
-      WordInfo w;
-      int ret;
-      WordInfo & entry = m_buffer[m_current];
-      w = entry;
-      entry.form = vnw_empty;
-      entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-      entry.vnSym = vnl_nonVnChar;
-      if (IsVnVowel[ev.vnSym])
-	ret = appendVowel(ev);
-      else
-	ret = appendConsonnant(ev);
-      entry = w;
-      return ret;
-    }
-    
-  }
-  return 0;
+    return 0;
 }
 
 //----------------------------------------------------------
 int UkEngine::appendVowel(UkKeyEvent & ev)
 {
-  //cout << "Process appendVowel!" << endl; //DEBUG
+    //cout << "Process appendVowel!" << endl; //DEBUG
 
-  m_current++;
-  WordInfo & entry = m_buffer[m_current];
+    m_current++;
+    WordInfo & entry = m_buffer[m_current];
 
-  VnLexiName lowerSym = vnToLower(ev.vnSym);
-  VnLexiName canSym = vnRemoveTone(lowerSym);
+    VnLexiName lowerSym = vnToLower(ev.vnSym);
+    VnLexiName canSym = vnRemoveTone(lowerSym);
 
-  entry.vnSym = canSym;
-  entry.caps = (lowerSym != ev.vnSym);
-  entry.tone = (lowerSym - canSym)/2;
-  entry.keyCode = ev.keyCode;
+    entry.vnSym = canSym;
+    entry.caps = (lowerSym != ev.vnSym);
+    entry.tone = (lowerSym - canSym)/2;
+    entry.keyCode = ev.keyCode;
 
-  if (m_current == 0) {
-    entry.form = vnw_v;
-    entry.c1Offset = entry.c2Offset = -1;
-    entry.vOffset = 0;
-    entry.vseq = lookupVSeq(canSym);
+    if (m_current == 0) {
+        entry.form = vnw_v;
+        entry.c1Offset = entry.c2Offset = -1;
+        entry.vOffset = 0;
+        entry.vseq = lookupVSeq(canSym);
+
+        if (ev.evType == vneNormal &&
+            ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
+             (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
+            return 0;
+        markChange(m_current);
+        return 1;
+    }
+  
+    WordInfo & prev = m_buffer[m_current-1];
+    VowelSeq vs, newVs;
+    ConSeq cs;
+    int prevTonePos;
+    int tone, newTone, tonePos, newTonePos;
+
+    switch (prev.form) {
+
+    case vnw_empty:
+        entry.form = vnw_v;
+        entry.c1Offset = entry.c2Offset = -1;
+        entry.vOffset = 0;
+        entry.vseq = newVs = lookupVSeq(canSym);
+        break;
+
+    case vnw_nonVn:
+    case vnw_cvc:
+    case vnw_vc:
+        entry.form = vnw_nonVn;
+        entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+        break;
+
+    case vnw_v:
+    case vnw_cv:
+        vs = prev.vseq;
+        prevTonePos = (m_current - 1) - (VSeqList[vs].len - 1) + getTonePosition(vs, true);
+        tone = m_buffer[prevTonePos].tone;
     
+        if (lowerSym != canSym && tone != 0) //new sym has a tone, but there's is already a preceeding tone
+            newVs = vs_nil;
+        else {
+            if (VSeqList[vs].len == 3)
+                newVs = vs_nil;
+            else if (VSeqList[vs].len == 2)
+                newVs = lookupVSeq(VSeqList[vs].v[0], VSeqList[vs].v[1], canSym);
+            else
+                newVs = lookupVSeq(VSeqList[vs].v[0], canSym);
+        }
+
+        if (newVs != vs_nil && prev.form == vnw_cv) {
+            cs = m_buffer[m_current - 1 - prev.c1Offset].cseq;
+            if (!isValidCV(cs, newVs))
+                newVs = vs_nil;
+        }
+
+        if (newVs == vs_nil) {
+            entry.form = vnw_nonVn;
+            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+            break;
+        }
+    
+        entry.form = prev.form;
+        if (prev.form == vnw_cv)
+            entry.c1Offset = prev.c1Offset + 1;
+        else
+            entry.c1Offset = -1;
+        entry.c2Offset = -1;
+        entry.vOffset = 0;
+        entry.vseq = newVs;
+        entry.tone = 0;
+
+        newTone = (lowerSym - canSym)/2;
+        if (tone == 0) {
+            if (newTone != 0) {
+                tone = newTone;
+                tonePos = getTonePosition(newVs, true) + ((m_current - 1) - VSeqList[vs].len + 1);
+                markChange(tonePos);
+                m_buffer[tonePos].tone = tone;
+                return 1;
+            }
+        }
+        else {
+            newTonePos = getTonePosition(newVs, true) + ((m_current - 1) - VSeqList[vs].len + 1);
+            if (newTonePos != prevTonePos) {
+                markChange(prevTonePos);
+                m_buffer[prevTonePos].tone = 0;
+                markChange(newTonePos);
+                if (newTone != 0)
+                    tone = newTone;
+                m_buffer[newTonePos].tone = tone;
+                return 1;
+            }
+            if (newTone != 0 && newTone != tone) {
+                tone = newTone;
+                markChange(prevTonePos);
+                m_buffer[prevTonePos].tone = tone;
+                return 1;
+            }
+
+        }
+
+        break;
+    case vnw_c:
+        newVs = lookupVSeq(canSym);
+        cs = prev.cseq;
+        if (!isValidCV(cs, newVs)) {
+            entry.form = vnw_nonVn;
+            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+            break;
+        }
+
+        entry.form = vnw_cv;
+        entry.c1Offset = 1;
+        entry.c2Offset = -1;
+        entry.vOffset = 0;
+        entry.vseq = newVs;
+
+        if (cs == cs_gi && prev.tone != 0) {
+            if (entry.tone == 0)
+                entry.tone = prev.tone;
+            markChange(m_current - 1);
+            prev.tone = 0;
+            return 1;
+        }
+    
+        break;
+  }
+
     if (ev.evType == vneNormal &&
-	      ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
-	      (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
-      return 0;
+        ((entry.keyCode >= 'a' && entry.keyCode <= 'z') ||
+         (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
+        return 0;
     markChange(m_current);
     return 1;
-  }
-  
-  WordInfo & prev = m_buffer[m_current-1];
-  VowelSeq vs, newVs;
-  ConSeq cs;
-  int prevTonePos;
-  int tone, newTone, tonePos, newTonePos;
-
-  switch (prev.form) {
-
-  case vnw_empty:
-    entry.form = vnw_v;
-    entry.c1Offset = entry.c2Offset = -1;
-    entry.vOffset = 0;
-    entry.vseq = newVs = lookupVSeq(canSym);
-    break;
-
-  case vnw_nonVn:
-  case vnw_cvc:
-  case vnw_vc:
-    entry.form = vnw_nonVn;
-    entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-    break;
-
-  case vnw_v:
-  case vnw_cv:
-    vs = prev.vseq;
-    prevTonePos = (m_current - 1) - (VSeqList[vs].len - 1) + getTonePosition(vs, true);
-    tone = m_buffer[prevTonePos].tone;
-    
-    if (lowerSym != canSym && tone != 0) //new sym has a tone, but there's is already a preceeding tone
-      newVs = vs_nil;
-    else {
-      if (VSeqList[vs].len == 3)
-	newVs = vs_nil;
-      else if (VSeqList[vs].len == 2)
-	newVs = lookupVSeq(VSeqList[vs].v[0], VSeqList[vs].v[1], canSym);
-      else
-	newVs = lookupVSeq(VSeqList[vs].v[0], canSym);
-    }
-
-    if (newVs != vs_nil && prev.form == vnw_cv) {
-      cs = m_buffer[m_current - 1 - prev.c1Offset].cseq;
-      if (!isValidCV(cs, newVs))
-	newVs = vs_nil;
-    }
-
-    if (newVs == vs_nil) {
-      entry.form = vnw_nonVn;
-      entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-      break;
-    }
-    
-    entry.form = prev.form;
-    if (prev.form == vnw_cv)
-      entry.c1Offset = prev.c1Offset + 1;
-    else
-      entry.c1Offset = -1;
-    entry.c2Offset = -1;
-    entry.vOffset = 0;
-    entry.vseq = newVs;
-    entry.tone = 0;
-
-    newTone = (lowerSym - canSym)/2;
-    if (tone == 0) {
-      if (newTone != 0) {
-	tone = newTone;
-	tonePos = getTonePosition(newVs, true) + ((m_current - 1) - VSeqList[vs].len + 1);
-	markChange(tonePos);
-	m_buffer[tonePos].tone = tone;
-	return 1;
-      }
-    }
-    else {
-      newTonePos = getTonePosition(newVs, true) + ((m_current - 1) - VSeqList[vs].len + 1);
-      if (newTonePos != prevTonePos) {
-	markChange(prevTonePos);
-	m_buffer[prevTonePos].tone = 0;
-	markChange(newTonePos);
-	if (newTone != 0)
-	  tone = newTone;
-	m_buffer[newTonePos].tone = tone;
-	return 1;
-      }
-      if (newTone != 0 && newTone != tone) {
-	tone = newTone;
-	markChange(prevTonePos);
-	m_buffer[prevTonePos].tone = tone;
-	return 1;
-      }
-      
-    }
-
-    break;
-  case vnw_c:
-    newVs = lookupVSeq(canSym);
-    cs = prev.cseq;
-    if (!isValidCV(cs, newVs)) {
-      entry.form = vnw_nonVn;
-      entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-      break;
-    }
-
-    entry.form = vnw_cv;
-    entry.c1Offset = 1;
-    entry.c2Offset = -1;
-    entry.vOffset = 0;
-    entry.vseq = newVs;
-
-    if (cs == cs_gi && prev.tone != 0) {
-      if (entry.tone == 0)
-	entry.tone = prev.tone;
-      markChange(m_current - 1);
-      prev.tone = 0;
-      return 1;
-    }
-    
-    break;
-  }
-
-  if (ev.evType == vneNormal &&
-      ((entry.keyCode >= 'a' && entry.keyCode <= 'z') ||
-       (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
-    return 0;
-  markChange(m_current);
-  return 1;
 }
 
 //----------------------------------------------------------
 int UkEngine::appendConsonnant(UkKeyEvent & ev)
 {
-  //cout << "appendConsonannt" << endl; //DEBUG
+    //cout << "appendConsonannt" << endl; //DEBUG
 
     m_current++;
     WordInfo & entry = m_buffer[m_current];
@@ -1526,40 +1526,40 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
 //----------------------------------------------------------
 void UkEngine::pass(int keyCode)
 {
-  //cout << "Pass through" << endl; //DEBUG
-  UkKeyEvent ev;
-  m_pCtrl->input.keyCodeToEvent(keyCode, ev);
-  processAppend(ev);
+    //cout << "Pass through" << endl; //DEBUG
+    UkKeyEvent ev;
+    m_pCtrl->input.keyCodeToEvent(keyCode, ev);
+    processAppend(ev);
 }
 
 //----------------------------------------------------------
 int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize)
 {
-  //cout << "Process input " << endl; //DEBUG
+    //cout << "Process input " << endl; //DEBUG
 
-  UkKeyEvent ev;
-  prepareBuffer();
-  m_keyStrokes[++m_keyCurrent] = keyCode;
-  m_backs = 0;
-  m_changePos = m_current+1;
-  m_pOutBuf = outBuf;
-  m_pOutSize = &outSize;
-  m_outputWritten = false;
-  m_pCtrl->input.keyCodeToEvent(keyCode, ev);
+    UkKeyEvent ev;
+    prepareBuffer();
+    m_keyStrokes[++m_keyCurrent] = keyCode;
+    m_backs = 0;
+    m_changePos = m_current+1;
+    m_pOutBuf = outBuf;
+    m_pOutSize = &outSize;
+    m_outputWritten = false;
+    m_pCtrl->input.keyCodeToEvent(keyCode, ev);
 
-  int ret = (this->*UkKeyProcList[ev.evType])(ev);
-  if (ret == 0) {
-    backs = 0;
-    outSize = 0;
-    return 0;
-  }
+    int ret = (this->*UkKeyProcList[ev.evType])(ev);
+    if (ret == 0) {
+        backs = 0;
+        outSize = 0;
+        return 0;
+    }
 
-  backs = m_backs;
-  if (!m_outputWritten) {
-    writeOutput(outBuf, outSize);
-  }
+    backs = m_backs;
+    if (!m_outputWritten) {
+        writeOutput(outBuf, outSize);
+    }
 
-  return ret;
+    return ret;
 }
 
 
@@ -1572,32 +1572,32 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
 //----------------------------------------------------------
 int UkEngine::writeOutput(unsigned char *outBuf, int & outSize)
 {
-  StdVnChar stdChar;
-  int i, bytesWritten;
-  int ret = 1;
-  StringBOStream os(outBuf, outSize);
-  VnCharset *pCharset = VnCharsetLibObj.getVnCharset(m_pCtrl->charsetId);
-  pCharset->startOutput();
+    StdVnChar stdChar;
+    int i, bytesWritten;
+    int ret = 1;
+    StringBOStream os(outBuf, outSize);
+    VnCharset *pCharset = VnCharsetLibObj.getVnCharset(m_pCtrl->charsetId);
+    pCharset->startOutput();
 
-  for (i = m_changePos; i <= m_current; i++) {
-    if (m_buffer[i].vnSym != vnl_nonVnChar) {
-      //process vn symbol
-      stdChar = m_buffer[i].vnSym + VnStdCharOffset;
-      if (m_buffer[i].caps)
-        stdChar--;
-      if (m_buffer[i].tone != 0)
-        stdChar += m_buffer[i].tone * 2;
-    }
-    else {
-      stdChar = m_buffer[i].keyCode;
-    }
+    for (i = m_changePos; i <= m_current; i++) {
+        if (m_buffer[i].vnSym != vnl_nonVnChar) {
+            //process vn symbol
+            stdChar = m_buffer[i].vnSym + VnStdCharOffset;
+            if (m_buffer[i].caps)
+                stdChar--;
+            if (m_buffer[i].tone != 0)
+                stdChar += m_buffer[i].tone * 2;
+        }
+        else {
+            stdChar = m_buffer[i].keyCode;
+        }
     
-    if (stdChar != INVALID_STD_CHAR)
-      ret = pCharset->putChar(os, stdChar, bytesWritten);
-  }
+        if (stdChar != INVALID_STD_CHAR)
+            ret = pCharset->putChar(os, stdChar, bytesWritten);
+    }
 
-  outSize = os.getOutBytes();
-  return (ret? 0 : VNCONV_OUT_OF_MEMORY);
+    outSize = os.getOutBytes();
+    return (ret? 0 : VNCONV_OUT_OF_MEMORY);
 }
 
 //---------------------------------------------
@@ -1606,148 +1606,148 @@ int UkEngine::writeOutput(unsigned char *outBuf, int & outSize)
 //---------------------------------------------
 int UkEngine::getSeqSteps(int first, int last)
 {
-  StdVnChar stdChar;
+    StdVnChar stdChar;
 
-  if (last < first)
-    return 0;
+    if (last < first)
+        return 0;
 
-  if (m_pCtrl->charsetId == CONV_CHARSET_XUTF8 || 
-      m_pCtrl->charsetId == CONV_CHARSET_UNICODE)
-    return (last - first +  1);
+    if (m_pCtrl->charsetId == CONV_CHARSET_XUTF8 || 
+        m_pCtrl->charsetId == CONV_CHARSET_UNICODE)
+        return (last - first +  1);
 
-  StringBOStream os(0, 0);
-  int i, bytesWritten;
+    StringBOStream os(0, 0);
+    int i, bytesWritten;
 
-  VnCharset *pCharset = VnCharsetLibObj.getVnCharset(m_pCtrl->charsetId);
-  pCharset->startOutput();
+    VnCharset *pCharset = VnCharsetLibObj.getVnCharset(m_pCtrl->charsetId);
+    pCharset->startOutput();
 
-  for (i = first; i <= last; i++) {
-    //    if (m_buffer[i].form != vnw_nonVn && m_buffer[i].form != vnw_empty) {
-    if (m_buffer[i].vnSym != vnl_nonVnChar) {
-      //process vn symbol
-      stdChar = m_buffer[i].vnSym + VnStdCharOffset;
-      if (m_buffer[i].caps)
-        stdChar--;
-      if (m_buffer[i].tone != 0)
-        stdChar += m_buffer[i].tone*2;
-    }
-    else {
-      stdChar = m_buffer[i].keyCode;
-    }
+    for (i = first; i <= last; i++) {
+        //    if (m_buffer[i].form != vnw_nonVn && m_buffer[i].form != vnw_empty) {
+        if (m_buffer[i].vnSym != vnl_nonVnChar) {
+            //process vn symbol
+            stdChar = m_buffer[i].vnSym + VnStdCharOffset;
+            if (m_buffer[i].caps)
+                stdChar--;
+            if (m_buffer[i].tone != 0)
+                stdChar += m_buffer[i].tone*2;
+        }
+        else {
+            stdChar = m_buffer[i].keyCode;
+        }
     
-    if (stdChar != INVALID_STD_CHAR)
-      pCharset->putChar(os, stdChar, bytesWritten);
-  }
+        if (stdChar != INVALID_STD_CHAR)
+            pCharset->putChar(os, stdChar, bytesWritten);
+    }
   
-  int len = os.getOutBytes();
-  if (m_pCtrl->charsetId == CONV_CHARSET_UNIDECOMPOSED)
-    len = len / 2;
-  return len;
+    int len = os.getOutBytes();
+    if (m_pCtrl->charsetId == CONV_CHARSET_UNIDECOMPOSED)
+        len = len / 2;
+    return len;
 }
 
 //---------------------------------------------
 void UkEngine::markChange(int pos)
 {
-  if (pos < m_changePos) {
-    m_backs += getSeqSteps(pos, m_changePos-1);
-    m_changePos = pos;
-  }
+    if (pos < m_changePos) {
+        m_backs += getSeqSteps(pos, m_changePos-1);
+        m_changePos = pos;
+    }
 }
 
 //---------------------------------------------
 int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize)
 {
-  //cout << "ProcessBackspace. m_current: " << m_current << endl; //DEBUG
-  if (m_current < 0) {
-    backs = 0;
-    outSize = 0;
-    return 0;
-  }
+    //cout << "ProcessBackspace. m_current: " << m_current << endl; //DEBUG
+    if (m_current < 0) {
+        backs = 0;
+        outSize = 0;
+        return 0;
+    }
 
-  m_backs = 0;
-  m_changePos = m_current + 1;
-  markChange(m_current);
+    m_backs = 0;
+    m_changePos = m_current + 1;
+    markChange(m_current);
 
-  if (m_current == 0 || m_buffer[m_current-1].form == vnw_empty)
-    resetKeyBuf();
-  else if (m_keyCurrent >= 0)
-    m_keyCurrent--;
+    if (m_current == 0 || m_buffer[m_current-1].form == vnw_empty)
+        resetKeyBuf();
+    else if (m_keyCurrent >= 0)
+        m_keyCurrent--;
 
-  if (m_current == 0 || 
-      m_buffer[m_current].form == vnw_empty ||
-      m_buffer[m_current].form == vnw_nonVn ||
-      m_buffer[m_current].form == vnw_c ||
-      m_buffer[m_current-1].form == vnw_c ||
-      m_buffer[m_current-1].form == vnw_cvc ||
-      m_buffer[m_current-1].form == vnw_vc) {
+    if (m_current == 0 || 
+        m_buffer[m_current].form == vnw_empty ||
+        m_buffer[m_current].form == vnw_nonVn ||
+        m_buffer[m_current].form == vnw_c ||
+        m_buffer[m_current-1].form == vnw_c ||
+        m_buffer[m_current-1].form == vnw_cvc ||
+        m_buffer[m_current-1].form == vnw_vc) {
 
-    m_current--;
-    backs = m_backs;
-    outSize = 0;
-    return (backs > 1);
-  }
+        m_current--;
+        backs = m_backs;
+        outSize = 0;
+        return (backs > 1);
+    }
   
-  VowelSeq vs, newVs;
-  int curTonePos, newTonePos, tone, vStart, vEnd;
+    VowelSeq vs, newVs;
+    int curTonePos, newTonePos, tone, vStart, vEnd;
 
-  vEnd = m_current - m_buffer[m_current].vOffset;
-  vs = m_buffer[vEnd].vseq;
-  vStart = vEnd - VSeqList[vs].len + 1;
-  newVs = m_buffer[m_current-1].vseq;
-  curTonePos = vStart +  getTonePosition(vs, vEnd == m_current);
-  newTonePos = vStart + getTonePosition(newVs, true);
-  tone = m_buffer[curTonePos].tone;
+    vEnd = m_current - m_buffer[m_current].vOffset;
+    vs = m_buffer[vEnd].vseq;
+    vStart = vEnd - VSeqList[vs].len + 1;
+    newVs = m_buffer[m_current-1].vseq;
+    curTonePos = vStart +  getTonePosition(vs, vEnd == m_current);
+    newTonePos = vStart + getTonePosition(newVs, true);
+    tone = m_buffer[curTonePos].tone;
 
-  if (tone == 0 || curTonePos == newTonePos || 
-      (curTonePos == m_current && m_buffer[m_current].tone != 0)) {
+    if (tone == 0 || curTonePos == newTonePos || 
+        (curTonePos == m_current && m_buffer[m_current].tone != 0)) {
+        m_current--;
+        backs = m_backs;
+        outSize = 0;
+        //cout << "-> After backspace, m_current = " << m_current << endl; //DEBUG
+        return (backs > 1);
+    }
+
+    markChange(newTonePos);
+    m_buffer[newTonePos].tone = tone;
+    markChange(curTonePos);
+    m_buffer[curTonePos].tone = 0;
     m_current--;
+
     backs = m_backs;
-    outSize = 0;
+    writeOutput(outBuf, outSize);
     //cout << "-> After backspace, m_current = " << m_current << endl; //DEBUG
-    return (backs > 1);
-  }
-
-  markChange(newTonePos);
-  m_buffer[newTonePos].tone = tone;
-  markChange(curTonePos);
-  m_buffer[curTonePos].tone = 0;
-  m_current--;
-
-  backs = m_backs;
-  writeOutput(outBuf, outSize);
-  //cout << "-> After backspace, m_current = " << m_current << endl; //DEBUG
-  return 1;
+    return 1;
 }
 
 //------------------------------------------------
 void UkEngine::reset()
 {
-  //cout << "RESET\n"; //DEBUG
-  m_current = -1;
-  m_keyCurrent = -1;
-  m_singleMode = false;
+    //cout << "RESET\n"; //DEBUG
+    m_current = -1;
+    m_keyCurrent = -1;
+    m_singleMode = false;
 }
 
 //------------------------------------------------
 void UkEngine::resetKeyBuf()
 {
-  m_keyCurrent = -1;
+    m_keyCurrent = -1;
 }
 
 //------------------------------------------------
 UkEngine::UkEngine()
 {
-  if (!m_classInit) {
-    engineClassInit();
-    m_classInit = true;
-  }
-  m_pCtrl = 0;
-  m_bufSize = MAX_UK_ENGINE;
-  m_keyBufSize = MAX_UK_ENGINE;
-  m_current = -1;
-  m_keyCurrent = -1;
-  m_singleMode = false;
-  m_keyCheckFunc = 0;
+    if (!m_classInit) {
+        engineClassInit();
+        m_classInit = true;
+    }
+    m_pCtrl = 0;
+    m_bufSize = MAX_UK_ENGINE;
+    m_keyBufSize = MAX_UK_ENGINE;
+    m_current = -1;
+    m_keyCurrent = -1;
+    m_singleMode = false;
+    m_keyCheckFunc = 0;
 }
 
 //----------------------------------------------------
@@ -1755,31 +1755,31 @@ UkEngine::UkEngine()
 //----------------------------------------------------
 void UkEngine::prepareBuffer()
 {
-  int rid;
+    int rid;
 
-  //prepare symbol buffer
-  if (m_current >= 0 && m_current + 10 >= m_bufSize) {
-    //cout << "FLUSHING BUFFER!\n"; //DEBUG
-    // Get rid of at least half of the current entries
-    // don't get rid from the middle of a word.
-    for (rid = m_current/2; m_buffer[rid].form != vnw_empty && rid < m_current; rid++);
-    if (rid == m_current) {
-      m_current = -1;
+    //prepare symbol buffer
+    if (m_current >= 0 && m_current + 10 >= m_bufSize) {
+        //cout << "FLUSHING BUFFER!\n"; //DEBUG
+        // Get rid of at least half of the current entries
+        // don't get rid from the middle of a word.
+        for (rid = m_current/2; m_buffer[rid].form != vnw_empty && rid < m_current; rid++);
+        if (rid == m_current) {
+            m_current = -1;
+        }
+        else {
+            rid++;
+            memmove(m_buffer, m_buffer+rid, (m_current-rid+1)*sizeof(WordInfo));
+            m_current -= rid;
+        }
     }
-    else {
-      rid++;
-      memmove(m_buffer, m_buffer+rid, (m_current-rid+1)*sizeof(WordInfo));
-      m_current -= rid;
-    }
-  }
 
-  //prepare key stroke buffer
-  if (m_keyCurrent > 0 && m_keyCurrent + 1 >= m_keyBufSize) {
-    // Get rid of at least half of the current entries
-    rid = m_keyCurrent/2;
-    memmove(m_keyStrokes, m_keyStrokes + rid, (m_keyCurrent-rid+1)*sizeof(m_keyStrokes[0]));
-    m_keyCurrent -= rid;
-  }
+    //prepare key stroke buffer
+    if (m_keyCurrent > 0 && m_keyCurrent + 1 >= m_keyBufSize) {
+        // Get rid of at least half of the current entries
+        rid = m_keyCurrent/2;
+        memmove(m_keyStrokes, m_keyStrokes + rid, (m_keyCurrent-rid+1)*sizeof(m_keyStrokes[0]));
+        m_keyCurrent -= rid;
+    }
 
 }
 
@@ -1886,39 +1886,39 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
 //----------------------------------------------------
 int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize)
 {
-  if (m_current < 0 || m_buffer[m_current].form == vnw_empty) {
-    backs = 0;
-    outSize = 0;
-    return 0;
-  }
+    if (m_current < 0 || m_buffer[m_current].form == vnw_empty) {
+        backs = 0;
+        outSize = 0;
+        return 0;
+    }
 
-  m_backs = 0;
-  m_changePos = m_current+1;
+    m_backs = 0;
+    m_changePos = m_current+1;
 
-  int i = m_current;
-  while (i>=0 && m_buffer[i].form != vnw_empty)
-    i--;
-  i++;
-  markChange(i);
-  backs = m_backs;
-  for (i=0; i <= m_keyCurrent && i<outSize; i++) {
-    outBuf[i] = (unsigned char)m_keyStrokes[i];
-  }
-  outSize = i;
-  reset();
-  return 1;
+    int i = m_current;
+    while (i>=0 && m_buffer[i].form != vnw_empty)
+        i--;
+    i++;
+    markChange(i);
+    backs = m_backs;
+    for (i=0; i <= m_keyCurrent && i<outSize; i++) {
+        outBuf[i] = (unsigned char)m_keyStrokes[i];
+    }
+    outSize = i;
+    reset();
+    return 1;
 }
 
 //--------------------------------------------------
 void UkEngine::setSingleMode()
 {
-  m_singleMode = true;
+    m_singleMode = true;
 }
 
 //--------------------------------------------------
 void SetupUnikeyEngine()
 {
-  SetupInputClassifierTable();
+    SetupInputClassifierTable();
 }
 
 //--------------------------------------------------
