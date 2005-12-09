@@ -70,6 +70,7 @@ public:
       m_keyCheckFunc = pFunc;
   }
 
+  bool atWordBeginning();
 
   int process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize);
   void pass(int keyCode); //just pass through without filtering

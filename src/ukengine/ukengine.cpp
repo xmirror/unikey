@@ -1920,3 +1920,9 @@ void SetupUnikeyEngine()
 {
   SetupInputClassifierTable();
 }
+
+//--------------------------------------------------
+bool UkEngine::atWordBeginning()
+{
+    return (m_current < 0 || m_buffer[m_current].form == vnw_empty);
+}
