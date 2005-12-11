@@ -111,6 +111,7 @@ protected:
     unsigned char *m_pOutBuf;
     int *m_pOutSize;
     bool m_outputWritten;
+    bool m_reverted;
   
     struct WordInfo {
         //info for word ending at this position
@@ -142,6 +143,7 @@ protected:
     int getTonePosition(VowelSeq vs, bool terminated);
     void resetKeyBuf();
     int checkEscapeVIQR(UkKeyEvent & ev);
+    int processNoSpellCheck(UkKeyEvent & ev);
 
 };
 

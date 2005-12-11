@@ -46,6 +46,7 @@ struct _UnikeyOptions
   int alwaysMacro;
   int strictSpellCheck;
   int useIME; //for Win32 only
+  int spellCheckDisabled;
 };
 
 #define UKOPT_FLAG_ALL                   0xFFFFFFFF
@@ -57,6 +58,7 @@ struct _UnikeyOptions
 #define UKOPT_FLAG_ALWAYS_MACRO          0x00000020
 #define UKOPT_FLAG_STRICT_SPELL          0x00000040
 #define UKOPT_FLAG_USE_IME               0x00000080
+#define UKOPT_FLAG_SPELLCHECK_DISABLED   0x00000100
 
 #if defined(WIN32)
 typedef struct _UnikeySysInfo UnikeySysInfo;

@@ -506,7 +506,6 @@ int UkEngine::processRoof(UkKeyEvent & ev)
 
         pInfo = &VSeqList[newVs];
         roofRemoved = true;
- 
     }
     else {
         pInfo = &VSeqList[newVs];
@@ -551,8 +550,10 @@ int UkEngine::processRoof(UkKeyEvent & ev)
         m_buffer[curTonePos].tone = 0;
     }
 
-    if (roofRemoved)
+    if (roofRemoved) {
         processAppend(ev);
+        m_reverted = true;
+    }
     return 1;
 }
 
@@ -679,8 +680,10 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
         m_buffer[curTonePos].tone = 0;
     }
 
-    if (hookRemoved && removeWithUndo)
+    if (hookRemoved && removeWithUndo) {
         processAppend(ev);
+        m_reverted = true;
+    }
     return 1;
 }
 
@@ -823,8 +826,10 @@ int UkEngine::processHook(UkKeyEvent & ev)
         m_buffer[curTonePos].tone = 0;
     }
 
-    if (hookRemoved)
+    if (hookRemoved) {
         processAppend(ev);
+        m_reverted = true;
+    }
     return 1;
 }
 
@@ -869,6 +874,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
         if (m_buffer[p].tone == ev.tone) {
             m_buffer[p].tone = 0;
             processAppend(ev);
+            m_reverted = true;
             return 1;
         }
         m_buffer[p].tone = ev.tone;
@@ -903,6 +909,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
         markChange(tonePos);
         m_buffer[tonePos].tone = 0;
         processAppend(ev);
+        m_reverted = true;
         return 1;
     }
 
@@ -935,6 +942,7 @@ int UkEngine::processDd(UkKeyEvent & ev)
         m_buffer[pos].cseq = cs_d;
         m_buffer[pos].vnSym = vnl_d;
         processAppend(ev);
+        m_reverted = true;
         return 1;
     }
   
@@ -1027,8 +1035,10 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
     ev.chType = m_pCtrl->input.getCharType(ev.keyCode);
     ev.vnSym = IsoToVnLexi(ev.keyCode);
     ret = processAppend(ev);
-    if (undo)
+    if (undo) {
+        m_reverted = true;
         return 1;
+    }
     return ret;
 }
 
@@ -1155,7 +1165,7 @@ int UkEngine::checkEscapeVIQR(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::processAppend(UkKeyEvent & ev)
 {
-    //cout << "Process append!" << endl; //DEBUG
+    int ret = 0;
     switch (ev.chType) {
     case ukcReset:
         reset();
@@ -1181,43 +1191,48 @@ int UkEngine::processAppend(UkKeyEvent & ev)
         }
     case ukcVn:
         {
-            if (!m_singleMode || m_current < 0) {
-                if (IsVnVowel[ev.vnSym]) {
-                    VnLexiName v = vnRemoveTone(vnToLower(ev.vnSym));
-                    if (m_current >= 0 && m_buffer[m_current].form == vnw_c &&
-                        ((m_buffer[m_current].cseq == cs_q && v == vnl_u) ||
-                         (m_buffer[m_current].cseq == cs_g && v == vnl_i)))
-                        return appendConsonnant(ev); //process u after q, i after g as consonnants
-                    return appendVowel(ev);
+            if (IsVnVowel[ev.vnSym]) {
+                VnLexiName v = vnRemoveTone(vnToLower(ev.vnSym));
+                if (m_current >= 0 && m_buffer[m_current].form == vnw_c &&
+                      ((m_buffer[m_current].cseq == cs_q && v == vnl_u) ||
+                      (m_buffer[m_current].cseq == cs_g && v == vnl_i))) {
+                    return appendConsonnant(ev); //process u after q, i after g as consonnants
                 }
-                return appendConsonnant(ev);
+                return appendVowel(ev);
             }
-            //single mode:
-            //set previous entry to vnw_empty, so other methods won't look back in the buffer
-            //After processing, restore it to original value
-            WordInfo w;
-            int ret;
-            WordInfo & entry = m_buffer[m_current];
-            w = entry;
-            entry.form = vnw_empty;
-            entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-            entry.vnSym = vnl_nonVnChar;
-            if (IsVnVowel[ev.vnSym])
-                ret = appendVowel(ev);
-            else
-                ret = appendConsonnant(ev);
-            entry = w;
-            return ret;
+            return appendConsonnant(ev);
+            /*
+            else {
+                //single mode:
+                //set previous entry to vnw_empty, so other methods won't look back in the buffer
+                //After processing, restore it to original value
+                WordInfo w;
+                int ret;
+                WordInfo & entry = m_buffer[m_current];
+                w = entry;
+                entry.form = vnw_empty;
+                entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+                entry.vnSym = vnl_nonVnChar;
+                if (IsVnVowel[ev.vnSym])
+                    ret = appendVowel(ev);
+                else
+                    ret = appendConsonnant(ev);
+                entry = w;
+                return ret;
+            }
+            */
         }
-
+        break;
     }
-    return 0;
+
+    return ret;
 }
 
 //----------------------------------------------------------
 int UkEngine::appendVowel(UkKeyEvent & ev)
 {
     //cout << "Process appendVowel!" << endl; //DEBUG
+    bool autoCompleted = false;
 
     m_current++;
     WordInfo & entry = m_buffer[m_current];
@@ -1238,7 +1253,7 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
 
         if (ev.evType == vneNormal &&
             ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
-             (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
+             (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
             return 0;
         markChange(m_current);
         return 1;
@@ -1304,6 +1319,16 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         entry.vOffset = 0;
         entry.vseq = newVs;
         entry.tone = 0;
+        
+        /*
+        //check: u+o -> u+o+
+        if (entry.vnSym == vnl_o && newVs == vs_uho) {
+            entry.vnSym = vnl_oh;
+            newVs = vs_uhoh;
+            entry.vseq = newVs;
+            autoCompleted = true;
+        }
+        */
 
         newTone = (lowerSym - canSym)/2;
         if (tone == 0) {
@@ -1362,10 +1387,11 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         break;
   }
 
-    if (ev.evType == vneNormal &&
-        ((entry.keyCode >= 'a' && entry.keyCode <= 'z') ||
-         (entry.keyCode >= 'A' && entry.keyCode <= 'Z')))
+    if (ev.evType == vneNormal && !autoCompleted &&
+        ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
+         (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
         return 0;
+
     markChange(m_current);
     return 1;
 }
@@ -1374,7 +1400,7 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
 int UkEngine::appendConsonnant(UkKeyEvent & ev)
 {
     //cout << "appendConsonannt" << endl; //DEBUG
-
+    bool complexEvent = false;
     m_current++;
     WordInfo & entry = m_buffer[m_current];
 
@@ -1395,7 +1421,7 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
     }
 
     ConSeq cs, newCs;
-    VowelSeq vs;
+    VowelSeq vs, newVs;
     bool isValid;
 
     WordInfo & prev = m_buffer[m_current-1];
@@ -1415,6 +1441,7 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
     case vnw_v:
     case vnw_cv:
         vs = prev.vseq;
+        newVs = vs;
         newCs = lookupCSeq(lowerSym);
         isValid = false;
         if (CSeqList[newCs].suffix && isValidVC(vs, newCs, &m_pCtrl->options))
@@ -1427,6 +1454,15 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
                 isValid = true;
         }
         if (isValid) {
+            //check u+o -> u+o+
+            if (vs == vs_uho) {
+                markChange(m_current-1);
+                newVs = vs_uhoh;
+                prev.vnSym = vnl_oh;
+                prev.vseq = vs_uhoh;
+                complexEvent = true;
+            }
+
             if (prev.form == vnw_v) {
                 entry.form = vnw_vc;
                 entry.c1Offset = -1;
@@ -1444,7 +1480,7 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             //reposition tone if needed
             int oldIdx = (m_current-1) - (VSeqList[vs].len - 1) + getTonePosition(vs, true);
             if (m_buffer[oldIdx].tone != 0) {
-                int newIdx = (m_current-1) - (VSeqList[vs].len - 1) + getTonePosition(vs, false);
+                int newIdx = (m_current-1) - (VSeqList[newVs].len - 1) + getTonePosition(newVs, false);
                 if (newIdx != oldIdx) {
                     markChange(newIdx);
                     m_buffer[newIdx].tone = m_buffer[oldIdx].tone;
@@ -1458,7 +1494,7 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             entry.form = vnw_nonVn;
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
         }
-        return 0;
+        return (complexEvent)? 1 : 0;
     case vnw_c:
     case vnw_vc:
     case vnw_cvc:
@@ -1520,6 +1556,7 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
         }
         return 0;
     }
+
     return 0;
 }
 
@@ -1532,6 +1569,34 @@ void UkEngine::pass(int keyCode)
     processAppend(ev);
 }
 
+//---------------------------------------------
+// This can be called only after other processing have been done.
+// The new event is supposed to be put into m_buffer already
+//---------------------------------------------
+int UkEngine::processNoSpellCheck(UkKeyEvent & ev)
+{
+    WordInfo & entry = m_buffer[m_current];
+    if (IsVnVowel[entry.vnSym]) {
+        entry.form = vnw_v;
+        entry.vOffset = 0;
+        entry.vseq = lookupVSeq(entry.vnSym);
+        entry.c1Offset = entry.c2Offset = -1;
+    }
+    else {
+        entry.form = vnw_c;
+        entry.c1Offset = 0;
+        entry.c2Offset = -1;
+        entry.vOffset = -1;
+        entry.cseq = lookupCSeq(entry.vnSym);
+    }
+
+    if (ev.evType == vneNormal &&
+        ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
+         (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
+        return 0;
+    markChange(m_current);
+    return 1;
+}
 //----------------------------------------------------------
 int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize)
 {
@@ -1545,9 +1610,25 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
     m_pOutBuf = outBuf;
     m_pOutSize = &outSize;
     m_outputWritten = false;
+    m_reverted = false;
     m_pCtrl->input.keyCodeToEvent(keyCode, ev);
 
     int ret = (this->*UkKeyProcList[ev.evType])(ev);
+
+    bool needNonSpellProcess = true;
+    if ((m_pCtrl->options.spellCheckDisabled || m_singleMode) &&
+        m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
+        ev.chType == ukcVn ) {
+        //The spell check has failed, but because we are in non-spellcheck mode,
+        //we consider the new character as the beginning of a new word
+        if (m_singleMode || 
+            ( !m_reverted && 
+              (m_current < 1 || m_buffer[m_current-1].form != vnw_nonVn)) ) {
+
+            ret = processNoSpellCheck(ev);
+        }
+    }
+
     if (ret == 0) {
         backs = 0;
         outSize = 0;
@@ -1748,6 +1829,7 @@ UkEngine::UkEngine()
     m_keyCurrent = -1;
     m_singleMode = false;
     m_keyCheckFunc = 0;
+    m_reverted = false;
 }
 
 //----------------------------------------------------
