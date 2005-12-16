@@ -43,6 +43,51 @@ VnLexiName AZLexiLower[] =
 
 UkCharType UkcMap[256];
 
+struct _ascVnLexi {
+    int asc;
+    VnLexiName lexi;
+};
+
+//List of western characters outside range A-Z that are
+//also Vietnamese characters
+_ascVnLexi AscVnLexiList[] = {
+    {0xC0, vnl_A2},
+    {0xC1, vnl_A1},
+    {0xC2, vnl_Ar},
+    {0xC2, vnl_A4},
+    {0xC8, vnl_E2},
+    {0xC9, vnl_E1},
+    {0xCA, vnl_Er},
+    {0xCC, vnl_I2},
+    {0xCD, vnl_I1},
+    {0xD2, vnl_O2},
+    {0xD3, vnl_O1},
+    {0xD4, vnl_Or},
+    {0xD5, vnl_O4},
+    {0xD9, vnl_U2},
+    {0xDA, vnl_U1},
+    {0xDD, vnl_Y1},
+    {0xE0, vnl_a2},
+    {0xE1, vnl_a1},
+    {0xE2, vnl_ar},
+    {0xE3, vnl_a4},
+    {0xE8, vnl_e2},
+    {0xE9, vnl_e1},
+    {0xEA, vnl_er},
+    {0xEC, vnl_i2},
+    {0xED, vnl_i1},
+    {0xF2, vnl_o2},
+    {0xF3, vnl_o1},
+    {0xF4, vnl_or},
+    {0xF5, vnl_o4},
+    {0xF9, vnl_u2},
+    {0xFA, vnl_u1},
+    {0xFD, vnl_y1},
+    {0x00, vnl_nonVnChar}
+};
+
+VnLexiName IsoVnLexiMap[256];
+
 bool ClassifierTableInitialized = false;
 
 DllExport UkKeyMapping TelexMethodMapping[] = {
@@ -125,6 +170,7 @@ DllExport UkKeyMapping MsViMethodMapping[] = {
 void SetupInputClassifierTable()
 {
   unsigned int c;
+  int i;
   for (c=0; c<256; c++)
     UkcMap[c] = ukcReset;
 
@@ -132,6 +178,10 @@ void SetupInputClassifierTable()
     UkcMap[c] = ukcVn;
   for (c = 'A'; c <= 'Z'; c++)
     UkcMap[c] = ukcVn;
+
+  for (i=0; AscVnLexiList[i].asc; i++) {
+      UkcMap[AscVnLexiList[i].asc] = ukcVn;
+  }
 
   for (c = '0'; c <= '9'; c++)
     UkcMap[c] = ukcNonVn;
@@ -144,8 +194,25 @@ void SetupInputClassifierTable()
   UkcMap[(unsigned char)'W'] = ukcNonVn;
 
   int count = sizeof(WordBreakSyms)/sizeof(unsigned char);
-  for (int i = 0; i < count; i++)
+  for (i = 0; i < count; i++)
     UkcMap[WordBreakSyms[i]] = ukcWordBreak;
+
+  //Calculate IsoVnLexiMap
+  for (i = 0; i < 256; i++) {
+      IsoVnLexiMap[i] = vnl_nonVnChar;
+  }
+
+  for (i = 0; AscVnLexiList[i].asc; i++) {
+      IsoVnLexiMap[AscVnLexiList[i].asc] = AscVnLexiList[i].lexi;
+  }
+
+  for (c = 'a'; c <= 'z'; c++) {
+      IsoVnLexiMap[c] = AZLexiLower[c - 'a'];
+  }
+
+  for (c = 'A'; c <= 'Z'; c++) {
+      IsoVnLexiMap[c] = AZLexiUpper[c - 'A'];
+  }
 }
 
 //-------------------------------------------
@@ -222,7 +289,6 @@ void UkInputProcessor::useBuiltIn(UkKeyMapping *map)
 void UkInputProcessor::keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev)
 {
   ev.keyCode = keyCode;
-
   if (keyCode > 255) {
     ev.evType = vneNormal;
     ev.vnSym = IsoToVnLexi(keyCode);
@@ -265,18 +331,3 @@ void UkInputProcessor::getKeyMap(int map[256])
     map[i] = m_keyMap[i];
 }
 
-//-------------------------------------------
-//TODO:
-// At the moment we considers character outside the ranges a-z, A-Z
-// as non-Vietnamese
-// We should handle characters outside those ranges
-// to test if they are Vietnamese according to ISO8859-1 (western)
-//-------------------------------------------
-VnLexiName IsoToVnLexi(int keyCode)
-{
-  if (keyCode >= 'a' && keyCode <= 'z')
-    return AZLexiLower[keyCode - 'a'];
-  if (keyCode >= 'A' && keyCode <= 'Z')
-    return AZLexiUpper[keyCode - 'A'];
-  return vnl_nonVnChar;
-}

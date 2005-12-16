@@ -369,6 +369,7 @@ bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
     return false;
 }
 
+/*
 //----------------------------------------------------------
 //At the moment we suppose we receive from the system 
 // only characters with no tone.
@@ -376,8 +377,9 @@ bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
 //----------------------------------------------------------
 VnLexiName vnRemoveTone(VnLexiName x)
 {
-    return x;
+    return StdVnNoTone[x];
 }
+*/
 
 //------------------------------------------------
 void engineClassInit()
@@ -963,7 +965,8 @@ VnLexiName changeCase(VnLexiName x)
 {
     if (x == vnl_nonVnChar)
         return vnl_nonVnChar;
-    if (x == ((x >> 1) << 1)) //even
+    //if (x == ((x >> 1) << 1)) //even
+    if (!(x & 0x01)) //even
         return (VnLexiName)(x+1);
     return (VnLexiName)(x-1);
 }
@@ -971,7 +974,8 @@ VnLexiName changeCase(VnLexiName x)
 //----------------------------------------------------------
 inline VnLexiName vnToLower(VnLexiName x)
 {
-    if (x == ((x >> 1) << 1)) //even
+    //if (x == ((x >> 1) << 1)) //even
+    if (!(x & 0x01)) //even
         return (VnLexiName)(x+1);
     return x;
 }
@@ -1201,7 +1205,7 @@ int UkEngine::processAppend(UkKeyEvent & ev)
     case ukcVn:
         {
             if (IsVnVowel[ev.vnSym]) {
-                VnLexiName v = vnRemoveTone(vnToLower(ev.vnSym));
+                VnLexiName v = (VnLexiName)StdVnNoTone[vnToLower(ev.vnSym)];
                 if (m_current >= 0 && m_buffer[m_current].form == vnw_c &&
                       ((m_buffer[m_current].cseq == cs_q && v == vnl_u) ||
                       (m_buffer[m_current].cseq == cs_g && v == vnl_i))) {
@@ -1247,7 +1251,7 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
     WordInfo & entry = m_buffer[m_current];
 
     VnLexiName lowerSym = vnToLower(ev.vnSym);
-    VnLexiName canSym = vnRemoveTone(lowerSym);
+    VnLexiName canSym = (VnLexiName)StdVnNoTone[lowerSym];
 
     entry.vnSym = canSym;
     entry.caps = (lowerSym != ev.vnSym);

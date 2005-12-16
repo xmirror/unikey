@@ -105,7 +105,6 @@ protected:
 };
 
 void UkResetKeyMap(int keyMap[256]);
-VnLexiName IsoToVnLexi(int keyCode);
 void SetupInputClassifierTable();
 
 DllInterface UkKeyMapping TelexMethodMapping[];
@@ -113,5 +112,10 @@ DllInterface UkKeyMapping VniMethodMapping[];
 DllInterface UkKeyMapping VIQRMethodMapping[];
 DllInterface UkKeyMapping MsViMethodMapping[];
 
-#endif
+extern VnLexiName IsoVnLexiMap[];
+inline VnLexiName IsoToVnLexi(int keyCode)
+{
+    return (keyCode >= 256)? vnl_nonVnChar : IsoVnLexiMap[keyCode];
+}
 
+#endif
