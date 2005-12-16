@@ -44,10 +44,19 @@ bool IsVnVowel[vnl_lastChar];
 extern VnLexiName AZLexiUpper[]; //defined in inputproc.cpp
 extern VnLexiName AZLexiLower[];
 
-/*
-extern int UnikeyCapsLockOn; //defined in unikey.cpp
-extern int UnikeyShiftPressed; //defined in unikey.cpp
-*/
+//see vnconv/data.cpp for explanation of these characters
+unsigned char SpecialWesternChars[] = {
+  0x80, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88,
+  0x89, 0x8A, 0x8B, 0x8C, 0x8E, 0x91, 0x92, 0x93,
+  0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B,
+  0x9C, 0x9E, 0x9F, 0x00};
+
+StdVnChar IsoStdVnCharMap[256];
+
+inline StdVnChar IsoToStdVnChar(int keyCode)
+{
+    return (keyCode < 256)? IsoStdVnCharMap[keyCode] : keyCode;
+}
 
 struct VowelSeqInfo {
     int len;
@@ -1670,7 +1679,7 @@ int UkEngine::writeOutput(unsigned char *outBuf, int & outSize)
                 stdChar += m_buffer[i].tone * 2;
         }
         else {
-            stdChar = m_buffer[i].keyCode;
+            stdChar = IsoToStdVnChar(m_buffer[i].keyCode);
         }
     
         if (stdChar != INVALID_STD_CHAR)
@@ -2001,6 +2010,23 @@ void UkEngine::setSingleMode()
 void SetupUnikeyEngine()
 {
     SetupInputClassifierTable();
+    int i;
+    VnLexiName lexi;
+
+    //Calculate IsoStdVnCharMap
+    for (i=0; i < 256; i++) {
+        IsoStdVnCharMap[i] = i;
+    }
+
+    for (i=0; SpecialWesternChars[i]; i++) {
+        IsoStdVnCharMap[SpecialWesternChars[i]] = (vnl_lastChar + i) + VnStdCharOffset;
+    }
+
+    for (i=0; i < 256; i++) {
+        if ((lexi = IsoToVnLexi(i)) != vnl_nonVnChar) {
+            IsoStdVnCharMap[i] = lexi + VnStdCharOffset;
+        }
+    }
 }
 
 //--------------------------------------------------
