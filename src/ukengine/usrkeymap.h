@@ -25,6 +25,13 @@
 #define __UNIKEY_USER_KEY_MAP_H
 
 #include "inputproc.h"
-int UkLoadKeyMap(const char *fileName, UkKeyEvName keyMap[256]);
+struct UkKeyMapPair {
+    unsigned char   key;
+    int             action;
+};
+
+DllInterface int UkLoadKeyMap(const char *fileName, int keyMap[256]);
+DllInterface int UkLoadKeyOrderMap(const char *fileName, UkKeyMapPair *pMap, int *pMapCount);
+DllInterface int UkStoreKeyOrderMap(const char *fileName, UkKeyMapPair *pMap, int mapCount);
 
 #endif

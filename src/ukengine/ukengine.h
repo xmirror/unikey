@@ -38,7 +38,7 @@ struct UkSharedMem {
     UnikeyOptions options;
     UkInputProcessor input;
     int usrKeyMapLoaded;
-    UkKeyEvName usrKeyMap[256];
+    int usrKeyMap[256];
     int charsetId;
 
 #if defined(WIN32)

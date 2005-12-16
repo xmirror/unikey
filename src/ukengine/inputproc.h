@@ -26,6 +26,20 @@
 #include "keycons.h"
 #include "vnlexi.h"
 
+#if defined(_WIN32)
+    #define DllExport   __declspec( dllexport )
+    #define DllImport   __declspec( dllimport )
+    #if defined(UNIKEYHOOK)
+        #define DllInterface   __declspec( dllexport )
+    #else
+        #define DllInterface   __declspec( dllimport )
+    #endif
+#else
+    #define DllInterface //not used
+    #define DllExport
+    #define DllImport
+#endif
+
 enum UkKeyEvName {
   vneRoofAll, vneRoof_a, vneRoof_e, vneRoof_o, 
   vneHookAll, vneHook_uo, vneHook_u, vneHook_o, vneBowl, 
@@ -45,7 +59,7 @@ enum UkCharType {
 };
 
 struct UkKeyEvent {
-  UkKeyEvName evType;
+  int evType;
   UkCharType chType;
   VnLexiName vnSym; //meaningful only when chType==ukcVn
   unsigned int keyCode;
@@ -54,7 +68,7 @@ struct UkKeyEvent {
 
 struct UkKeyMapping {
     unsigned char key;
-    UkKeyEvName action;
+    int action;
 };
 
 ///////////////////////////////////////////
@@ -75,8 +89,8 @@ public:
 
   void keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev);
   int setIM(UkInputMethod im);
-  int setIM(UkKeyEvName map[256]);
-  void getKeyMap(UkKeyEvName map[256]);
+  int setIM(int map[256]);
+  void getKeyMap(int map[256]);
 
   UkCharType getCharType(unsigned int keyCode);
 
@@ -84,15 +98,20 @@ protected:
   static bool m_classInit;
 
   UkInputMethod m_im;
-  UkKeyEvName m_keyMap[256];
+  int m_keyMap[256];
 
   void useBuiltIn(UkKeyMapping *map);
 
 };
 
-void UkResetKeyMap(UkKeyEvName keyMap[256]);
+void UkResetKeyMap(int keyMap[256]);
 VnLexiName IsoToVnLexi(int keyCode);
 void SetupInputClassifierTable();
+
+DllInterface UkKeyMapping TelexMethodMapping[];
+DllInterface UkKeyMapping VniMethodMapping[];
+DllInterface UkKeyMapping VIQRMethodMapping[];
+DllInterface UkKeyMapping MsViMethodMapping[];
 
 #endif
 

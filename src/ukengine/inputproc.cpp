@@ -45,37 +45,26 @@ UkCharType UkcMap[256];
 
 bool ClassifierTableInitialized = false;
 
-UkKeyMapping TelexMethodMapping[] = {
-    {'z', vneTone0},
+DllExport UkKeyMapping TelexMethodMapping[] = {
     {'Z', vneTone0},
-    {'s', vneTone1},
     {'S', vneTone1},
-    {'f', vneTone2},
     {'F', vneTone2},
-    {'r', vneTone3},
     {'R', vneTone3},
-    {'x', vneTone4},
     {'X', vneTone4},
-    {'j', vneTone5},
     {'J', vneTone5},
-    {'w', vne_telex_w},
     {'W', vne_telex_w},
-    {'a', vneRoof_a},
     {'A', vneRoof_a},
-    {'e', vneRoof_e},
     {'E', vneRoof_e},
-    {'o', vneRoof_o},
     {'O', vneRoof_o},
-    {'d', vneDd},
     {'D', vneDd},
-    {'[', (UkKeyEvName)(vneCount + vnl_uh)},
-    {']', (UkKeyEvName)(vneCount + vnl_oh)},
-    {'{', (UkKeyEvName)(vneCount + vnl_Uh)},
-    {'}', (UkKeyEvName)(vneCount + vnl_Oh)},
+    {'[', vneCount + vnl_uh},
+    {']', vneCount + vnl_oh},
+    {'{', vneCount + vnl_Uh},
+    {'}', vneCount + vnl_Oh},
     {0, vneNormal}
 };
 
-UkKeyMapping VniMethodMapping[] = {
+DllExport UkKeyMapping VniMethodMapping[] = {
     {'0', vneTone0},
     {'1', vneTone1},
     {'2', vneTone2},
@@ -89,7 +78,7 @@ UkKeyMapping VniMethodMapping[] = {
     {0, vneNormal}
 };
 
-UkKeyMapping VIQRMethodMapping[] = {
+DllExport UkKeyMapping VIQRMethodMapping[] = {
     {'0', vneTone0},
     {'\'', vneTone1},
     {'`', vneTone2},
@@ -100,19 +89,11 @@ UkKeyMapping VIQRMethodMapping[] = {
     {'+', vneHook_uo},
     {'*', vneHook_uo},
     {'(', vneBowl},
-    {'d', vneDd},
+    {'D', vneDd},
     {0, vneNormal}
 };
 
-UkKeyMapping MsViMethodMapping[] = {
-    {'1', (UkKeyEvName)(vneCount + vnl_ab)},
-    {'!', (UkKeyEvName)(vneCount + vnl_Ab)},
-    {'2', (UkKeyEvName)(vneCount + vnl_ar)},
-    {'@', (UkKeyEvName)(vneCount + vnl_Ar)},
-    {'3', (UkKeyEvName)(vneCount + vnl_er)},
-    {'#', (UkKeyEvName)(vneCount + vnl_Er)},
-    {'4', (UkKeyEvName)(vneCount + vnl_or)},
-    {'$', (UkKeyEvName)(vneCount + vnl_Or)},
+DllExport UkKeyMapping MsViMethodMapping[] = {
     {'5', vneTone2},
     {'%', vneTone2},
     {'6', vneTone3},
@@ -123,12 +104,20 @@ UkKeyMapping MsViMethodMapping[] = {
     {'*', vneTone1},
     {'9', vneTone5},
     {'(', vneTone5},
-    {'0', (UkKeyEvName)(vneCount + vnl_dd)},
-    {')', (UkKeyEvName)(vneCount + vnl_DD)},
-    {'[', (UkKeyEvName)(vneCount + vnl_uh)},
-    {']', (UkKeyEvName)(vneCount + vnl_oh)},
-    {'{', (UkKeyEvName)(vneCount + vnl_Uh)},
-    {'}', (UkKeyEvName)(vneCount + vnl_Oh)},
+    {'1', vneCount + vnl_ab},
+    {'!', vneCount + vnl_Ab},
+    {'2', vneCount + vnl_ar},
+    {'@', vneCount + vnl_Ar},
+    {'3', vneCount + vnl_er},
+    {'#', vneCount + vnl_Er},
+    {'4', vneCount + vnl_or},
+    {'$', vneCount + vnl_Or},
+    {'0', vneCount + vnl_dd},
+    {')', vneCount + vnl_DD},
+    {'[', vneCount + vnl_uh},
+    {']', vneCount + vnl_oh},
+    {'{', vneCount + vnl_Uh},
+    {'}', vneCount + vnl_Oh},
     {0, vneNormal}
 };
 
@@ -194,7 +183,7 @@ int UkInputProcessor::setIM(UkInputMethod im)
 }
 
 //-------------------------------------------
-int UkInputProcessor::setIM(UkKeyEvName map[256])
+int UkInputProcessor::setIM(int map[256])
 {
   int i;
   m_im = UkUsrIM;
@@ -205,7 +194,7 @@ int UkInputProcessor::setIM(UkKeyEvName map[256])
   
 
 //-------------------------------------------
-void UkResetKeyMap(UkKeyEvName keyMap[256])
+void UkResetKeyMap(int keyMap[256])
 {
   unsigned int c;
   for (c=0; c<256; c++)
@@ -218,6 +207,14 @@ void UkInputProcessor::useBuiltIn(UkKeyMapping *map)
     UkResetKeyMap(m_keyMap);
     for (int i=0; map[i].key; i++) {
         m_keyMap[map[i].key] = map[i].action;
+        if (map[i].action < vneCount) {
+            if (islower(map[i].key)) {
+                m_keyMap[toupper(map[i].key)] = map[i].action;
+            }
+            else if (isupper(map[i].key)) {
+                m_keyMap[tolower(map[i].key)] = map[i].action;
+            }
+        }
     }
 }
 
@@ -261,7 +258,7 @@ UkCharType UkInputProcessor::getCharType(unsigned int keyCode)
 }
 
 //-------------------------------------------
-void UkInputProcessor::getKeyMap(UkKeyEvName map[256])
+void UkInputProcessor::getKeyMap(int map[256])
 {
   int i;
   for (i=0; i<256; i++)
