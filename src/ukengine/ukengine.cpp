@@ -1400,7 +1400,8 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         break;
   }
 
-    if (ev.evType == vneNormal && !autoCompleted &&
+//    if (ev.evType == vneNormal && !autoCompleted &&
+    if (!autoCompleted &&
         ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
          (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
         return 0;
