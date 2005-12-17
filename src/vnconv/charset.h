@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #if defined(_WIN32)
-    #if defined(VNCHARLIB)
+    #if defined(UNIKEYHOOK)
         #define DllInterface   __declspec( dllexport )
     #else
         #define DllInterface   __declspec( dllimport )
