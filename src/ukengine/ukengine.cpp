@@ -369,18 +369,6 @@ bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
     return false;
 }
 
-/*
-//----------------------------------------------------------
-//At the moment we suppose we receive from the system 
-// only characters with no tone.
-//TODO: check what tone that x has.
-//----------------------------------------------------------
-VnLexiName vnRemoveTone(VnLexiName x)
-{
-    return StdVnNoTone[x];
-}
-*/
-
 //------------------------------------------------
 void engineClassInit()
 {
@@ -1200,7 +1188,10 @@ int UkEngine::processAppend(UkKeyEvent & ev)
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
             entry.keyCode = ev.keyCode;
             entry.vnSym = vnl_nonVnChar;
-            return 0;
+            if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+                return 0;
+            markChange(m_current);
+            return 1;
         }
     case ukcVn:
         {
@@ -1264,7 +1255,7 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         entry.vOffset = 0;
         entry.vseq = lookupVSeq(canSym);
 
-        if (ev.evType == vneNormal &&
+        if ((m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) &&
             ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
              (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
             return 0;
@@ -1402,6 +1393,7 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
 
 //    if (ev.evType == vneNormal && !autoCompleted &&
     if (!autoCompleted &&
+        (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) &&
         ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
          (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
         return 0;
@@ -1431,7 +1423,10 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
         entry.c2Offset = -1;
         entry.vOffset = -1;
         entry.cseq = lookupCSeq(lowerSym);
-        return 0;
+        if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+            return 0;
+        markChange(m_current);
+        return 1;
     }
 
     ConSeq cs, newCs;
@@ -1444,14 +1439,20 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
     case vnw_nonVn:
         entry.form = vnw_nonVn;
         entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-        return 0;
+        if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+            return 0;
+        markChange(m_current);
+        return 1;
     case vnw_empty:
         entry.form = vnw_c;
         entry.c1Offset = 0;
         entry.c2Offset = -1;
         entry.vOffset = -1;
         entry.cseq = lookupCSeq(lowerSym);
-        return 0;
+        if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+            return 0;
+        markChange(m_current);
+        return 1;
     case vnw_v:
     case vnw_cv:
         vs = prev.vseq;
@@ -1508,7 +1509,12 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             entry.form = vnw_nonVn;
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
         }
-        return (complexEvent)? 1 : 0;
+        if (complexEvent)
+            return 1;
+        if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+            return 0;
+        markChange(m_current);
+        return 1;
     case vnw_c:
     case vnw_vc:
     case vnw_cvc:
@@ -1568,10 +1574,16 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             }
             entry.cseq = newCs;
         }
-        return 0;
+        if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+            return 0;
+        markChange(m_current);
+        return 1;
     }
 
-    return 0;
+    if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+        return 0;
+    markChange(m_current);
+    return 1;
 }
 
 //----------------------------------------------------------

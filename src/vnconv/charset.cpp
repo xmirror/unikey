@@ -550,7 +550,7 @@ int UnicodeCStringCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & 
 	UnicodeChar uChar = (stdChar < VnStdCharOffset)? 
 		                (UnicodeChar)stdChar : m_toUnicode[stdChar-VnStdCharOffset];
 	int ret;
-	if (uChar < 256 && (!isxdigit(uChar) || !m_prevIsHex)) {
+	if (uChar < 128 && !isxdigit(uChar) && uChar != 'x' && uChar != 'X') {
 		outLen = 1;
 		ret = os.putB((UKBYTE)uChar);
 	}
