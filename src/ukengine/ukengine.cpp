@@ -436,7 +436,7 @@ ConSeq lookupCSeq(VnLexiName c1, VnLexiName c2, VnLexiName c3)
 //------------------------------------------------------------------
 int UkEngine::processRoof(UkKeyEvent & ev)
 {
-    if (m_current < 0 || m_buffer[m_current].vOffset < 0)
+    if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].vOffset < 0)
         return processAppend(ev);
     /*
       if (!m_pCtrl->options.freeMarking) {
@@ -689,7 +689,7 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
 //------------------------------------------------------------------
 int UkEngine::processHook(UkKeyEvent & ev)
 {
-    if (m_current < 0 || m_buffer[m_current].vOffset < 0)
+    if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].vOffset < 0)
         return processAppend(ev);
     //cout << "Process hook!" << endl; //DEBUG
 
@@ -861,7 +861,7 @@ int UkEngine::getTonePosition(VowelSeq vs, bool terminated)
 int UkEngine::processTone(UkKeyEvent & ev)
 {
     //cout << "Process tone!" << endl; //DEBUG
-    if (m_current < 0)
+    if (m_current < 0 || !m_pCtrl->vietKey)
         return processAppend(ev);
 
     if (m_buffer[m_current].form == vnw_c && 
@@ -921,7 +921,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
 int UkEngine::processDd(UkKeyEvent & ev)
 {
     //cout << "Process dd!" << endl; //DEBUG  
-    if (m_current < 0 || m_buffer[m_current].c1Offset < 0)
+    if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].c1Offset < 0)
         return processAppend(ev);
 
     int pos = m_current - m_buffer[m_current].c1Offset;
@@ -980,6 +980,9 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
         ev.vnSym = changeCase(ev.vnSym);
 
     int ret = processAppend(ev);
+    if (!m_pCtrl->vietKey)
+        return ret;
+
     if (m_current >= 0 && m_buffer[m_current].form != vnw_empty &&
         m_buffer[m_current].form != vnw_nonVn) {
         return 1;
@@ -1047,6 +1050,9 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
 int UkEngine::processTelexW(UkKeyEvent & ev)
 {
     //cout << "Process telex W\n"; //DEBUG
+    if (!m_pCtrl->vietKey)
+        return processAppend(ev);
+
     int ret;
     static bool usedAsMapChar = false;
     int capsLockOn = 0;
@@ -1179,7 +1185,7 @@ int UkEngine::processAppend(UkKeyEvent & ev)
         //otherwise, process as ukcNonVn
     case ukcNonVn:
         {
-            if (m_pCtrl->charsetId == CONV_CHARSET_VIQR && checkEscapeVIQR(ev))
+            if (m_pCtrl->vietKey && m_pCtrl->charsetId == CONV_CHARSET_VIQR && checkEscapeVIQR(ev))
                 return 1;
 
             m_current++;
@@ -1188,7 +1194,7 @@ int UkEngine::processAppend(UkKeyEvent & ev)
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
             entry.keyCode = ev.keyCode;
             entry.vnSym = vnl_nonVnChar;
-            if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+            if (!m_pCtrl->vietKey || m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
                 return 0;
             markChange(m_current);
             return 1;
@@ -1249,15 +1255,16 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
     entry.tone = (lowerSym - canSym)/2;
     entry.keyCode = ev.keyCode;
 
-    if (m_current == 0) {
+    if (m_current == 0 || !m_pCtrl->vietKey) {
         entry.form = vnw_v;
         entry.c1Offset = entry.c2Offset = -1;
         entry.vOffset = 0;
         entry.vseq = lookupVSeq(canSym);
 
-        if ((m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) &&
-            ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
-             (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
+        if (!m_pCtrl->vietKey || 
+            ((m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) &&
+              ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
+               (entry.keyCode >= 'A' && entry.keyCode <= 'Z'))) )
             return 0;
         markChange(m_current);
         return 1;
@@ -1417,13 +1424,13 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
     entry.keyCode = ev.keyCode;
     entry.tone = 0;
 
-    if (m_current == 0) {
+    if (m_current == 0 || !m_pCtrl->vietKey) {
         entry.form = vnw_c;
         entry.c1Offset = 0;
         entry.c2Offset = -1;
         entry.vOffset = -1;
         entry.cseq = lookupCSeq(lowerSym);
-        if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
+        if (!m_pCtrl->vietKey || m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
             return 0;
         markChange(m_current);
         return 1;
@@ -1642,9 +1649,11 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
     int ret = (this->*UkKeyProcList[ev.evType])(ev);
 
     bool needNonSpellProcess = true;
-    if ((m_pCtrl->options.spellCheckDisabled || m_singleMode) &&
-        m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
-        ev.chType == ukcVn ) {
+    if ( m_pCtrl->vietKey &&
+         (m_pCtrl->options.spellCheckDisabled || m_singleMode) &&
+         m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
+         ev.chType == ukcVn ) {
+
         //The spell check has failed, but because we are in non-spellcheck mode,
         //we consider the new character as the beginning of a new word
         if (m_singleMode || 
@@ -1765,7 +1774,7 @@ void UkEngine::markChange(int pos)
 int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize)
 {
     //cout << "ProcessBackspace. m_current: " << m_current << endl; //DEBUG
-    if (m_current < 0) {
+    if (!m_pCtrl->vietKey || m_current < 0) {
         backs = 0;
         outSize = 0;
         return 0;
