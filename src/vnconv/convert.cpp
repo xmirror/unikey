@@ -52,7 +52,7 @@ DllExport int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & inp
 			  else if (VnCharsetLibObj.m_options.toUpper)
 			    stdChar = StdVnToUpper(stdChar);
 			  if (VnCharsetLibObj.m_options.removeTone)
-			    stdChar = StdVnRemoveTone(stdChar);
+			    stdChar = StdVnGetRoot(stdChar);
 			  ret = outcs.putChar(output, stdChar, bytesWritten);
 			}
 		}

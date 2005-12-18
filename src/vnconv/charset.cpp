@@ -1278,9 +1278,9 @@ StdVnChar StdVnToLower(StdVnChar ch)
 }
 
 //----------------------------------------
-StdVnChar StdVnRemoveTone(StdVnChar ch)
+StdVnChar StdVnGetRoot(StdVnChar ch)
 {
 	if (ch >= VnStdCharOffset && ch<VnStdCharOffset+TOTAL_VNCHARS)
-		ch = VnStdCharOffset + StdVnNoTone[ch-VnStdCharOffset];
+		ch = VnStdCharOffset + StdVnRootChar[ch-VnStdCharOffset];
 	return ch;
 }

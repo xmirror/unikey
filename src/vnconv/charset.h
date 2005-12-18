@@ -290,11 +290,12 @@ extern UKWORD WinCP1258Pre[TOTAL_VNCHARS];
 extern DllInterface CVnCharsetLib VnCharsetLibObj;
 extern VnConvOptions VnConvGlobalOptions;
 extern int StdVnNoTone[TOTAL_VNCHARS];
+extern int StdVnRootChar[TOTAL_VNCHARS];
 
 DllInterface int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & input, ByteOutStream & output);
 
 StdVnChar StdVnToUpper(StdVnChar ch);
 StdVnChar StdVnToLower(StdVnChar ch);
-StdVnChar StdVnRemoveTone(StdVnChar ch);
+StdVnChar StdVnGetRoot(StdVnChar ch);
 
 #endif
