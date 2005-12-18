@@ -999,8 +999,9 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
     // test if undo is needed
     if (entry.form != vnw_empty && entry.form != vnw_nonVn) {
         VnLexiName prevSym = entry.vnSym;
-        if (entry.caps)
+        if (entry.caps) {
             prevSym = (VnLexiName)(prevSym - 1);
+        }
         if (prevSym == ev.vnSym) {
             if (entry.form != vnw_c) {
                 int vStart, vEnd, curTonePos, newTonePos, tone;
