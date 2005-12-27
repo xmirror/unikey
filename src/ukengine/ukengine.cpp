@@ -357,10 +357,6 @@ bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
 
     if (!pOpt->strictSpellCheck)
         return true;
-  /*
-  if (vInfo.roofPos != -1 || vInfo.hookPos != -1)
-    return true; //if v already has roof or hook, there's no point in spell-checking
-  */
     VCPair p;
     p.v = v;
     p.c = c;
@@ -438,13 +434,6 @@ int UkEngine::processRoof(UkKeyEvent & ev)
 {
     if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].vOffset < 0)
         return processAppend(ev);
-    /*
-      if (!m_pCtrl->options.freeMarking) {
-      if (m_buffer[m_current].vOffset != 0)
-      return processAppend(ev);
-      }
-    */
-    //cout << "Process roof!" << endl; //DEBUG
 
     VnLexiName target;
     switch (ev.evType) {
@@ -569,7 +558,6 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
 
     VnLexiName *v;
 
-    //cout << "Process HookWithUO!" << endl; //DEBUG
     if (!m_pCtrl->options.freeMarking && m_buffer[m_current].vOffset != 0)
         return processAppend(ev);    
 
@@ -691,7 +679,6 @@ int UkEngine::processHook(UkKeyEvent & ev)
 {
     if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].vOffset < 0)
         return processAppend(ev);
-    //cout << "Process hook!" << endl; //DEBUG
 
     VowelSeq vs, newVs;
     int i, vStart, vEnd;
@@ -860,7 +847,6 @@ int UkEngine::getTonePosition(VowelSeq vs, bool terminated)
 //----------------------------------------------------------
 int UkEngine::processTone(UkKeyEvent & ev)
 {
-    //cout << "Process tone!" << endl; //DEBUG
     if (m_current < 0 || !m_pCtrl->vietKey)
         return processAppend(ev);
 
@@ -920,7 +906,6 @@ int UkEngine::processTone(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::processDd(UkKeyEvent & ev)
 {
-    //cout << "Process dd!" << endl; //DEBUG  
     if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].c1Offset < 0)
         return processAppend(ev);
 
@@ -953,7 +938,6 @@ VnLexiName changeCase(VnLexiName x)
 {
     if (x == vnl_nonVnChar)
         return vnl_nonVnChar;
-    //if (x == ((x >> 1) << 1)) //even
     if (!(x & 0x01)) //even
         return (VnLexiName)(x+1);
     return (VnLexiName)(x-1);
@@ -962,7 +946,6 @@ VnLexiName changeCase(VnLexiName x)
 //----------------------------------------------------------
 inline VnLexiName vnToLower(VnLexiName x)
 {
-    //if (x == ((x >> 1) << 1)) //even
     if (!(x & 0x01)) //even
         return (VnLexiName)(x+1);
     return x;
@@ -1050,7 +1033,6 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::processTelexW(UkKeyEvent & ev)
 {
-    //cout << "Process telex W\n"; //DEBUG
     if (!m_pCtrl->vietKey)
         return processAppend(ev);
 
@@ -1212,26 +1194,6 @@ int UkEngine::processAppend(UkKeyEvent & ev)
                 return appendVowel(ev);
             }
             return appendConsonnant(ev);
-            /*
-            else {
-                //single mode:
-                //set previous entry to vnw_empty, so other methods won't look back in the buffer
-                //After processing, restore it to original value
-                WordInfo w;
-                int ret;
-                WordInfo & entry = m_buffer[m_current];
-                w = entry;
-                entry.form = vnw_empty;
-                entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
-                entry.vnSym = vnl_nonVnChar;
-                if (IsVnVowel[ev.vnSym])
-                    ret = appendVowel(ev);
-                else
-                    ret = appendConsonnant(ev);
-                entry = w;
-                return ret;
-            }
-            */
         }
         break;
     }
@@ -1242,7 +1204,6 @@ int UkEngine::processAppend(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::appendVowel(UkKeyEvent & ev)
 {
-    //cout << "Process appendVowel!" << endl; //DEBUG
     bool autoCompleted = false;
 
     m_current++;
@@ -1263,10 +1224,9 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         entry.vseq = lookupVSeq(canSym);
 
         if (!m_pCtrl->vietKey || 
-            ((m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) &&
-              ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
-               (entry.keyCode >= 'A' && entry.keyCode <= 'Z'))) )
+            ((m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) && isalpha(entry.keyCode)) ) {
             return 0;
+        }
         markChange(m_current);
         return 1;
     }
@@ -1399,12 +1359,11 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         break;
   }
 
-//    if (ev.evType == vneNormal && !autoCompleted &&
     if (!autoCompleted &&
-        (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) &&
-        ((entry.keyCode >= 'a' && entry.keyCode <= 'z') || 
-         (entry.keyCode >= 'A' && entry.keyCode <= 'Z') ) )
+        (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING) && 
+        isalpha(entry.keyCode)) {
         return 0;
+    }
 
     markChange(m_current);
     return 1;
@@ -1413,7 +1372,6 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::appendConsonnant(UkKeyEvent & ev)
 {
-    //cout << "appendConsonannt" << endl; //DEBUG
     bool complexEvent = false;
     m_current++;
     WordInfo & entry = m_buffer[m_current];
@@ -1597,7 +1555,6 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
 //----------------------------------------------------------
 void UkEngine::pass(int keyCode)
 {
-    //cout << "Pass through" << endl; //DEBUG
     UkKeyEvent ev;
     m_pCtrl->input.keyCodeToEvent(keyCode, ev);
     processAppend(ev);
@@ -1634,8 +1591,6 @@ int UkEngine::processNoSpellCheck(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize)
 {
-    //cout << "Process input " << endl; //DEBUG
-
     UkKeyEvent ev;
     prepareBuffer();
     m_keyStrokes[++m_keyCurrent] = keyCode;
@@ -1774,7 +1729,6 @@ void UkEngine::markChange(int pos)
 //---------------------------------------------
 int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize)
 {
-    //cout << "ProcessBackspace. m_current: " << m_current << endl; //DEBUG
     if (!m_pCtrl->vietKey || m_current < 0) {
         backs = 0;
         outSize = 0;
@@ -1832,14 +1786,12 @@ int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize
 
     backs = m_backs;
     writeOutput(outBuf, outSize);
-    //cout << "-> After backspace, m_current = " << m_current << endl; //DEBUG
     return 1;
 }
 
 //------------------------------------------------
 void UkEngine::reset()
 {
-    //cout << "RESET\n"; //DEBUG
     m_current = -1;
     m_keyCurrent = -1;
     m_singleMode = false;
@@ -1874,10 +1826,8 @@ UkEngine::UkEngine()
 void UkEngine::prepareBuffer()
 {
     int rid;
-
     //prepare symbol buffer
     if (m_current >= 0 && m_current + 10 >= m_bufSize) {
-        //cout << "FLUSHING BUFFER!\n"; //DEBUG
         // Get rid of at least half of the current entries
         // don't get rid from the middle of a word.
         for (rid = m_current/2; m_buffer[rid].form != vnw_empty && rid < m_current; rid++);
