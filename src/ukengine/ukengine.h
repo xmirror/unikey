@@ -91,6 +91,7 @@ public:
     int processDd(UkKeyEvent & ev);
     int processMapChar(UkKeyEvent & ev);
     int processTelexW(UkKeyEvent & ev);
+    int processEscChar(UkKeyEvent & ev);
 
 protected:
     static bool m_classInit;
@@ -106,6 +107,7 @@ protected:
     int m_keyBufSize;
     unsigned int m_keyStrokes[MAX_UK_ENGINE];
     int m_keyCurrent;
+    bool m_toEscape;
 
     //varables valid in one session
     unsigned char *m_pOutBuf;

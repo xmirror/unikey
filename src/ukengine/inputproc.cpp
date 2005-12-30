@@ -135,6 +135,7 @@ DllExport UkKeyMapping VIQRMethodMapping[] = {
     {'*', vneHook_uo},
     {'(', vneBowl},
     {'D', vneDd},
+    {'\\', vneEscChar},
     {0, vneNormal}
 };
 

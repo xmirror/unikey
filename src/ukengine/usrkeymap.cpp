@@ -57,6 +57,7 @@ UkEventLabelPair UkEvLabelList[] = {
     {"Bowl", vneBowl},
     {"D-Mark", vneDd},
     {"Telex-W", vne_telex_w},
+    {"Escape", vneEscChar},
     {"DD", vneCount + vnl_DD},
     {"dd", vneCount + vnl_dd},
     {"A^", vneCount + vnl_Ar},

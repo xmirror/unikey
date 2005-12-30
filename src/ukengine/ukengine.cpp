@@ -277,6 +277,7 @@ UkKeyProc UkKeyProcList[vneCount] = {
     &UkEngine::processTone,    //vneTone5
     &UkEngine::processTelexW,  //vne_telex_w
     &UkEngine::processMapChar, //vneMapChar
+    &UkEngine::processEscChar, //vneEscChar
     &UkEngine::processAppend   //vneNormal
 };
 
@@ -1553,6 +1554,16 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
 }
 
 //----------------------------------------------------------
+int UkEngine::processEscChar(UkKeyEvent & ev)
+{
+    if (m_pCtrl->vietKey && 
+        m_current >=0 && m_buffer[m_current].form != vnw_empty && m_buffer[m_current].form != vnw_nonVn) {
+        m_toEscape = true;
+    }
+    return processAppend(ev);
+}
+
+//----------------------------------------------------------
 void UkEngine::pass(int keyCode)
 {
     UkKeyEvent ev;
@@ -1602,7 +1613,22 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
     m_reverted = false;
     m_pCtrl->input.keyCodeToEvent(keyCode, ev);
 
-    int ret = (this->*UkKeyProcList[ev.evType])(ev);
+    int ret;
+    if (!m_toEscape) {
+        ret = (this->*UkKeyProcList[ev.evType])(ev);
+    }
+    else {
+        m_toEscape = false;
+        if (m_current < 0 || ev.evType == vneNormal || ev.evType == vneEscChar) {
+            ret = processAppend(ev);
+        }
+        else {
+            m_current--;
+            processAppend(ev);
+            markChange(m_current); //this will assign m_backs to 1 and mark the character for output
+            ret = 1;
+        }
+    }
 
     bool needNonSpellProcess = true;
     if ( m_pCtrl->vietKey &&
@@ -1795,6 +1821,7 @@ void UkEngine::reset()
     m_current = -1;
     m_keyCurrent = -1;
     m_singleMode = false;
+    m_toEscape = false;
 }
 
 //------------------------------------------------
@@ -1818,6 +1845,7 @@ UkEngine::UkEngine()
     m_singleMode = false;
     m_keyCheckFunc = 0;
     m_reverted = false;
+    m_toEscape = false;
 }
 
 //----------------------------------------------------
@@ -2011,3 +2039,4 @@ bool UkEngine::atWordBeginning()
 {
     return (m_current < 0 || m_buffer[m_current].form == vnw_empty);
 }
+
