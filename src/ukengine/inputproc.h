@@ -109,6 +109,7 @@ void UkResetKeyMap(int keyMap[256]);
 void SetupInputClassifierTable();
 
 DllInterface UkKeyMapping TelexMethodMapping[];
+DllInterface UkKeyMapping SimpleTelexMethodMapping[];
 DllInterface UkKeyMapping VniMethodMapping[];
 DllInterface UkKeyMapping VIQRMethodMapping[];
 DllInterface UkKeyMapping MsViMethodMapping[];

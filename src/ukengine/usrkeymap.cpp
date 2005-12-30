@@ -96,14 +96,15 @@ static int parseNameValue(char *line, char **name, char **value)
         return 0;
 
     *name = p;
-    mark = 0; //mark the last non-space character
+    mark = p; //mark the last non-space character
+    p++;
     while ((ch=*p) != '=' && ch!=0) {
         if (ch != ' ')
             mark = p;
         p++;
     }
 
-    if (ch == 0 && mark == 0)
+    if (ch == 0)
         return 0;
     *(mark+1) = 0; //terminate name with a null character
 

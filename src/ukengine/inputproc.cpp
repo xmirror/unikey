@@ -109,6 +109,21 @@ DllExport UkKeyMapping TelexMethodMapping[] = {
     {0, vneNormal}
 };
 
+DllExport UkKeyMapping SimpleTelexMethodMapping[] = {
+    {'Z', vneTone0},
+    {'S', vneTone1},
+    {'F', vneTone2},
+    {'R', vneTone3},
+    {'X', vneTone4},
+    {'J', vneTone5},
+    {'W', vneHookAll},
+    {'A', vneRoof_a},
+    {'E', vneRoof_e},
+    {'O', vneRoof_o},
+    {'D', vneDd},
+    {0, vneNormal}
+};
+
 DllExport UkKeyMapping VniMethodMapping[] = {
     {'0', vneTone0},
     {'1', vneTone1},
