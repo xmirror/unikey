@@ -26,10 +26,17 @@
 
 using namespace std;
 
+/*
 unsigned char WordBreakSyms[] = {
 	',', ';', ':', '.', '\"', '\'', '!', '?', ' ',
 	'<', '>', '=', '+', '-', '*', '/', '\\',
 	'_', '~', '`', '@', '#', '$', '%', '^', '&', '(', ')', '{', '}', '[', ']'};
+*/
+
+unsigned char WordBreakSyms[] = {
+	',', ';', ':', '.', '\"', '\'', '!', '?', ' ',
+	'<', '>', '=', '+', '-', '*', '/', '\\',
+	'_', '@', '#', '$', '%', '&', '(', ')', '{', '}', '[', ']', '|'}; //we excluded ~, `, ^
 
 VnLexiName AZLexiUpper[] = 
   {vnl_A, vnl_B, vnl_C, vnl_D, vnl_E, vnl_F, vnl_G, vnl_H, vnl_I, vnl_J,
@@ -187,8 +194,19 @@ void SetupInputClassifierTable()
 {
   unsigned int c;
   int i;
-  for (c=0; c<256; c++)
+
+  for (c=0; c<=32; c++) {
     UkcMap[c] = ukcReset;
+  }
+
+  for (c=33; c<256; c++) {
+    UkcMap[c] = ukcNonVn;
+  }
+
+  /*
+  for (c = '0'; c <= '9'; c++)
+    UkcMap[c] = ukcNonVn;
+  */
 
   for (c = 'a'; c <= 'z'; c++)
     UkcMap[c] = ukcVn;
@@ -198,9 +216,6 @@ void SetupInputClassifierTable()
   for (i=0; AscVnLexiList[i].asc; i++) {
       UkcMap[AscVnLexiList[i].asc] = ukcVn;
   }
-
-  for (c = '0'; c <= '9'; c++)
-    UkcMap[c] = ukcNonVn;
 
   UkcMap[(unsigned char)'j'] = ukcNonVn;
   UkcMap[(unsigned char)'J'] = ukcNonVn;
