@@ -109,10 +109,10 @@ DllExport UkKeyMapping TelexMethodMapping[] = {
     {'E', vneRoof_e},
     {'O', vneRoof_o},
     {'D', vneDd},
-    {'[', vneCount + vnl_uh},
-    {']', vneCount + vnl_oh},
-    {'{', vneCount + vnl_Uh},
-    {'}', vneCount + vnl_Oh},
+    {'[', vneCount + vnl_oh},
+    {']', vneCount + vnl_uh},
+    {'{', vneCount + vnl_Oh},
+    {'}', vneCount + vnl_Uh},
     {0, vneNormal}
 };
 
@@ -319,31 +319,31 @@ void UkInputProcessor::useBuiltIn(UkKeyMapping *map)
 //-------------------------------------------
 void UkInputProcessor::keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev)
 {
-  ev.keyCode = keyCode;
-  if (keyCode > 255) {
-    ev.evType = vneNormal;
-    ev.vnSym = IsoToVnLexi(keyCode);
-    ev.chType = (ev.vnSym == vnl_nonVnChar)? ukcNonVn : ukcVn;
-  }
-  else {
-    ev.chType = UkcMap[keyCode];
-    ev.evType = m_keyMap[keyCode];
-
-    if (ev.evType >= vneTone0 && ev.evType <= vneTone5) {
-      ev.tone = ev.evType - vneTone0;
-    }
-
-    if (ev.evType >= vneCount) {
-      //cout << "Input Processor: shortcut. Key: " << (unsigned char)keyCode 
-      //     << " EvType: " << ev.evType << endl; //DEBUG
-      ev.chType = ukcVn;
-      ev.vnSym = (VnLexiName)(ev.evType - vneCount);
-      ev.evType = vneMapChar;
+    ev.keyCode = keyCode;
+    if (keyCode > 255) {
+        ev.evType = vneNormal;
+        ev.vnSym = IsoToVnLexi(keyCode);
+        ev.chType = (ev.vnSym == vnl_nonVnChar)? ukcNonVn : ukcVn;
     }
     else {
-      ev.vnSym = IsoToVnLexi(keyCode);
+        ev.chType = UkcMap[keyCode];
+        ev.evType = m_keyMap[keyCode];
+
+        if (ev.evType >= vneTone0 && ev.evType <= vneTone5) {
+            ev.tone = ev.evType - vneTone0;
+        }
+
+        if (ev.evType >= vneCount) {
+            //cout << "Input Processor: shortcut. Key: " << (unsigned char)keyCode 
+            //     << " EvType: " << ev.evType << endl; //DEBUG
+            ev.chType = ukcVn;
+            ev.vnSym = (VnLexiName)(ev.evType - vneCount);
+            ev.evType = vneMapChar;
+        }
+        else {
+            ev.vnSym = IsoToVnLexi(keyCode);
+        }
     }
-  }
 }
 
 //-------------------------------------------

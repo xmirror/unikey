@@ -39,6 +39,8 @@
 
 using namespace std;
 
+#define ENTER_CHAR 13
+
 bool IsVnVowel[vnl_lastChar];
 
 extern VnLexiName AZLexiUpper[]; //defined in inputproc.cpp
@@ -1159,6 +1161,12 @@ int UkEngine::processAppend(UkKeyEvent & ev)
     int ret = 0;
     switch (ev.chType) {
     case ukcReset:
+#if defined(_WIN32)
+        if (ev.keyCode == ENTER_CHAR) {
+            if (m_pCtrl->options.macroEnabled && macroMatch(ev))
+                return 1;
+        }
+#endif
         reset();
         return 0;
     case ukcWordBreak:
@@ -1177,7 +1185,7 @@ int UkEngine::processAppend(UkKeyEvent & ev)
             entry.form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
             entry.keyCode = ev.keyCode;
-            entry.vnSym = vnl_nonVnChar;
+            entry.vnSym = ev.vnSym;
             if (!m_pCtrl->vietKey || m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
                 return 0;
             markChange(m_current);
