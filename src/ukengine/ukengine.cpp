@@ -702,7 +702,6 @@ int UkEngine::processHook(UkKeyEvent & ev)
         (v[1] == vnl_o || v[1] == vnl_oh))
         return processHookWithUO(ev);
 
-
     vStart = vEnd - (VSeqList[vs].len - 1);
     curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
     tone = m_buffer[curTonePos].tone;
@@ -756,12 +755,12 @@ int UkEngine::processHook(UkKeyEvent & ev)
 
         switch (ev.evType) {
         case vneHook_u:
-            if (pInfo->v[pInfo->hookPos] != vnl_u)
+            if (pInfo->v[pInfo->hookPos] != vnl_uh)
                 return processAppend(ev);
             newChar = vnl_uh;
             break;
         case vneHook_o:
-            if (pInfo->v[pInfo->hookPos] != vnl_o)
+            if (pInfo->v[pInfo->hookPos] != vnl_oh)
                 return processAppend(ev);
             newChar = vnl_oh;
             break;
