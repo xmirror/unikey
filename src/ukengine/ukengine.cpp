@@ -1646,7 +1646,7 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
     }
 
     if ( m_pCtrl->vietKey &&
-         (m_pCtrl->options.spellCheckDisabled || m_singleMode) &&
+         (!m_pCtrl->options.spellCheckEnabled || m_singleMode) &&
          m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
          ev.chType == ukcVn ) {
 
@@ -1660,11 +1660,12 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
         }
     }
 
-    //we add key to key buffer only that key has not caused a reset
+    //we add key to key buffer only if that key has not caused a reset
     if (m_current >= 0) {
+        ev.chType = m_pCtrl->input.getCharType(ev.keyCode);
         m_keyCurrent++;
         m_keyStrokes[m_keyCurrent].ev = ev;
-        m_keyStrokes[m_keyCurrent].converted = false;
+        m_keyStrokes[m_keyCurrent].converted = (ret && !m_keyRestored);
     }
 
     if (ret == 0) {
@@ -1672,10 +1673,6 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
         outSize = 0;
         outType = m_outType;
         return 0;
-    }
-
-    if (!m_keyRestored) {
-        m_keyStrokes[m_keyCurrent].converted = true;
     }
 
     backs = m_backs;
@@ -2026,7 +2023,6 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
 int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType)
 {
     outType = UkKeyOutput;
-//    if (m_current < 0 || m_buffer[m_current].form == vnw_empty ) {
     if (!lastWordHasVnMark()) {
         backs = 0;
         outSize = 0;
@@ -2044,6 +2040,7 @@ int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSiz
         }
     }
     keyStart++;
+
     if (!converted) {
         //no key stroke has been converted, so it doesn't make sense to restore key strokes
         backs = 0;
@@ -2120,7 +2117,7 @@ int UkEngine::processWordEnd(UkKeyEvent & ev)
     if (m_pCtrl->options.macroEnabled && macroMatch(ev))
         return 1;
 
-    if (m_pCtrl->options.spellCheckDisabled || m_singleMode || m_current < 0 || m_keyRestoring) {
+    if (!m_pCtrl->options.spellCheckEnabled || m_singleMode || m_current < 0 || m_keyRestoring) {
         m_current++;
         WordInfo & entry = m_buffer[m_current];
         entry.form = vnw_empty;
@@ -2200,8 +2197,7 @@ bool UkEngine::lastWordIsNonVn()
 //---------------------------------------------------------------------------
 bool UkEngine::lastWordHasVnMark()
 {
-    int i;
-    for (i=m_current; i>=0 && m_buffer[i].form != vnw_empty; i--) {
+    for (int i=m_current; i>=0 && m_buffer[i].form != vnw_empty; i--) {
         VnLexiName sym = m_buffer[i].vnSym;
         if (sym != vnl_nonVnChar) {
             if (IsVnVowel[sym]) {
