@@ -89,6 +89,7 @@ public:
   }
 
   void keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev);
+  void keyCodeToSymbol(unsigned int keyCode, UkKeyEvent & ev);
   int setIM(UkInputMethod im);
   int setIM(int map[256]);
   void getKeyMap(int map[256]);

@@ -545,6 +545,7 @@ int UkEngine::processRoof(UkKeyEvent & ev)
         processAppend(ev);
         m_reverted = true;
     }
+
     return 1;
 }
 
@@ -674,6 +675,7 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
         processAppend(ev);
         m_reverted = true;
     }
+
     return 1;
 }
 
@@ -818,6 +820,7 @@ int UkEngine::processHook(UkKeyEvent & ev)
         processAppend(ev);
         m_reverted = true;
     }
+
     return 1;
 }
 
@@ -939,8 +942,8 @@ int UkEngine::processDd(UkKeyEvent & ev)
 VnLexiName changeCase(VnLexiName x)
 {
     if (x == vnl_nonVnChar)
-        return vnl_nonVnChar;
-    if (!(x & 0x01)) //even
+        return x;
+    if (!(x & 0x01))
         return (VnLexiName)(x+1);
     return (VnLexiName)(x-1);
 }
@@ -948,6 +951,8 @@ VnLexiName changeCase(VnLexiName x)
 //----------------------------------------------------------
 inline VnLexiName vnToLower(VnLexiName x)
 {
+    if (x == vnl_nonVnChar)
+        return x;
     if (!(x & 0x01)) //even
         return (VnLexiName)(x+1);
     return x;
@@ -1047,7 +1052,7 @@ int UkEngine::processTelexW(UkKeyEvent & ev)
 
     if (usedAsMapChar) {
         ev.evType = vneMapChar;
-        ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
+        ev.vnSym = isupper(ev.keyCode)? vnl_Uh : vnl_uh;
         if (capsLockOn)
             ev.vnSym = changeCase(ev.vnSym);
         ev.chType = ukcVn;
@@ -1069,7 +1074,7 @@ int UkEngine::processTelexW(UkKeyEvent & ev)
         if (m_current >= 0)
             m_current--;
         ev.evType = vneMapChar;
-        ev.vnSym = (ev.keyCode == 'w')? vnl_uh : vnl_Uh;
+        ev.vnSym = isupper(ev.keyCode)? vnl_Uh : vnl_uh;
         if (capsLockOn)
             ev.vnSym = changeCase(ev.vnSym);
         ev.chType = ukcVn;
@@ -1149,7 +1154,6 @@ int UkEngine::checkEscapeVIQR(UkKeyEvent & ev)
         m_pOutBuf[1] = ev.keyCode;
         *m_pOutSize = 2;
         m_outputWritten = true;
-
     }
     return escape;
 }
@@ -1170,10 +1174,7 @@ int UkEngine::processAppend(UkKeyEvent & ev)
         return 0;
     case ukcWordBreak:
         m_singleMode = false;
-        if (m_pCtrl->options.macroEnabled && macroMatch(ev))
-            return 1;
-        resetKeyBuf();
-        //otherwise, process as ukcNonVn
+        return processWordEnd(ev);
     case ukcNonVn:
         {
             if (m_pCtrl->vietKey && m_pCtrl->charsetId == CONV_CHARSET_VIQR && checkEscapeVIQR(ev))
@@ -1184,7 +1185,8 @@ int UkEngine::processAppend(UkKeyEvent & ev)
             entry.form = (ev.chType == ukcWordBreak) ? vnw_empty : vnw_nonVn;
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
             entry.keyCode = ev.keyCode;
-            entry.vnSym = ev.vnSym;
+            entry.vnSym = vnToLower(ev.vnSym);
+            entry.caps = (entry.vnSym != ev.vnSym);
             if (!m_pCtrl->vietKey || m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
                 return 0;
             markChange(m_current);
@@ -1483,8 +1485,11 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             entry.form = vnw_nonVn;
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
         }
-        if (complexEvent)
+
+        if (complexEvent) {
             return 1;
+        }
+
         if (m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
             return 0;
         markChange(m_current);
@@ -1607,17 +1612,20 @@ int UkEngine::processNoSpellCheck(UkKeyEvent & ev)
     return 1;
 }
 //----------------------------------------------------------
-int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize)
+int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType)
 {
     UkKeyEvent ev;
     prepareBuffer();
-    m_keyStrokes[++m_keyCurrent] = keyCode;
     m_backs = 0;
     m_changePos = m_current+1;
     m_pOutBuf = outBuf;
     m_pOutSize = &outSize;
     m_outputWritten = false;
     m_reverted = false;
+    m_keyRestored = false;
+    m_keyRestoring = false;
+    m_outType = UkCharOutput;
+
     m_pCtrl->input.keyCodeToEvent(keyCode, ev);
 
     int ret;
@@ -1637,7 +1645,6 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
         }
     }
 
-    bool needNonSpellProcess = true;
     if ( m_pCtrl->vietKey &&
          (m_pCtrl->options.spellCheckDisabled || m_singleMode) &&
          m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
@@ -1653,16 +1660,29 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
         }
     }
 
+    //we add key to key buffer only that key has not caused a reset
+    if (m_current >= 0) {
+        m_keyCurrent++;
+        m_keyStrokes[m_keyCurrent].ev = ev;
+        m_keyStrokes[m_keyCurrent].converted = false;
+    }
+
     if (ret == 0) {
         backs = 0;
         outSize = 0;
+        outType = m_outType;
         return 0;
+    }
+
+    if (!m_keyRestored) {
+        m_keyStrokes[m_keyCurrent].converted = true;
     }
 
     backs = m_backs;
     if (!m_outputWritten) {
         writeOutput(outBuf, outSize);
     }
+    outType = m_outType;
 
     return ret;
 }
@@ -1759,9 +1779,29 @@ void UkEngine::markChange(int pos)
     }
 }
 
-//---------------------------------------------
-int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize)
+//----------------------------------------------------------------
+// Called from processBackspace to keep
+// character buffer (m_buffer) and key stroke buffer in synch
+//----------------------------------------------------------------
+void UkEngine::synchKeyStrokeBuffer()
 {
+    //synchronize with key-stroke buffer
+    if (m_keyCurrent >= 0)
+        m_keyCurrent--;
+    if (m_current >= 0 && m_buffer[m_current].form == vnw_empty) {
+        //in character buffer, we have reached a word break,
+        //so we also need to move key stroke pointer backward to corresponding word break
+        while (m_keyCurrent >= 0 && m_keyStrokes[m_keyCurrent].ev.chType != ukcWordBreak)
+        {
+            m_keyCurrent--;
+        }
+    }
+}
+
+//---------------------------------------------
+int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType)
+{
+    outType = UkCharOutput;
     if (!m_pCtrl->vietKey || m_current < 0) {
         backs = 0;
         outSize = 0;
@@ -1771,11 +1811,6 @@ int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize
     m_backs = 0;
     m_changePos = m_current + 1;
     markChange(m_current);
-
-    if (m_current == 0 || m_buffer[m_current-1].form == vnw_empty)
-        resetKeyBuf();
-    else if (m_keyCurrent >= 0)
-        m_keyCurrent--;
 
     if (m_current == 0 || 
         m_buffer[m_current].form == vnw_empty ||
@@ -1788,6 +1823,7 @@ int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize
         m_current--;
         backs = m_backs;
         outSize = 0;
+        synchKeyStrokeBuffer();
         return (backs > 1);
     }
   
@@ -1807,7 +1843,7 @@ int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize
         m_current--;
         backs = m_backs;
         outSize = 0;
-        //cout << "-> After backspace, m_current = " << m_current << endl; //DEBUG
+        synchKeyStrokeBuffer();
         return (backs > 1);
     }
 
@@ -1816,7 +1852,7 @@ int UkEngine::processBackspace(int & backs, unsigned char *outBuf, int & outSize
     markChange(curTonePos);
     m_buffer[curTonePos].tone = 0;
     m_current--;
-
+    synchKeyStrokeBuffer();
     backs = m_backs;
     writeOutput(outBuf, outSize);
     return 1;
@@ -1853,6 +1889,7 @@ UkEngine::UkEngine()
     m_keyCheckFunc = 0;
     m_reverted = false;
     m_toEscape = false;
+    m_keyRestored = false;
 }
 
 //----------------------------------------------------
@@ -1985,11 +2022,12 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
     return 1;
 }
 
-
 //----------------------------------------------------
-int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize)
+int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType)
 {
-    if (m_current < 0 || m_buffer[m_current].form == vnw_empty) {
+    outType = UkKeyOutput;
+//    if (m_current < 0 || m_buffer[m_current].form == vnw_empty ) {
+    if (!lastWordHasVnMark()) {
         backs = 0;
         outSize = 0;
         return 0;
@@ -1998,17 +2036,42 @@ int UkEngine::restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSiz
     m_backs = 0;
     m_changePos = m_current+1;
 
-    int i = m_current;
-    while (i>=0 && m_buffer[i].form != vnw_empty)
-        i--;
-    i++;
-    markChange(i);
-    backs = m_backs;
-    for (i=0; i <= m_keyCurrent && i<outSize; i++) {
-        outBuf[i] = (unsigned char)m_keyStrokes[i];
+    int keyStart;
+    bool converted = false;
+    for (keyStart = m_keyCurrent; keyStart >= 0 && m_keyStrokes[keyStart].ev.chType != ukcWordBreak; keyStart--) {
+        if (m_keyStrokes[keyStart].converted) {
+            converted = true;
+        }
     }
-    outSize = i;
-    reset();
+    keyStart++;
+    if (!converted) {
+        //no key stroke has been converted, so it doesn't make sense to restore key strokes
+        backs = 0;
+        outSize = 0;
+        return 0;
+    }
+
+    //int i = m_current;
+    while (m_current >=0 && m_buffer[m_current].form != vnw_empty)
+        m_current--;
+    markChange(m_current+1);
+    backs = m_backs;
+
+    int count;
+    int i;
+    UkKeyEvent ev;
+    m_keyRestoring = true;
+    for (i=keyStart, count = 0; i <= m_keyCurrent; i++) {
+        if (count<outSize) {
+            outBuf[count++] = (unsigned char)m_keyStrokes[i].ev.keyCode;
+        }
+        m_pCtrl->input.keyCodeToSymbol(m_keyStrokes[i].ev.keyCode, ev);
+        m_keyStrokes[i].converted = false;
+        processAppend(ev);
+    }
+    outSize = count;
+    m_keyRestoring = false;
+
     return 1;
 }
 
@@ -2047,3 +2110,107 @@ bool UkEngine::atWordBeginning()
     return (m_current < 0 || m_buffer[m_current].form == vnw_empty);
 }
 
+//--------------------------------------------------
+// Check for macro first, if there's a match, expand macro. If not:
+// Spell-check, if is valid Vietnamese, return normally, if not:
+// restore key strokes if auto-restore is enabled
+//--------------------------------------------------
+int UkEngine::processWordEnd(UkKeyEvent & ev)
+{
+    if (m_pCtrl->options.macroEnabled && macroMatch(ev))
+        return 1;
+
+    if (m_pCtrl->options.spellCheckDisabled || m_singleMode || m_current < 0 || m_keyRestoring) {
+        m_current++;
+        WordInfo & entry = m_buffer[m_current];
+        entry.form = vnw_empty;
+        entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+        entry.keyCode = ev.keyCode;
+        entry.vnSym = vnToLower(ev.vnSym);
+        entry.caps = (entry.vnSym != ev.vnSym);
+        return 0;
+    }
+
+    int outSize = 0;
+    if (m_pCtrl->options.autoNonVnRestore && lastWordIsNonVn()) {
+        outSize = *m_pOutSize;
+        if (restoreKeyStrokes(m_backs, m_pOutBuf, outSize, m_outType)) {
+            m_keyRestored = true;
+            m_outputWritten = true;
+        }
+    }
+
+    m_current++;
+    WordInfo & entry = m_buffer[m_current];
+    entry.form = vnw_empty;
+    entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
+    entry.keyCode = ev.keyCode;
+    entry.vnSym = vnToLower(ev.vnSym);
+    entry.caps = (entry.vnSym != ev.vnSym);
+    
+    if (m_keyRestored && outSize < *m_pOutSize) {
+        m_pOutBuf[outSize] = ev.keyCode;
+        outSize++;
+        *m_pOutSize = outSize;
+        return 1;
+    }
+ 
+    return 0;
+}
+
+//---------------------------------------------------------------------------
+// Test if last word is a non-Vietnamese word, so that
+// the engine can restore key strokes if it is indeed not a Vietnamese word
+//---------------------------------------------------------------------------
+bool UkEngine::lastWordIsNonVn()
+{
+    if (m_current < 0)
+        return false;
+
+    switch (m_buffer[m_current].form) {
+        case vnw_nonVn:
+            return true;
+        case vnw_empty:
+        case vnw_c:
+            return false;
+        case vnw_v:
+        case vnw_cv:
+            return !VSeqList[m_buffer[m_current].vseq].complete;
+        case vnw_vc:
+        case vnw_cvc: {
+            int vIndex = m_current - m_buffer[m_current].vOffset;
+            VowelSeq vs = m_buffer[vIndex].vseq;
+            if (!VSeqList[vs].complete)
+                return true;
+            ConSeq cs = m_buffer[m_current].cseq;
+            if (!isValidVC(vs, cs, &m_pCtrl->options))
+                return true;
+            int tonePos = vIndex + getTonePosition(vs, false);
+            int tone = m_buffer[tonePos].tone;
+            if ((cs == cs_c || cs == cs_ch || cs == cs_p || cs == cs_t) &&
+                (tone == 2 || tone == 3 || tone == 4))
+                return true;
+        }
+    }
+    return false;
+}
+
+//---------------------------------------------------------------------------
+// Test if last word has a Vietnamese mark, that is tones, decorators
+//---------------------------------------------------------------------------
+bool UkEngine::lastWordHasVnMark()
+{
+    int i;
+    for (i=m_current; i>=0 && m_buffer[i].form != vnw_empty; i--) {
+        VnLexiName sym = m_buffer[i].vnSym;
+        if (sym != vnl_nonVnChar) {
+            if (IsVnVowel[sym]) {
+                if (m_buffer[i].tone)
+                    return true;
+            }
+            if (sym != StdVnRootChar[sym] )
+                return true;
+        }
+    }
+    return false;
+}

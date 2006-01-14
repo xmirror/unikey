@@ -56,6 +56,11 @@ enum VnWordForm {vnw_nonVn, vnw_empty, vnw_c, vnw_v, vnw_cv, vnw_vc, vnw_cvc};
 
 typedef void (* CheckKeyboardCaseCb)(int *pShiftPressed, int *pCapslockOn);
 
+struct KeyBufEntry {
+    UkKeyEvent ev;
+    bool converted;
+};
+
 class UkEngine
 {
 public:
@@ -72,13 +77,13 @@ public:
 
     bool atWordBeginning();
 
-    int process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize);
+    int process(unsigned int keyCode, int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType);
     void pass(int keyCode); //just pass through without filtering
     void setSingleMode();
 
-    int processBackspace(int & backs, unsigned char *outBuf, int & outSize);
+    int processBackspace(int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType);
     void reset();
-    int restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize);
+    int restoreKeyStrokes(int & backs, unsigned char *outBuf, int & outSize, UkOutputType & outType);
 
     //following methods must be public just to enable the use of pointers to them
     //they should not be called from outside.
@@ -105,7 +110,8 @@ protected:
     int m_singleMode;
 
     int m_keyBufSize;
-    unsigned int m_keyStrokes[MAX_UK_ENGINE];
+    //unsigned int m_keyStrokes[MAX_UK_ENGINE];
+    KeyBufEntry m_keyStrokes[MAX_UK_ENGINE];
     int m_keyCurrent;
     bool m_toEscape;
 
@@ -114,6 +120,9 @@ protected:
     int *m_pOutSize;
     bool m_outputWritten;
     bool m_reverted;
+    bool m_keyRestored;
+    bool m_keyRestoring;
+    UkOutputType m_outType;
   
     struct WordInfo {
         //info for word ending at this position
@@ -146,7 +155,10 @@ protected:
     void resetKeyBuf();
     int checkEscapeVIQR(UkKeyEvent & ev);
     int processNoSpellCheck(UkKeyEvent & ev);
-
+    int processWordEnd(UkKeyEvent & ev);
+    void synchKeyStrokeBuffer();
+    bool lastWordIsNonVn();
+    bool lastWordHasVnMark();
 };
 
 void SetupUnikeyEngine();

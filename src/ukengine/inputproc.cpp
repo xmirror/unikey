@@ -334,8 +334,6 @@ void UkInputProcessor::keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev)
         }
 
         if (ev.evType >= vneCount) {
-            //cout << "Input Processor: shortcut. Key: " << (unsigned char)keyCode 
-            //     << " EvType: " << ev.evType << endl; //DEBUG
             ev.chType = ukcVn;
             ev.vnSym = (VnLexiName)(ev.evType - vneCount);
             ev.evType = vneMapChar;
@@ -343,6 +341,24 @@ void UkInputProcessor::keyCodeToEvent(unsigned int keyCode, UkKeyEvent & ev)
         else {
             ev.vnSym = IsoToVnLexi(keyCode);
         }
+    }
+}
+
+//----------------------------------------------------------------
+// This method translates a key stroke to a symbol.
+// Key strokes are simply considered character input, not action keys as in
+// keyCodeToEvent method
+//----------------------------------------------------------------
+void UkInputProcessor::keyCodeToSymbol(unsigned int keyCode, UkKeyEvent & ev)
+{
+    ev.keyCode = keyCode;
+    ev.evType = vneNormal;
+    ev.vnSym = IsoToVnLexi(keyCode);
+    if (keyCode > 255) {
+        ev.chType = (ev.vnSym == vnl_nonVnChar)? ukcNonVn : ukcVn;
+    }
+    else {
+        ev.chType = UkcMap[keyCode];
     }
 }
 

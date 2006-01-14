@@ -47,6 +47,7 @@ struct _UnikeyOptions
   int strictSpellCheck;
   int useIME; //for Win32 only
   int spellCheckDisabled;
+  int autoNonVnRestore;
 };
 
 #define UKOPT_FLAG_ALL                   0xFFFFFFFF
@@ -73,5 +74,7 @@ struct _UnikeySysInfo
   DWORD winMajorVersion, winMinorVersion;
 };
 #endif
+
+enum UkOutputType {UkCharOutput, UkKeyOutput};
 
 #endif
