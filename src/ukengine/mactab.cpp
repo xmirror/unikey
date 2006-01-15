@@ -101,6 +101,13 @@ int CMacroTable::loadFromFile(const TCHAR *fname)
   char line[MAX_MACRO_LINE];
   size_t len;
 
+  // Set conversions options
+  VnConvOptions opt, oldOpt;
+  VnConvGetOptions(&oldOpt);
+  VnConvResetOptions(&opt);
+  opt.smartViqr = 0;
+  VnConvSetOptions(&opt);
+
   resetContent();
   while (fgets(line, sizeof(line), f)) {
     len = strlen(line);
@@ -111,6 +118,7 @@ int CMacroTable::loadFromFile(const TCHAR *fname)
     addItem(line);
   }
   fclose(f);
+  VnConvSetOptions(&oldOpt);
   MacCompareStartMem = m_macroMem;
   qsort(m_table, m_count, sizeof(MacroDef), macCompare);
   //writeToFile("uktest");
@@ -187,7 +195,10 @@ int CMacroTable::addItem(const char *key, const char *text)
   
   m_table[m_count].keyOffset = offset;
 
-  //convert macro key form VIQR to VN standard
+  /*
+     Convert macro key form VIQR to VN standard
+  */
+
   inLen = -1; //input is null-terminated
   maxOutLen = MAX_MACRO_KEY_LEN * sizeof(StdVnChar);
   if (maxOutLen + offset > m_memSize)

@@ -66,7 +66,7 @@ typedef struct _UnikeySysInfo UnikeySysInfo;
 struct _UnikeySysInfo
 {
   int switchKey;
-  HHOOK keyHook,mouseHook;
+  HHOOK keyHook;
   HWND hMainDlg;
   UINT iconMsgId;
   HICON hVietIcon,hEnIcon;

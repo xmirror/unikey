@@ -1648,11 +1648,12 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
     if ( m_pCtrl->vietKey &&
          (!m_pCtrl->options.spellCheckEnabled || m_singleMode) &&
          m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
-         ev.chType == ukcVn ) {
+         ev.chType == ukcVn ) 
+    {
 
         //The spell check has failed, but because we are in non-spellcheck mode,
         //we consider the new character as the beginning of a new word
-        if (m_singleMode || 
+        if ((!m_pCtrl->options.spellCheckEnabled || m_singleMode) || 
             ( !m_reverted && 
               (m_current < 1 || m_buffer[m_current-1].form != vnw_nonVn)) ) {
 
