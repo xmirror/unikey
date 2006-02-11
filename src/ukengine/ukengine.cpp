@@ -340,7 +340,9 @@ int VCPairCompare(const void *p1, const void *p2)
 //----------------------------------------------------------
 bool isValidCV(ConSeq c, VowelSeq v)
 {
-    //ConSeqInfo & cInfo = CSeqList[c];
+    if (c == cs_nil || v == vs_nil)
+        return true;
+
     VowelSeqInfo & vInfo = VSeqList[v];
 
     if ((c == cs_gi && vInfo.v[0] == vnl_i) ||
@@ -361,20 +363,57 @@ bool isValidCV(ConSeq c, VowelSeq v)
 }
 
 //----------------------------------------------------------
-bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
+bool isValidVC(VowelSeq v, ConSeq c)
 {
+    if (v == vs_nil || c == cs_nil)
+        return true;
+
     VowelSeqInfo & vInfo = VSeqList[v];
     if (!vInfo.conSuffix)
         return false;
 
-    if (!pOpt->strictSpellCheck)
-        return true;
+    ConSeqInfo & cInfo = CSeqList[c];
+    if (!cInfo.suffix)
+        return false;
+
     VCPair p;
     p.v = v;
     p.c = c;
     if (bsearch(&p, VCPairList, VCPairCount, sizeof(VCPair), VCPairCompare))
         return true;
 
+    return false;
+}
+
+//----------------------------------------------------------
+bool isValidCVC(ConSeq c1, VowelSeq v, ConSeq c2)
+{
+    if (v == vs_nil)
+        return (c1 == cs_nil || c2 != cs_nil);
+
+    if (c1 == cs_nil)
+        return isValidVC(v, c2);
+
+    if (c2 == cs_nil)
+        return isValidCV(c1, v);
+
+    bool okCV = isValidCV(c1, v);
+    bool okVC = isValidVC(v, c2);
+
+    if (okCV && okVC)
+        return true;
+
+    if (!okVC) {
+        //check some exceptions: vc fails but cvc passes
+
+        // quyn, quynh
+        if (c1 == cs_qu && v == vs_y && (c2 == cs_n || c2 == cs_nh))
+            return true;
+
+        // gieng, gie^ng
+        if (c1 == cs_gi && (v == vs_e || v == vs_er) && (c2 == cs_n || c2 == cs_ng))
+            return true;
+    }
     return false;
 }
 
@@ -515,12 +554,15 @@ int UkEngine::processRoof(UkKeyEvent & ev)
 
         //check validity of new VC and CV
         bool valid = true;
-        if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
-            valid = isValidVC(newVs, m_buffer[m_current].cseq, &m_pCtrl->options);
-        }
-        if (valid && (m_buffer[m_current].form == vnw_cv || m_buffer[m_current].form == vnw_cvc)) {
-            valid = isValidCV(m_buffer[m_current-m_buffer[m_current].c1Offset].cseq, newVs);
-        }
+        ConSeq c1 = cs_nil;
+        ConSeq c2 = cs_nil;
+        if (m_buffer[m_current].c1Offset != -1)
+            c1 = m_buffer[m_current-m_buffer[m_current].c1Offset].cseq;
+        
+        if (m_buffer[m_current].c2Offset != -1)
+            c2 = m_buffer[m_current-m_buffer[m_current].c2Offset].cseq;
+
+        valid = isValidCVC(c1, newVs, c2);
         if (!valid)
             return processAppend(ev);
 
@@ -783,15 +825,18 @@ int UkEngine::processHook(UkKeyEvent & ev)
 
         //check validity of new VC and CV
         bool valid = true;
-        if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
-            valid = isValidVC(newVs, m_buffer[m_current].cseq, &m_pCtrl->options);
-        }
-        if (valid && (m_buffer[m_current].form == vnw_cv || m_buffer[m_current].form == vnw_cvc)) {
-            valid = isValidCV(m_buffer[m_current-m_buffer[m_current].c1Offset].cseq, newVs);
-        }
+        ConSeq c1 = cs_nil;
+        ConSeq c2 = cs_nil;
+        if (m_buffer[m_current].c1Offset != -1)
+            c1 = m_buffer[m_current-m_buffer[m_current].c1Offset].cseq;
+        
+        if (m_buffer[m_current].c2Offset != -1)
+            c2 = m_buffer[m_current-m_buffer[m_current].c2Offset].cseq;
+
+        valid = isValidCVC(c1, newVs, c2);
+
         if (!valid)
             return processAppend(ev);
-        //
 
         changePos = vStart + pInfo->hookPos;
         if (!m_pCtrl->options.freeMarking && changePos != m_current)
@@ -1409,7 +1454,7 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
         return 1;
     }
 
-    ConSeq cs, newCs;
+    ConSeq cs, newCs, c1;
     VowelSeq vs, newVs;
     bool isValid;
 
@@ -1441,19 +1486,13 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             newVs = vs_uhoh;
         }
 
+        c1 = cs_nil;
+        if (prev.c1Offset != -1)
+            c1 = m_buffer[m_current-1-prev.c1Offset].cseq;
+
         newCs = lookupCSeq(lowerSym);
-        isValid = false;
-        if (CSeqList[newCs].suffix && isValidVC(newVs, newCs, &m_pCtrl->options))
-            isValid = true;
-        else {
-            // check for exception: [quyn] is considered valid, because it can become [quynh]
-            if (prev.form == vnw_cv &&
-                m_buffer[m_current-2].cseq == cs_qu &&
-                vs == vs_y && newCs == cs_n) 
-            {
-                isValid = true;
-            }
-        }
+        isValid = isValidCVC(c1, newVs, newCs);
+
         if (isValid) {
             //check u+o -> u+o+
             if (vs == vs_uho) {
@@ -1522,26 +1561,17 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
             newCs = lookupCSeq(CSeqList[cs].c[0], lowerSym);
         
         if (newCs != cs_nil && (prev.form == vnw_vc || prev.form == vnw_cvc)) {
-            if (CSeqList[newCs].suffix) {
-                //check VC combination
-                int vIdx = (m_current - 1) - prev.vOffset;
-                vs = m_buffer[vIdx].vseq;
+            // Check CVC combination
+            c1 = cs_nil;
+            if (prev.c1Offset != -1)
+                c1 = m_buffer[m_current-1-prev.c1Offset].cseq;
 
-                isValid = false;
-                if (isValidVC(vs, newCs, &m_pCtrl->options))
-                    isValid = true;
-                else {
-                    if (newCs == cs_nh &&
-                        prev.form == vnw_cvc &&
-                        m_buffer[m_current-2].vseq == vs_y &&
-                        m_buffer[m_current-3].cseq == cs_qu)
-                        isValid = true;
-                }
+            int vIdx = (m_current - 1) - prev.vOffset;
+            vs = m_buffer[vIdx].vseq;
+            isValid = isValidCVC(c1, vs, newCs);
 
-                if (!isValid)
-                    newCs = cs_nil;
-            }
-            else newCs = cs_nil;
+            if (!isValid)
+                newCs = cs_nil;
         }
 
         if (newCs == cs_nil) {
@@ -1761,7 +1791,6 @@ int UkEngine::getSeqSteps(int first, int last)
     pCharset->startOutput();
 
     for (i = first; i <= last; i++) {
-        //    if (m_buffer[i].form != vnw_nonVn && m_buffer[i].form != vnw_empty) {
         if (m_buffer[i].vnSym != vnl_nonVnChar) {
             //process vn symbol
             stdChar = m_buffer[i].vnSym + VnStdCharOffset;
@@ -2197,15 +2226,14 @@ bool UkEngine::lastWordIsNonVn()
             if (!VSeqList[vs].complete)
                 return true;
             ConSeq cs = m_buffer[m_current].cseq;
-            if (!isValidVC(vs, cs, &m_pCtrl->options)) {
-                // We should return true to say that it's not Vietnamese.
-                // But we still need to exclude some exceptions that failed VC test
-                // but the whole word is valid. For now, there's only 1 exception: quynh
-                if (!(m_buffer[m_current].form == vnw_cvc && 
-                      m_current >= 3 && m_buffer[m_current-3].cseq == cs_qu &&
-                      vs == vs_y && cs == cs_nh))
-                    return true;
+            ConSeq c1 = cs_nil;
+            if (m_buffer[m_current].c1Offset != -1)
+                c1 = m_buffer[m_current-m_buffer[m_current].c1Offset].cseq;
+
+            if (!isValidCVC(c1, vs, cs)) {
+                return true;
             }
+
             int tonePos = (vIndex - VSeqList[vs].len + 1) + getTonePosition(vs, false);
             int tone = m_buffer[tonePos].tone;
             if ((cs == cs_c || cs == cs_ch || cs == cs_p || cs == cs_t) &&
