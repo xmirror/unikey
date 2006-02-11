@@ -551,6 +551,7 @@ int UkEngine::processRoof(UkKeyEvent & ev)
 
 //------------------------------------------------------------------
 // can only be called from processHook
+//------------------------------------------------------------------
 int UkEngine::processHookWithUO(UkKeyEvent & ev)
 {
     VowelSeq vs, newVs;
@@ -567,7 +568,7 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
 
     vEnd = m_current - m_buffer[m_current].vOffset;
     vs = m_buffer[vEnd].vseq;
-    vStart = vEnd - (VSeqList[vs].len - 1);
+    vStart = vEnd - 1;
     v = VSeqList[vs].v;
     curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
     tone = m_buffer[curTonePos].tone;
@@ -601,45 +602,38 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
             toneRemoved = (m_buffer[vStart+1].tone != 0);
         }
         break;
-    default:  //vneHookAll:
+    default:  //vneHookAll, vneHookUO:
         if (v[0] == vnl_u) {
-            if (v[1] == vnl_o) {
-                newVs = VSeqList[vs].withHook;
-                markChange(vStart);
-                m_buffer[vStart].vnSym = vnl_uh;
-                newVs = VSeqList[newVs].withHook;
-                m_buffer[vStart+1].vnSym = vnl_oh;
+            if (v[1] == vnl_o) { 
+                //uo -> uo+ if prefixed by "th"
+                if (vEnd == m_current && m_buffer[m_current].form == vnw_cv && m_buffer[m_current-2].cseq == cs_th) {
+                    newVs = vs_uoh;
+                    markChange(vStart+1);
+                    m_buffer[vStart+1].vnSym = vnl_oh;
+                }
+                else {
+                    //uo -> u+o+
+                    newVs = vs_uhoh;
+                    markChange(vStart);
+                    m_buffer[vStart].vnSym = vnl_uh;
+                    m_buffer[vStart+1].vnSym = vnl_oh;
+                }
             }
-            else if (vEnd == m_current) { //vs_uoh -> vs_uo [ev]
-                newVs = vs_uo;
-                markChange(vStart+1);
-                m_buffer[vStart+1].vnSym = vnl_o;
-                hookRemoved = true;
-                toneRemoved = (m_buffer[vStart+1].tone != 0);
-            }
-            else {
-                newVs = VSeqList[vs].withHook;
+            else {//uo+ -> u+o+
+                newVs = vs_uhoh;
                 markChange(vStart);
                 m_buffer[vStart].vnSym = vnl_uh;
             }
         }
         else {//v[0] == vnl_uh
-            if (v[1] == vnl_o) {
-                newVs = lookupVSeq(v[0], vnl_oh, v[2]);
+            if (v[1] == vnl_o) { // u+o -> u+o+
+                newVs = vs_uhoh;
                 markChange(vStart+1);
                 m_buffer[vStart+1].vnSym = vnl_oh;
             }
             else { //v[1] == vnl_oh
-                if (vEnd == m_current) {//vs_uhoh -> vs_uoh
-                    newVs = vs_uoh;
-                    markChange(vStart);
-                    m_buffer[vStart].vnSym = vnl_u;
-                    hookRemoved = true;
-                    removeWithUndo = false;
-                    toneRemoved = (m_buffer[vStart].tone != 0);
-                }
-                else {
-                    newVs = lookupVSeq(vnl_u, vnl_o, v[2]);
+                if (vEnd == m_current) {// u+o+ -> uo
+                    newVs = vs_uo;
                     markChange(vStart);
                     m_buffer[vStart].vnSym = vnl_u;
                     m_buffer[vStart+1].vnSym = vnl_o;
@@ -698,7 +692,7 @@ int UkEngine::processHook(UkKeyEvent & ev)
 
     v = VSeqList[vs].v;
   
-    if (VSeqList[vs].len > 1 && 
+    if (VSeqList[vs].len == 2 && 
         ev.evType != vneBowl &&
         (v[0] == vnl_u || v[0] == vnl_uh) &&
         (v[1] == vnl_o || v[1] == vnl_oh))
@@ -880,7 +874,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
     vEnd = m_current - m_buffer[m_current].vOffset;
     vs = m_buffer[vEnd].vseq;
     VowelSeqInfo & info = VSeqList[vs];
-    if (!info.complete)
+    if (!info.complete) // && !m_pCtrl->options.freeMarking)
         return processAppend(ev);
 
     if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
@@ -1433,23 +1427,35 @@ int UkEngine::appendConsonnant(UkKeyEvent & ev)
     case vnw_cv:
         vs = prev.vseq;
         newVs = vs;
+        if (vs == vs_uoh || vs == vs_uho) {
+            newVs = vs_uhoh;
+        }
+
         newCs = lookupCSeq(lowerSym);
         isValid = false;
-        if (CSeqList[newCs].suffix && isValidVC(vs, newCs, &m_pCtrl->options))
+        if (CSeqList[newCs].suffix && isValidVC(newVs, newCs, &m_pCtrl->options))
             isValid = true;
         else {
             // check for exception: [quyn] is considered valid, because it can become [quynh]
             if (prev.form == vnw_cv &&
                 m_buffer[m_current-2].cseq == cs_qu &&
-                vs == vs_y && newCs == cs_n)
+                vs == vs_y && newCs == cs_n) 
+            {
                 isValid = true;
+            }
         }
         if (isValid) {
             //check u+o -> u+o+
             if (vs == vs_uho) {
                 markChange(m_current-1);
-                newVs = vs_uhoh;
                 prev.vnSym = vnl_oh;
+                prev.vseq = vs_uhoh;
+                complexEvent = true;
+            }
+            else if (vs == vs_uoh) {
+                markChange(m_current-2);
+                m_buffer[m_current-2].vnSym = vnl_uh;
+                m_buffer[m_current-2].vseq = vs_uh;
                 prev.vseq = vs_uhoh;
                 complexEvent = true;
             }
@@ -2181,13 +2187,22 @@ bool UkEngine::lastWordIsNonVn()
             if (!VSeqList[vs].complete)
                 return true;
             ConSeq cs = m_buffer[m_current].cseq;
-            if (!isValidVC(vs, cs, &m_pCtrl->options))
-                return true;
-            int tonePos = vIndex + getTonePosition(vs, false);
+            if (!isValidVC(vs, cs, &m_pCtrl->options)) {
+                // We should return true to say that it's not Vietnamese.
+                // But we still need to exclude some exceptions that failed VC test
+                // but the whole word is valid. For now, there's only 1 exception: quynh
+                if (!(m_buffer[m_current].form == vnw_cvc && 
+                      m_current >= 3 && m_buffer[m_current-3].cseq == cs_qu &&
+                      vs == vs_y && cs == cs_nh))
+                    return true;
+            }
+            int tonePos = (vIndex - VSeqList[vs].len + 1) + getTonePosition(vs, false);
             int tone = m_buffer[tonePos].tone;
             if ((cs == cs_c || cs == cs_ch || cs == cs_p || cs == cs_t) &&
                 (tone == 2 || tone == 3 || tone == 4))
+            {
                 return true;
+            }
         }
     }
     return false;
