@@ -108,8 +108,8 @@ VowelSeqInfo VSeqList[] = {
     {2, 1, 0, {vnl_oh, vnl_i, vnl_nonVnChar}, {vs_oh, vs_ohi, vs_nil}, -1, vs_ori, 0, vs_nil},
     {2, 1, 1, {vnl_u, vnl_a, vnl_nonVnChar}, {vs_u, vs_ua, vs_nil}, -1, vs_uar, -1, vs_uha},
     {2, 1, 1, {vnl_u, vnl_ar, vnl_nonVnChar}, {vs_u, vs_uar, vs_nil}, 1, vs_nil, -1, vs_nil},
-    {2, 0, 0, {vnl_u, vnl_e, vnl_nonVnChar}, {vs_u, vs_ue, vs_nil}, -1, vs_uer, -1, vs_nil},
-    {2, 1, 0, {vnl_u, vnl_er, vnl_nonVnChar}, {vs_u, vs_uer, vs_nil}, 1, vs_nil, -1, vs_nil},
+    {2, 0, 1, {vnl_u, vnl_e, vnl_nonVnChar}, {vs_u, vs_ue, vs_nil}, -1, vs_uer, -1, vs_nil},
+    {2, 1, 1, {vnl_u, vnl_er, vnl_nonVnChar}, {vs_u, vs_uer, vs_nil}, 1, vs_nil, -1, vs_nil},
     {2, 1, 0, {vnl_u, vnl_i, vnl_nonVnChar}, {vs_u, vs_ui, vs_nil}, -1, vs_nil, -1, vs_uhi},
     {2, 0, 1, {vnl_u, vnl_o, vnl_nonVnChar}, {vs_u, vs_uo, vs_nil}, -1, vs_uor, -1, vs_uho},
     {2, 1, 1, {vnl_u, vnl_or, vnl_nonVnChar}, {vs_u, vs_uor, vs_nil}, 1, vs_nil, -1, vs_uoh},
@@ -347,7 +347,16 @@ bool isValidCV(ConSeq c, VowelSeq v)
         (c == cs_qu && vInfo.v[0] == vnl_u))
         return false; // gi doesn't go with i, qu doesn't go with u
   
-    //more checks here
+    if (c == cs_k) {
+        // k can only go with the following vowel sequences
+        static VowelSeq kVseq[] = {vs_e, vs_i, vs_y, vs_er, vs_eo, vs_eu, 
+                                   vs_eru, vs_ie, vs_ier, vs_ieu, vs_ieru, vs_nil};
+        int i;
+        for (i=0; kVseq[i] != vs_nil && kVseq[i] != v; i++);
+        return (kVseq[i] != vs_nil);
+    }
+
+    //More checks
     return true;
 }
 
@@ -365,6 +374,7 @@ bool isValidVC(VowelSeq v, ConSeq c, UnikeyOptions *pOpt)
     p.c = c;
     if (bsearch(&p, VCPairList, VCPairCount, sizeof(VCPair), VCPairCompare))
         return true;
+
     return false;
 }
 
