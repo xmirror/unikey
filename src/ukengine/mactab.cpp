@@ -87,7 +87,7 @@ const StdVnChar *CMacroTable::lookup(StdVnChar *key)
 }
 
 //---------------------------------------------------------------
-int CMacroTable::loadFromFile(const TCHAR *fname)
+int CMacroTable::loadFromFile(const char *fname)
 {
   FILE *f;
 #if defined(WIN32)
@@ -126,15 +126,7 @@ int CMacroTable::loadFromFile(const TCHAR *fname)
 }
 
 //---------------------------------------------------------------
-int strStdVnLen(StdVnChar *s)
-{
-  int len = 0;
-  while (s[len] != 0) len++;
-  return len;
-}
-
-//---------------------------------------------------------------
-int CMacroTable::writeToFile(const TCHAR *fname)
+int CMacroTable::writeToFile(const char *fname)
 {
   int ret;
   int inLen, maxOutLen;
@@ -155,7 +147,7 @@ int CMacroTable::writeToFile(const TCHAR *fname)
   UKBYTE *p;
   for (int i=0; i < m_count; i++) {
     p = (UKBYTE *)m_macroMem + m_table[i].keyOffset;
-    inLen = (strStdVnLen((StdVnChar *)p)+1) * sizeof(StdVnChar);
+    inLen = -1;
     maxOutLen = sizeof(key);
     ret = VnConvert(CONV_CHARSET_VNSTANDARD, CONV_CHARSET_VIQR,
 		    (UKBYTE *) p, (UKBYTE *)key,
@@ -164,7 +156,7 @@ int CMacroTable::writeToFile(const TCHAR *fname)
       continue;
 
     p = (UKBYTE *)m_macroMem + m_table[i].textOffset;
-    inLen = (strStdVnLen((StdVnChar *)p)+1) * sizeof(StdVnChar);
+    inLen = -1;
     maxOutLen = sizeof(text);
     ret = VnConvert(CONV_CHARSET_VNSTANDARD, CONV_CHARSET_VIQR,
 		    p, (UKBYTE *)text,
@@ -255,4 +247,20 @@ void CMacroTable::resetContent()
 {
   m_occupied = 0;
   m_count = 0;
+}
+
+//---------------------------------------------------------------
+const StdVnChar *CMacroTable::getKey(int idx)
+{
+    if (idx < 0 || idx >= m_count)
+        return 0;
+    return (StdVnChar *)(m_macroMem + m_table[idx].keyOffset);
+}
+
+//---------------------------------------------------------------
+const StdVnChar *CMacroTable::getText(int idx)
+{
+    if (idx < 0 || idx >= m_count)
+        return 0;
+    return (StdVnChar *)(m_macroMem + m_table[idx].textOffset);
 }

@@ -27,13 +27,17 @@
 #include "keycons.h"
 #include "charset.h"
 
-/*
-struct MacroDef
-{
-  StdVnChar *key;
-  StdVnChar *text;
-};
-*/
+#if defined(_WIN32)
+    #if defined(UNIKEYHOOK)
+        #define DllInterface   __declspec( dllexport )
+    #else
+        #define DllInterface   __declspec( dllimport )
+    #endif
+#else
+    #define DllInterface //not used
+    #define DllExport
+    #define DllImport
+#endif
 
 struct MacroDef
 {
@@ -45,14 +49,20 @@ struct MacroDef
 typedef char TCHAR;
 #endif
 
-class CMacroTable
+class DllInterface CMacroTable
 {
 public:
   void init();
-  int loadFromFile(const TCHAR *fname);
-  int writeToFile(const TCHAR *fname);
+  int loadFromFile(const char *fname);
+  int writeToFile(const char *fname);
 
   const StdVnChar *lookup(StdVnChar *key);
+  const StdVnChar *getKey(int idx);
+  const StdVnChar *getText(int idx);
+  int getCount() { return m_count; }
+  void resetContent();
+  int addItem(const char *item);
+  int addItem(const char *key, const char *text);
 
 protected:
   MacroDef m_table[MAX_MACRO_ITEMS];
@@ -60,10 +70,6 @@ protected:
 
   int m_count;
   int m_memSize, m_occupied;
-
-  void resetContent();
-  int addItem(const char *item);
-  int addItem(const char *key, const char *text);
 };
 
 #endif

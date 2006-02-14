@@ -2,23 +2,19 @@
 #include "prehdr.h"
 #include "byteio.h"
 
-/*
-#ifndef _WIN32
-
-#if defined(HAVE_WCHAR_H)
-#include <wchar.h>
-#endif
-
-#endif
-*/
-
 //------------------------------------------------
-StringBIStream::StringBIStream(UKBYTE *data, int len)
+StringBIStream::StringBIStream(UKBYTE *data, int len, int elementSize)
 {
 	m_data = m_current = data;
 	m_len = m_left = len;
-	if (len == -1)
-		m_eos = (*data == 0);
+    if (len == -1) {
+        if (elementSize == 2)
+            m_eos = (*(UKWORD *)data == 0);
+        else if (elementSize == 4)
+            m_eos = (*(UKDWORD *)data == 4);
+        else
+            m_eos = (*data == 0);
+    }
 	else
 		m_eos = (len <= 0);
 	m_didBookmark = 0;
@@ -54,12 +50,6 @@ int StringBIStream::unget(UKBYTE b)
 		m_eos = 0;
 		if (m_len != -1)
 			m_left++;
-/*
-		if (m_left > m_len) {
-			int err;
-			err = 1;
-		}
-*/
 	}
 	return 1;
 }
@@ -79,6 +69,21 @@ int StringBIStream::getNextW(UKWORD & w)
 	return 1;
 }
 
+//------------------------------------------------
+int StringBIStream::getNextDW(UKDWORD & dw)
+{
+	if (m_eos) return 0;
+
+	dw = *((UKDWORD *)m_current);
+	m_current += 4;
+	if (m_len == -1)
+		m_eos = (dw == 0);
+	else {
+		m_left -= 4;
+		m_eos = (m_left <= 0);
+	}
+	return 1;
+}
 
 //------------------------------------------------
 int StringBIStream::peekNext(UKBYTE & b)
@@ -97,6 +102,17 @@ int StringBIStream::peekNextW(UKWORD & w)
 	w = *((UKWORD *)m_current);
 	return 1;
 }
+
+/*
+//------------------------------------------------
+int StringBIStream::peekNextDW(UKDWORD & dw)
+{
+	if (m_eos)
+		return 0;
+	dw = *((UKDWORD *)m_current);
+	return 1;
+}
+*/
 
 //------------------------------------------------
 void StringBIStream::reopen()
@@ -352,23 +368,32 @@ int FileBIStream::unget(UKBYTE b)
 //----------------------------------------------------
 int FileBIStream::getNextW(UKWORD &w)
 {
-  UKBYTE hi, low;
+  UKBYTE b1, b2;
 
-  if (getNext(low)) {
-    if (getNext(hi)) {
-      w = hi;
-      w = (w << 8) + low;
+  if (getNext(b1)) {
+    if (getNext(b2)) {
+      *((UKBYTE *)&w) = b1;
+      *(((UKBYTE *)&w)+1) = b2;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+//----------------------------------------------------
+int FileBIStream::getNextDW(UKDWORD &dw)
+{
+  UKWORD w1, w2;
+  if (getNextW(w1)) {
+    if (getNextW(w2)) {
+      *((UKWORD *)&dw) = w1;
+      *(((UKWORD *)&dw)+1) = w2;
       return 1;
     }
   }
   return 0;
       
-  /*
-	w = fgetwc(m_file);
-	return (!feof(m_file));
-  */
 }
-
 //----------------------------------------------------
 int FileBIStream::peekNextW(UKWORD &w)
 {
@@ -390,14 +415,6 @@ int FileBIStream::peekNextW(UKWORD &w)
     return 0;
   }
   return 0;
-    
-  /*
-	w = fgetwc(m_file);
-	if (feof(m_file))
-		return 0;
-	ungetwc(w, m_file);
-	return 1;
-  */
 }
 
 //----------------------------------------------------

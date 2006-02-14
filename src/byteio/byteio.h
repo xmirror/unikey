@@ -8,6 +8,7 @@
 
 typedef unsigned char UKBYTE;
 typedef unsigned short UKWORD;
+typedef unsigned int UKDWORD;
 
 //----------------------------------------------------
 class ByteStream {
@@ -25,6 +26,8 @@ public:
 
 	virtual int getNextW(UKWORD &w) = 0;
 	virtual int peekNextW(UKWORD &w) = 0;
+
+	virtual int getNextDW(UKDWORD &dw) = 0;
 
 	virtual int bookmark() //no support for bookmark by default
 	{
@@ -67,14 +70,17 @@ protected:
 	int m_didBookmark;
 		
 public:
-	StringBIStream(UKBYTE *data, int len);
+	StringBIStream(UKBYTE *data, int len, int elementSize = 1);
 	virtual int getNext(UKBYTE &b);
 	virtual int peekNext(UKBYTE &b);
 	virtual int unget(UKBYTE b);
 
 	virtual int getNextW(UKWORD &w);
 	virtual int peekNextW(UKWORD &w);
-	virtual int eos(); //end of stream
+
+	virtual int getNextDW(UKDWORD &dw);
+
+    virtual int eos(); //end of stream
 	virtual int close();
 
 	virtual int bookmark();
@@ -121,7 +127,10 @@ public:
 
 	virtual int getNextW(UKWORD &w);
 	virtual int peekNextW(UKWORD &w);
-	virtual int eos(); //end of stream
+
+    virtual int getNextDW(UKDWORD &dw);
+
+    virtual int eos(); //end of stream
 
 	virtual int bookmark();
 	virtual int gotoBookmark();
