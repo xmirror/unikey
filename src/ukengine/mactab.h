@@ -52,24 +52,27 @@ typedef char TCHAR;
 class DllInterface CMacroTable
 {
 public:
-  void init();
-  int loadFromFile(const char *fname);
-  int writeToFile(const char *fname);
+    void init();
+    int loadFromFile(const char *fname);
+    int writeToFile(const char *fname);
 
-  const StdVnChar *lookup(StdVnChar *key);
-  const StdVnChar *getKey(int idx);
-  const StdVnChar *getText(int idx);
-  int getCount() { return m_count; }
-  void resetContent();
-  int addItem(const char *item);
-  int addItem(const char *key, const char *text);
+    const StdVnChar *lookup(StdVnChar *key);
+    const StdVnChar *getKey(int idx);
+    const StdVnChar *getText(int idx);
+    int getCount() { return m_count; }
+    void resetContent();
+    int addItem(const char *item, int charset);
+    int addItem(const void *key, const void *text, int charset);
 
 protected:
-  MacroDef m_table[MAX_MACRO_ITEMS];
-  char m_macroMem[MACRO_MEM_SIZE];
+    bool readHeader(FILE *f, int & version);
+    void writeHeader(FILE *f);
 
-  int m_count;
-  int m_memSize, m_occupied;
+    MacroDef m_table[MAX_MACRO_ITEMS];
+    char m_macroMem[MACRO_MEM_SIZE];
+
+    int m_count;
+    int m_memSize, m_occupied;
 };
 
 #endif
