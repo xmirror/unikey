@@ -45,6 +45,7 @@ DllExport int genConvert(VnCharset & incs, VnCharset & outcs, ByteInStream & inp
 
 	int ret = 1;
 	while (!input.eos()) {
+        stdChar = 0;
 		if (incs.nextInput(input, stdChar, bytesRead)) {
 			if (stdChar != INVALID_STD_CHAR) {
 			  if (VnCharsetLibObj.m_options.toLower)
@@ -95,7 +96,7 @@ DllExport int VnConvert(int inCharset, int outCharset, UKBYTE *input, UKBYTE *ou
 	if (!pInCharset || !pOutCharset)
 		return VNCONV_INVALID_CHARSET;
 
-	StringBIStream is(input, inLen);
+	StringBIStream is(input, inLen, pInCharset->elementSize());
 	StringBOStream os(output, maxOutLen);
 
 	ret = genConvert(*pInCharset, *pOutCharset, is, os);
@@ -233,3 +234,21 @@ int vnFileStreamConvert(int inCharset, int outCharset, FILE * inf, FILE *outf)
 
 	return genConvert(*pInCharset, *pOutCharset, is, os);
 }
+
+char *ErrTable[VNCONV_LAST_ERROR] = 
+{"No error",
+ "Unknown error",
+ "Invalid charset",
+ "Error opening input file",
+ "Error opening output file",
+ "Error writing to output stream",
+ "Not enough memory",
+};
+
+DllExport const char * VnConvErrMsg(int errCode)
+{
+	if (errCode < 0 || errCode >= VNCONV_LAST_ERROR)
+		errCode = VNCONV_UNKNOWN_ERROR;
+	return ErrTable[errCode];
+}
+

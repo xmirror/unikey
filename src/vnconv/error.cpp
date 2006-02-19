@@ -19,7 +19,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 --------------------------------------------------------------------------------*/
-
+// For some unknown reasons, the functions in this file cannot be exported
+// We had to move them to convert.cpp.
+// TODO: inspect this problem later!
+/*
 #include "stdafx.h"
 #include "vnconv.h"
 
@@ -33,10 +36,11 @@ char *ErrTable[VNCONV_LAST_ERROR] =
  "Not enough memory",
 };
 
-const char * VnConvErrMsg(int errCode)
+DllExport const char * VnConvErrMsg(int errCode)
 {
 	if (errCode < 0 || errCode >= VNCONV_LAST_ERROR)
 		errCode = VNCONV_UNKNOWN_ERROR;
 	return ErrTable[errCode];
 }
 
+*/

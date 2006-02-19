@@ -111,6 +111,7 @@ struct _VnConvOptions {
 	int toUpper;
 	int toLower;
 	int removeTone;
+    int smartViqr;
 };
 
 DllInterface void VnConvSetOptions(VnConvOptions *pOptions);

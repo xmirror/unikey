@@ -40,24 +40,23 @@ DoubleByteCharset *DbCharsets[CONV_TOTAL_DOUBLE_CHARSETS];
 
 DllExport CVnCharsetLib VnCharsetLibObj;
 
+//////////////////////////////////////////////////////
+// Generic VnCharset class
+//////////////////////////////////////////////////////
+int VnCharset::elementSize()
+{
+    return 1;
+}
+
 //-------------------------------------------
 int VnInternalCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead)
 {
-  //  UnicodeChar uniCh;
-  UKWORD *pWord = (UKWORD *)&stdChar;
-  if (!is.getNextW(*pWord)) {
-    bytesRead = 0;
-    return 0;
-  }
-  bytesRead = sizeof(UKWORD);
-
-  pWord++;
-
-  if (!is.getNextW(*pWord))
-    return 0;
-  bytesRead += sizeof(pWord);
-
-  return 1;
+    if (!is.getNextDW(stdChar)) {
+        bytesRead = 0;
+        return 0;
+    }
+    bytesRead = sizeof(UKDWORD);
+    return 1;
 }
 
 //-------------------------------------------
@@ -68,6 +67,12 @@ int VnInternalCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outL
   os.putW(*pWord);
   pWord++;
   return os.putW(*pWord);
+}
+
+//-------------------------------------------
+int VnInternalCharset::elementSize()
+{
+    return 4;
 }
 
 //-------------------------------------------
@@ -170,6 +175,11 @@ int UnicodeCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen)
 			       m_toUnicode[stdChar-VnStdCharOffset] : (UnicodeChar)stdChar);
 }
 
+//-------------------------------------------
+int UnicodeCharset::elementSize()
+{
+    return 2;
+}
 
 ////////////////////////////////////////
 // Unicode decomposed
@@ -261,6 +271,12 @@ int UnicodeCompCharset::putChar(ByteOutStream & os, StdVnChar stdChar, int & out
 		ret = os.putW((UKWORD)stdChar);
 	}
 	return ret;
+}
+
+//-------------------------------------------
+int UnicodeCompCharset::elementSize()
+{
+    return 2;
 }
 
 ////////////////////////////////
@@ -761,7 +777,9 @@ int VIQRCharset::nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRe
 		unsigned char ch2;
 		is.peekNext(ch2);
 		unsigned char upper = toupper(ch1);
-		if (m_atWordBeginning && upper == 'D' && (ch2 == 'd' || ch2 == 'D')) {
+        if ((!VnCharsetLibObj.m_options.smartViqr || m_atWordBeginning) &&
+             upper == 'D' && (ch2 == 'd' || ch2 == 'D')) 
+        {
 			is.getNext(ch2);
 			bytesRead++;
 			stdChar += 2; // dd is 2 positions after d.
@@ -1144,6 +1162,7 @@ DllExport void VnConvResetOptions(VnConvOptions *pOptions)
 	pOptions->toUpper = 0;
 	pOptions->toLower = 0;
 	pOptions->removeTone = 0;
+    pOptions->smartViqr = 1;
 }
 
 

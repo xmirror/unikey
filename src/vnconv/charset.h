@@ -101,6 +101,7 @@ public:
 	// Returns: next position in output
 	//------------------------------------------------------------------------
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen) = 0;
+    virtual int elementSize();
 	virtual ~VnCharset() {}
 };
 
@@ -121,6 +122,7 @@ public:
   VnInternalCharset() {};
   virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
   virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
+  virtual int elementSize();
 };
 
 //--------------------------------------------------
@@ -132,6 +134,7 @@ public:
 	UnicodeCharset(UnicodeChar *vnChars);
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
+    virtual int elementSize();
 };
 
 //--------------------------------------------------
@@ -215,6 +218,7 @@ public:
 	UnicodeCompCharset(UnicodeChar *uniChars, UKDWORD *uniCompChars);
 	virtual int nextInput(ByteInStream & is, StdVnChar & stdChar, int & bytesRead);
 	virtual int putChar(ByteOutStream & os, StdVnChar stdChar, int & outLen);
+    virtual int elementSize();
 };
 
 //--------------------------------------------------
