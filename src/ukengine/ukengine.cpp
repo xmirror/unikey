@@ -929,7 +929,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
     vEnd = m_current - m_buffer[m_current].vOffset;
     vs = m_buffer[vEnd].vseq;
     VowelSeqInfo & info = VSeqList[vs];
-    if (!info.complete) // && !m_pCtrl->options.freeMarking)
+    if (m_pCtrl->options.spellCheckEnabled && !info.complete)
         return processAppend(ev);
 
     if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
@@ -1235,6 +1235,7 @@ int UkEngine::processAppend(UkKeyEvent & ev)
             entry.c1Offset = entry.c2Offset = entry.vOffset = -1;
             entry.keyCode = ev.keyCode;
             entry.vnSym = vnToLower(ev.vnSym);
+            entry.tone = 0;
             entry.caps = (entry.vnSym != ev.vnSym);
             if (!m_pCtrl->vietKey || m_pCtrl->charsetId != CONV_CHARSET_UNI_CSTRING)
                 return 0;
@@ -1351,16 +1352,6 @@ int UkEngine::appendVowel(UkKeyEvent & ev)
         entry.vseq = newVs;
         entry.tone = 0;
         
-        /*
-        //check: u+o -> u+o+
-        if (entry.vnSym == vnl_o && newVs == vs_uho) {
-            entry.vnSym = vnl_oh;
-            newVs = vs_uhoh;
-            entry.vseq = newVs;
-            autoCompleted = true;
-        }
-        */
-
         newTone = (lowerSym - canSym)/2;
         if (tone == 0) {
             if (newTone != 0) {
