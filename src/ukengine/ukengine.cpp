@@ -579,14 +579,16 @@ int UkEngine::processRoof(UkKeyEvent & ev)
 
     //check if tone re-position is needed
     newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
+    /* //For now, users don't seem to like the following processing, thus commented out
     if (roofRemoved && tone != 0 &&
         (!pInfo->complete || changePos == curTonePos)) {
         //remove tone if the vowel sequence becomes incomplete as a result of roof removal OR
         //if removed roof is at the same position as the current tone
         markChange(curTonePos);
         m_buffer[curTonePos].tone = 0;
-    }
-    else if (curTonePos != newTonePos && tone != 0) {
+    } else
+    */
+    if (curTonePos != newTonePos && tone != 0) {
         markChange(newTonePos);
         m_buffer[newTonePos].tone = tone;
         markChange(curTonePos);
@@ -704,13 +706,16 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
 
     //check if tone re-position is needed
     newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
+    /* //For now, users don't seem to like the following processing, thus commented out
     if (hookRemoved && tone != 0 && (!p->complete || toneRemoved)) {
         //remove tone if the vowel sequence becomes incomplete as a result of hook removal
         //OR if a removed hook is at the same position as the current tone
         markChange(curTonePos);
         m_buffer[curTonePos].tone = 0;
     }
-    else if (curTonePos != newTonePos && tone != 0) {
+    else 
+    */
+    if (curTonePos != newTonePos && tone != 0) {
         markChange(newTonePos);
         m_buffer[newTonePos].tone = tone;
         markChange(curTonePos);
@@ -851,6 +856,7 @@ int UkEngine::processHook(UkKeyEvent & ev)
 
     //check if tone re-position is needed
     newTonePos = vStart + getTonePosition(newVs, vEnd == m_current);
+    /* //For now, users don't seem to like the following processing, thus commented out
     if (hookRemoved && tone != 0 && 
         (!pInfo->complete || (hookRemoved && curTonePos == changePos))) {
         //remove tone if the vowel sequence becomes incomplete as a result of hook removal
@@ -858,7 +864,8 @@ int UkEngine::processHook(UkKeyEvent & ev)
         markChange(curTonePos);
         m_buffer[curTonePos].tone = 0;
     }
-    else if (curTonePos != newTonePos && tone != 0) {
+    else */
+    if (curTonePos != newTonePos && tone != 0) {
         markChange(newTonePos);
         m_buffer[newTonePos].tone = tone;
         markChange(curTonePos);
@@ -929,7 +936,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
     vEnd = m_current - m_buffer[m_current].vOffset;
     vs = m_buffer[vEnd].vseq;
     VowelSeqInfo & info = VSeqList[vs];
-    if (m_pCtrl->options.spellCheckEnabled && !info.complete)
+    if (m_pCtrl->options.spellCheckEnabled && !m_pCtrl->options.freeMarking && !info.complete)
         return processAppend(ev);
 
     if (m_buffer[m_current].form == vnw_vc || m_buffer[m_current].form == vnw_cvc) {
