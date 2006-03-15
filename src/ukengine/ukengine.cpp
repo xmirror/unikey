@@ -134,6 +134,7 @@ VowelSeqInfo VSeqList[] = {
     {3, 0, 0, {vnl_u, vnl_o, vnl_u}, {vs_u, vs_uo, vs_uou}, -1, vs_nil, -1, vs_uhou},
     {3, 1, 0, {vnl_u, vnl_or, vnl_i}, {vs_u, vs_uor, vs_uori}, 1, vs_nil, -1, vs_uohi},
     {3, 0, 0, {vnl_u, vnl_oh, vnl_i}, {vs_u, vs_uoh, vs_uohi}, -1, vs_uori, 1, vs_nil},
+    {3, 0, 0, {vnl_u, vnl_oh, vnl_u}, {vs_u, vs_uoh, vs_uohu}, -1, vs_nil, 1, vs_uhohu},
     {3, 1, 0, {vnl_u, vnl_y, vnl_a}, {vs_u, vs_uy, vs_uya}, -1, vs_nil, -1, vs_nil},
     {3, 0, 1, {vnl_u, vnl_y, vnl_e}, {vs_u, vs_uy, vs_uye}, -1, vs_uyer, -1, vs_nil},
     {3, 1, 1, {vnl_u, vnl_y, vnl_er}, {vs_u, vs_uy, vs_uyer}, 2, vs_nil, -1, vs_nil},
@@ -244,7 +245,7 @@ VCPair VCPairList [] = {
   {vs_uho, cs_c}, {vs_uho, cs_m}, {vs_uho, cs_n}, {vs_uho, cs_ng}, {vs_uho, cs_p}, {vs_uho, cs_t},
   {vs_uhoh, cs_c}, {vs_uhoh, cs_m}, {vs_uhoh, cs_n}, {vs_uhoh, cs_ng}, {vs_uhoh, cs_p}, {vs_uhoh, cs_t},
 
-  {vs_uy, cs_c}, {vs_uy, cs_ch}, {vs_uy, cs_n}, {vs_uy, cs_nh}, {vs_uy, cs_t},
+  {vs_uy, cs_c}, {vs_uy, cs_ch}, {vs_uy, cs_n}, {vs_uy, cs_nh}, {vs_uy, cs_p}, {vs_uy, cs_t},
 
   {vs_ye, cs_m}, {vs_ye, cs_n}, {vs_ye, cs_ng}, {vs_ye, cs_p}, {vs_ye, cs_t},
   {vs_yer, cs_m}, {vs_yer, cs_n}, {vs_yer, cs_ng}, {vs_yer, cs_t},
@@ -352,7 +353,7 @@ bool isValidCV(ConSeq c, VowelSeq v)
     if (c == cs_k) {
         // k can only go with the following vowel sequences
         static VowelSeq kVseq[] = {vs_e, vs_i, vs_y, vs_er, vs_eo, vs_eu, 
-                                   vs_eru, vs_ie, vs_ier, vs_ieu, vs_ieru, vs_nil};
+                                   vs_eru, vs_ia, vs_ie, vs_ier, vs_ieu, vs_ieru, vs_nil};
         int i;
         for (i=0; kVseq[i] != vs_nil && kVseq[i] != v; i++);
         return (kVseq[i] != vs_nil);
@@ -685,15 +686,13 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
                 markChange(vStart+1);
                 m_buffer[vStart+1].vnSym = vnl_oh;
             }
-            else { //v[1] == vnl_oh
-                if (vEnd == m_current) {// u+o+ -> uo
-                    newVs = vs_uo;
-                    markChange(vStart);
-                    m_buffer[vStart].vnSym = vnl_u;
-                    m_buffer[vStart+1].vnSym = vnl_o;
-                    hookRemoved = true;
-                    toneRemoved = (m_buffer[vStart].tone != 0 || m_buffer[vStart+1].tone != 0);
-                }
+            else { //v[1] == vnl_oh, u+o+ -> uo
+                newVs = vs_uo;
+                markChange(vStart);
+                m_buffer[vStart].vnSym = vnl_u;
+                m_buffer[vStart+1].vnSym = vnl_o;
+                hookRemoved = true;
+                toneRemoved = (m_buffer[vStart].tone != 0 || m_buffer[vStart+1].tone != 0);
             }
         }
         break;
@@ -788,8 +787,16 @@ int UkEngine::processHook(UkKeyEvent & ev)
             if (ev.evType == vneHook_uo && curCh == vnl_ab)
                 return processAppend(ev);
         }
-        markChange(changePos);
-        m_buffer[changePos].vnSym = newCh;
+
+        if (vs == vs_uhohu && (ev.evType == vneHook_uo || ev.evType == vneHookAll)) {
+            markChange(m_current - 2);
+            m_buffer[m_current - 2].vnSym = vnl_u;
+            m_buffer[m_current - 1].vnSym = vnl_o;
+        }
+        else {
+            markChange(changePos);
+            m_buffer[changePos].vnSym = newCh;
+        }
 
         if (VSeqList[vs].len == 3)
             newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym, m_buffer[vStart+2].vnSym);
@@ -802,30 +809,27 @@ int UkEngine::processHook(UkKeyEvent & ev)
         hookRemoved = true;
     }
     else {
-        pInfo = &VSeqList[newVs];
+        if (vs == vs_uou && (ev.evType == vneHook_uo || ev.evType == vneHookAll))
+            newVs = vs_uhohu;
 
-        VnLexiName newChar;
+        pInfo = &VSeqList[newVs];
 
         switch (ev.evType) {
         case vneHook_u:
             if (pInfo->v[pInfo->hookPos] != vnl_uh)
                 return processAppend(ev);
-            newChar = vnl_uh;
             break;
         case vneHook_o:
             if (pInfo->v[pInfo->hookPos] != vnl_oh)
                 return processAppend(ev);
-            newChar = vnl_oh;
             break;
         case vneBowl:
             if (pInfo->v[pInfo->hookPos] != vnl_ab)
                 return processAppend(ev);
-            newChar = vnl_ab;
             break;
         default: //vneHook_uo, vneHookAll
             if (ev.evType == vneHook_uo && pInfo->v[pInfo->hookPos] == vnl_ab)
                 return processAppend(ev);
-            newChar = pInfo->v[pInfo->hookPos];
         }
 
         //check validity of new VC and CV
@@ -846,8 +850,17 @@ int UkEngine::processHook(UkKeyEvent & ev)
         changePos = vStart + pInfo->hookPos;
         if (!m_pCtrl->options.freeMarking && changePos != m_current)
             return processAppend(ev);
-        markChange(changePos);
-        m_buffer[changePos].vnSym = newChar;
+
+        if (newVs == vs_uhohu && vs == vs_uou)
+        {
+            markChange(m_current-2);
+            m_buffer[m_current-2].vnSym = vnl_uh;
+            m_buffer[m_current-1].vnSym = vnl_oh;
+        }
+        else {
+            markChange(changePos);
+            m_buffer[changePos].vnSym = pInfo->v[pInfo->hookPos];
+        }
     }
    
     for (i=0; i < pInfo->len; i++) { //update sub-sequences

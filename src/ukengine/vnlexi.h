@@ -110,6 +110,7 @@ enum VowelSeq {
   vs_uou,
   vs_uori,
   vs_uohi,
+  vs_uohu,
   vs_uya,
   vs_uye,
   vs_uyer,
