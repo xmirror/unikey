@@ -133,7 +133,7 @@ VowelSeqInfo VSeqList[] = {
     {3, 0, 0, {vnl_u, vnl_o, vnl_i}, {vs_u, vs_uo, vs_uoi}, -1, vs_uori, -1, vs_uhoi},
     {3, 0, 0, {vnl_u, vnl_o, vnl_u}, {vs_u, vs_uo, vs_uou}, -1, vs_nil, -1, vs_uhou},
     {3, 1, 0, {vnl_u, vnl_or, vnl_i}, {vs_u, vs_uor, vs_uori}, 1, vs_nil, -1, vs_uohi},
-    {3, 0, 0, {vnl_u, vnl_oh, vnl_i}, {vs_u, vs_uoh, vs_uohi}, -1, vs_uori, 1, vs_nil},
+    {3, 0, 0, {vnl_u, vnl_oh, vnl_i}, {vs_u, vs_uoh, vs_uohi}, -1, vs_uori, 1, vs_uhohi},
     {3, 0, 0, {vnl_u, vnl_oh, vnl_u}, {vs_u, vs_uoh, vs_uohu}, -1, vs_nil, 1, vs_uhohu},
     {3, 1, 0, {vnl_u, vnl_y, vnl_a}, {vs_u, vs_uy, vs_uya}, -1, vs_nil, -1, vs_nil},
     {3, 0, 1, {vnl_u, vnl_y, vnl_e}, {vs_u, vs_uy, vs_uye}, -1, vs_uyer, -1, vs_nil},
@@ -516,7 +516,15 @@ int UkEngine::processRoof(UkKeyEvent & ev)
     curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
     tone = m_buffer[curTonePos].tone;
 
-    newVs = VSeqList[vs].withRoof;
+    bool doubleChangeUO = false;
+    if (vs == vs_uho || vs == vs_uhoh || vs == vs_uhoi || vs == vs_uhohi) {
+        //special cases: u+o+ -> uo^, u+o -> uo^, u+o+i -> uo^i, u+oi -> uo^i
+        newVs = lookupVSeq(vnl_u, vnl_or, VSeqList[vs].v[2]);
+        doubleChangeUO = true;
+    }
+    else {
+        newVs = VSeqList[vs].withRoof;
+    }
 
     VowelSeqInfo *pInfo;
 
@@ -567,11 +575,22 @@ int UkEngine::processRoof(UkKeyEvent & ev)
         if (!valid)
             return processAppend(ev);
 
-        changePos = vStart + pInfo->roofPos;
+        if (doubleChangeUO) {
+            changePos = vStart;
+        }
+        else {
+            changePos = vStart + pInfo->roofPos;
+        }
         if (!m_pCtrl->options.freeMarking && changePos != m_current)
             return processAppend(ev);
         markChange(changePos);
-        m_buffer[changePos].vnSym = pInfo->v[pInfo->roofPos];
+        if (doubleChangeUO) {
+            m_buffer[vStart].vnSym = vnl_u;
+            m_buffer[vStart+1].vnSym = vnl_or;
+        }
+        else {
+            m_buffer[changePos].vnSym = pInfo->v[pInfo->roofPos];
+        }
     }
 
     for (i=0; i < pInfo->len; i++) { //update sub-sequences
@@ -623,7 +642,7 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
 
     vEnd = m_current - m_buffer[m_current].vOffset;
     vs = m_buffer[vEnd].vseq;
-    vStart = vEnd - 1;
+    vStart = vEnd - (VSeqList[vs].len - 1);
     v = VSeqList[vs].v;
     curTonePos = vStart + getTonePosition(vs, vEnd == m_current);
     tone = m_buffer[curTonePos].tone;
@@ -635,59 +654,87 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
             markChange(vStart);
             m_buffer[vStart].vnSym = vnl_uh;
         }
-        else {// v[0] = vnl_uh
-            newVs = lookupVSeq(vnl_u, v[1], v[2]);
+        else {// v[0] = vnl_uh, -> uo
+            newVs = lookupVSeq(vnl_u, vnl_o, v[2]);
             markChange(vStart);
             m_buffer[vStart].vnSym = vnl_u;
+            m_buffer[vStart+1].vnSym = vnl_o;
             hookRemoved = true;
             toneRemoved =  (m_buffer[vStart].tone != 0);
         }
         break;
     case vneHook_o:
-        if (v[1] == vnl_o) {
-            newVs = lookupVSeq(v[0], vnl_oh, v[2]);
-            markChange(vStart+1);
-            m_buffer[vStart+1].vnSym = vnl_oh;
+        if (v[1] == vnl_o || v[1] == vnl_or) {
+            if (vEnd == m_current && VSeqList[vs].len == 2 && 
+                m_buffer[m_current].form == vnw_cv && m_buffer[m_current-2].cseq == cs_th)
+            {
+                // o|o^ -> o+
+                newVs = VSeqList[vs].withHook;
+                markChange(vStart+1);
+                m_buffer[vStart+1].vnSym = vnl_oh;
+            }
+            else {
+                newVs = lookupVSeq(vnl_uh, vnl_oh, v[2]);
+                if (v[0] == vnl_u) {
+                    markChange(vStart);
+                    m_buffer[vStart].vnSym = vnl_uh;
+                    m_buffer[vStart+1].vnSym = vnl_oh;
+                }
+                else {
+                    markChange(vStart+1);
+                    m_buffer[vStart+1].vnSym = vnl_oh;
+                }
+            }
         }
-        else {// v[1] = vnl_oh
-            newVs = lookupVSeq(v[0], vnl_o, v[2]);
-            markChange(vStart+1);
-            m_buffer[vStart+1].vnSym = vnl_o;
+        else {// v[1] = vnl_oh, -> uo
+            newVs = lookupVSeq(vnl_u, vnl_o, v[2]);
+            if (v[0] == vnl_uh) {
+                markChange(vStart);
+                m_buffer[vStart].vnSym = vnl_u;
+                m_buffer[vStart+1].vnSym = vnl_o;
+            }
+            else {
+                markChange(vStart+1);
+                m_buffer[vStart+1].vnSym = vnl_o;
+            }
             hookRemoved = true;
             toneRemoved = (m_buffer[vStart+1].tone != 0);
         }
         break;
     default:  //vneHookAll, vneHookUO:
         if (v[0] == vnl_u) {
-            if (v[1] == vnl_o) { 
+            if (v[1] == vnl_o || v[1] == vnl_or) { 
                 //uo -> uo+ if prefixed by "th"
-                if (vEnd == m_current && m_buffer[m_current].form == vnw_cv && m_buffer[m_current-2].cseq == cs_th) {
+                if ((vs == vs_uo || vs == vs_uor) && vEnd == m_current && 
+                    m_buffer[m_current].form == vnw_cv && m_buffer[m_current-2].cseq == cs_th) 
+                {
                     newVs = vs_uoh;
                     markChange(vStart+1);
                     m_buffer[vStart+1].vnSym = vnl_oh;
                 }
                 else {
                     //uo -> u+o+
-                    newVs = vs_uhoh;
+                    newVs = VSeqList[vs].withHook;
                     markChange(vStart);
                     m_buffer[vStart].vnSym = vnl_uh;
+                    newVs = VSeqList[newVs].withHook;
                     m_buffer[vStart+1].vnSym = vnl_oh;
                 }
             }
             else {//uo+ -> u+o+
-                newVs = vs_uhoh;
+                newVs = VSeqList[vs].withHook;
                 markChange(vStart);
                 m_buffer[vStart].vnSym = vnl_uh;
             }
         }
         else {//v[0] == vnl_uh
             if (v[1] == vnl_o) { // u+o -> u+o+
-                newVs = vs_uhoh;
+                newVs = VSeqList[vs].withHook;
                 markChange(vStart+1);
                 m_buffer[vStart+1].vnSym = vnl_oh;
             }
             else { //v[1] == vnl_oh, u+o+ -> uo
-                newVs = vs_uo;
+                newVs = lookupVSeq(vnl_u, vnl_o, v[2]); //vs_uo;
                 markChange(vStart);
                 m_buffer[vStart].vnSym = vnl_u;
                 m_buffer[vStart+1].vnSym = vnl_o;
@@ -748,10 +795,10 @@ int UkEngine::processHook(UkKeyEvent & ev)
 
     v = VSeqList[vs].v;
   
-    if (VSeqList[vs].len == 2 && 
+    if (VSeqList[vs].len > 1 && 
         ev.evType != vneBowl &&
         (v[0] == vnl_u || v[0] == vnl_uh) &&
-        (v[1] == vnl_o || v[1] == vnl_oh))
+        (v[1] == vnl_o || v[1] == vnl_oh || v[1] == vnl_or))
         return processHookWithUO(ev);
 
     vStart = vEnd - (VSeqList[vs].len - 1);
@@ -788,15 +835,8 @@ int UkEngine::processHook(UkKeyEvent & ev)
                 return processAppend(ev);
         }
 
-        if (vs == vs_uhohu && (ev.evType == vneHook_uo || ev.evType == vneHookAll)) {
-            markChange(m_current - 2);
-            m_buffer[m_current - 2].vnSym = vnl_u;
-            m_buffer[m_current - 1].vnSym = vnl_o;
-        }
-        else {
-            markChange(changePos);
-            m_buffer[changePos].vnSym = newCh;
-        }
+        markChange(changePos);
+        m_buffer[changePos].vnSym = newCh;
 
         if (VSeqList[vs].len == 3)
             newVs = lookupVSeq(m_buffer[vStart].vnSym, m_buffer[vStart+1].vnSym, m_buffer[vStart+2].vnSym);
@@ -809,9 +849,6 @@ int UkEngine::processHook(UkKeyEvent & ev)
         hookRemoved = true;
     }
     else {
-        if (vs == vs_uou && (ev.evType == vneHook_uo || ev.evType == vneHookAll))
-            newVs = vs_uhohu;
-
         pInfo = &VSeqList[newVs];
 
         switch (ev.evType) {
@@ -851,16 +888,8 @@ int UkEngine::processHook(UkKeyEvent & ev)
         if (!m_pCtrl->options.freeMarking && changePos != m_current)
             return processAppend(ev);
 
-        if (newVs == vs_uhohu && vs == vs_uou)
-        {
-            markChange(m_current-2);
-            m_buffer[m_current-2].vnSym = vnl_uh;
-            m_buffer[m_current-1].vnSym = vnl_oh;
-        }
-        else {
-            markChange(changePos);
-            m_buffer[changePos].vnSym = pInfo->v[pInfo->hookPos];
-        }
+        markChange(changePos);
+        m_buffer[changePos].vnSym = pInfo->v[pInfo->hookPos];
     }
    
     for (i=0; i < pInfo->len; i++) { //update sub-sequences
