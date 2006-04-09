@@ -133,7 +133,11 @@ bool CMacroTable::readHeader(FILE *f, int & version)
 //----------------------------------------------------------------
 void CMacroTable::writeHeader(FILE *f)
 {
+#if defined(WIN32)
     fprintf(f, "\xEF\xBB\xBF;DO NOT DELETE THIS LINE*** version=%d ***\n", UKMACRO_VERSION_UTF8);
+#else
+    fprintf(f, "DO NOT DELETE THIS LINE*** version=%d ***\n", UKMACRO_VERSION_UTF8);
+#endif
 }
 //---------------------------------------------------------------
 int CMacroTable::loadFromFile(const char *fname)
@@ -172,6 +176,10 @@ int CMacroTable::loadFromFile(const char *fname)
     fclose(f);
     MacCompareStartMem = m_macroMem;
     qsort(m_table, m_count, sizeof(MacroDef), macCompare);
+    // Convert old version
+    if (version != UKMACRO_VERSION_UTF8) {
+        writeToFile(fname);
+    }
     return 1;
 }
 
