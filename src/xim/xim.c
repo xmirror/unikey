@@ -732,6 +732,7 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
             }
         }
         else {
+            //fprintf(stderr, "count != 1. About to reset state\n");
             resetState();
         }
     }
@@ -739,8 +740,14 @@ void ProcessKey(XIMS ims, IMForwardEventStruct *call_data)
         if (keysym != XK_Shift_L && keysym != XK_Shift_R &&
             keysym != XK_Control_L && keysym != XK_Control_R &&
             keysym != XK_Meta_L && keysym != XK_Meta_R && 
-            keysym != XK_Alt_L && keysym != XK_Alt_R)
+            keysym != XK_Alt_L && keysym != XK_Alt_R &&
+            // I don't know why with some GTK application we receive keysym == 0
+            // after commiting buffer. So we need to avoid reseting state for this case
+            keysym != 0) 
+        {
+            //fprintf(stderr, "Key sym checking: %d. About to reset state\n", keysym);
             resetState();
+        }
     }
     IMForwardEvent(ims, (XPointer)&forward_ev);
 }
@@ -764,6 +771,7 @@ Bool MyForwardEventHandler(XIMS ims, IMForwardEventStruct *call_data)
         goto forwardEv;
 
     if (IsKey(ims, call_data, Forward_Keys)) {
+        //fprintf(stderr, "IsKey. About to reset state\n");
         resetState();
         goto forwardEv;
     } else {
@@ -928,6 +936,7 @@ void handlePropertyChanged(Window win, XEvent *event)
     }
     else if (pev->atom == AGUIVisible) {
         UkGUIVisible = UkGetPropValue(AGUIVisible, 0);
+        //fprintf(stderr, "Property. About to reset state\n");
         resetState();
         if (!UkGUIVisible) {
             if (GlobalOpt.autoSave)
@@ -1324,6 +1333,7 @@ void fixSyncToUnikeyMethod()
 
     v = UkGetPropValue(AIMMethod, VKM_TELEX);
     GlobalOpt.enabled = (v != VKM_OFF);
+    //fprintf(stderr, "fixSyncToUnikeyMethod. About to reset state\n");
     resetState();
 
     if (GlobalOpt.enabled) {
