@@ -75,6 +75,6 @@ struct _UnikeySysInfo
 };
 #endif
 
-enum UkOutputType {UkCharOutput, UkKeyOutput};
+typedef enum {UkCharOutput, UkKeyOutput} UkOutputType;
 
 #endif

@@ -100,14 +100,20 @@ static char PosYCmt[] =
 "# PosY: Y Position of unikey window\n"
 "# set a minus value to let unikey use the default position\n";
 
-static char StrictSpellCmt[] =
-"# StrictSpell: Yes|No.\n"
-"# Enable strict spell-checking. Default: Yes\n";
-
 static char UsrKeyMapFileCmt[] =
 "# UsrKeyMapFile: path to user-defined input method file. Default: empty.\n"
 "# To enable user-define input method, specify the path here\n"
 "# For example: UsrKeyMapFile = ~/.unikey/my-telex\n";
+
+static char EnableSpellCheckCmt[] = 
+"# EnableSpellCheck: Yes|No\n"
+"# Enable Vietnamese spell checking\n"
+"# Default: Yes\n";
+
+static char AutoRestoreNonVnCmt[] = 
+"# AutoRestoreNonVn: Yes|No\n"
+"# Enable auto-restore key strokes for non-Vietnamese word\n"
+"# Default: No\n";
 
 static OptMap InputLookup[] = {
   {"TELEX", UkTelex},
@@ -153,7 +159,6 @@ OptItem UkXimOptList[] = {
   {"Input", InputCmt, offsetof(UkXimOpt, inputMethod), LookupOpt, InputLookup},
   {"Charset", CharsetCmt, offsetof(UkXimOpt, charset), LookupOpt, CharsetLookup},
   {"FreeStyle", FreeStyleCmt, offsetof(UkXimOpt, uk.freeMarking), BoolOpt, 0},
-  //  {"ToneManual", ToneManualCmt, offsetof(UkXimOpt, uk.toneNextToVowel), BoolOpt, 0},
   {"ModernStyle", ModernStyleCmt, offsetof(UkXimOpt, uk.modernStyle), BoolOpt, 0},
   {"XvnkbSync", XvnkbSyncCmt, offsetof(UkXimOpt, xvnkbSync), BoolOpt, 0},
   {"Bell", BellCmt, offsetof(UkXimOpt, bellNotify), BoolOpt, 0},
@@ -164,8 +169,9 @@ OptItem UkXimOptList[] = {
   {"GtkImAlone", GtkImAloneCmt, offsetof(UkXimOpt, gtkImAlone), BoolOpt, 0},
   {"PosX", PosXCmt, offsetof(UkXimOpt, posX), LongOpt, 0},
   {"PosY", PosYCmt, offsetof(UkXimOpt, posY), LongOpt, 0},
-  {"StrictSpell", StrictSpellCmt, offsetof(UkXimOpt, uk.strictSpellCheck), BoolOpt, 0},
-  {"UsrKeyMapFile", UsrKeyMapFileCmt, offsetof(UkXimOpt, usrKeyMapFile), StrOpt, 0}
+  {"UsrKeyMapFile", UsrKeyMapFileCmt, offsetof(UkXimOpt, usrKeyMapFile), StrOpt, 0},
+  {"EnableSpellCheck", EnableSpellCheckCmt, offsetof(UkXimOpt, uk.spellCheckEnabled), BoolOpt, 0},
+  {"AutoRestoreNonVn", AutoRestoreNonVnCmt, offsetof(UkXimOpt, uk.autoNonVnRestore), BoolOpt, 0}
 };
 
 /*

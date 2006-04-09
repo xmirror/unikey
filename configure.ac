@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.50)
-AC_INIT([Unikey X Input Method], [1.0.3b], [unikey@gmail.com], [x-unikey])
+AC_INIT([Unikey X Input Method], [1.0.4], [unikey@gmail.com], [x-unikey])
 AC_CONFIG_SRCDIR([src/xim/xim.c])
 AM_INIT_AUTOMAKE([dist-bzip2])
 AC_CONFIG_HEADER([config.h])
@@ -43,6 +43,7 @@ AC_CHECK_HEADERS([fcntl.h libintl.h locale.h malloc.h memory.h stddef.h stdlib.h
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_PID_T
+AC_TYPE_SIZE_T
 
 #Check for X
 AC_PATH_XTRA
@@ -52,7 +53,7 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
-AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol strtoul mkdir])
+AC_CHECK_FUNCS([gethostname memmove memset setlocale strcasecmp strchr strdup strrchr strtol strtoul mkdir strstr])
 
 AC_ARG_WITH(unikey-gtk, 
 	AC_HELP_STRING([--with-unikey-gtk],[Include Unikey GTK IM module (Default: excluded)]), 

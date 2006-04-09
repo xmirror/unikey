@@ -1,3 +1,10 @@
+9.4.2006: 1.0.4, merged from Windows version
+  + Fixed lots of bugs found in Windows version
+  + Merged enhancements from Windows version: smart typing u+o+, auto-restore
+  + New options:
+     - EnableSpellCheck: Default Yes
+     - AutoRestoreNonVn: Default No
+
 1.12.2005: 1.0.3b
   + unified with Win-Unikey.
   + Fixed some bugs found during porting new engine to Win-Unikey:

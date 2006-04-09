@@ -42,6 +42,7 @@ int UnikeyShiftPressed = 0;
 unsigned char UnikeyBuf[1024];
 int UnikeyBackspaces;
 int UnikeyBufChars;
+UkOutputType UnikeyOutput;
 
 //--------------------------------------------
 void UnikeySetInputMethod(UkInputMethod im)
@@ -84,7 +85,8 @@ void UnikeySetOptions(UnikeyOptions *pOpt)
   pShMem->options.macroEnabled = pOpt->macroEnabled;
   pShMem->options.useUnicodeClipboard = pOpt->useUnicodeClipboard;
   pShMem->options.alwaysMacro = pOpt->alwaysMacro;
-  pShMem->options.strictSpellCheck = pOpt->strictSpellCheck;
+  pShMem->options.spellCheckEnabled = pOpt->spellCheckEnabled;
+  pShMem->options.autoNonVnRestore = pOpt->autoNonVnRestore;
 }
 
 //--------------------------------------------
@@ -101,8 +103,8 @@ void CreateDefaultUnikeyOptions(UnikeyOptions *pOpt)
   pOpt->macroEnabled = 0;
   pOpt->useUnicodeClipboard = 0;
   pOpt->alwaysMacro = 0;
-  pOpt->strictSpellCheck = 1;
-
+  pOpt->spellCheckEnabled = 1;
+  pOpt->autoNonVnRestore = 0;
 }
 
 //--------------------------------------------
@@ -139,7 +141,7 @@ void UnikeyCleanup()
 void UnikeyFilter(unsigned int ch)
 {
   UnikeyBufChars = sizeof(UnikeyBuf);
-  MyKbEngine.process(ch, UnikeyBackspaces, UnikeyBuf, UnikeyBufChars);
+  MyKbEngine.process(ch, UnikeyBackspaces, UnikeyBuf, UnikeyBufChars, UnikeyOutput);
 }
 
 //--------------------------------------------
@@ -166,7 +168,7 @@ void UnikeySetSingleMode()
 void UnikeyBackspacePress()
 {
   UnikeyBufChars = sizeof(UnikeyBuf);
-  MyKbEngine.processBackspace(UnikeyBackspaces, UnikeyBuf, UnikeyBufChars);
+  MyKbEngine.processBackspace(UnikeyBackspaces, UnikeyBuf, UnikeyBufChars, UnikeyOutput);
   //  printf("Backspaces: %d\n",UnikeyBackspaces);
 }
 
@@ -190,6 +192,6 @@ int UnikeyLoadUserKeyMap(const char *fileName)
 //--------------------------------------------
 void UnikeyRestoreKeyStrokes()
 {
-  UnikeyBufChars = sizeof(UnikeyBuf);
-  MyKbEngine.restoreKeyStrokes(UnikeyBackspaces, UnikeyBuf, UnikeyBufChars);
+    UnikeyBufChars = sizeof(UnikeyBuf);
+    MyKbEngine.restoreKeyStrokes(UnikeyBackspaces, UnikeyBuf, UnikeyBufChars, UnikeyOutput);
 }

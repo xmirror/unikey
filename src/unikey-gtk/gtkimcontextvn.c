@@ -556,7 +556,7 @@ static void commitString(GtkIMContext *context)
   static char buf[1024];
 
   char *utfBuf;
-  if (GlobalOpt.charset != CONV_CHARSET_XUTF8) {
+  if (GlobalOpt.charset != CONV_CHARSET_XUTF8 || UnikeyOutput == UkKeyOutput) {
     int outLeft = sizeof(buf);
     if (!latinToUtf(buf, UnikeyBuf, UnikeyBufChars, &outLeft))
       return; //not enough memory

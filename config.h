@@ -95,6 +95,9 @@
 /* Define to 1 if you have the `strrchr' function. */
 #define HAVE_STRRCHR 1
 
+/* Define to 1 if you have the `strstr' function. */
+#define HAVE_STRSTR 1
+
 /* Define to 1 if you have the `strtol' function. */
 #define HAVE_STRTOL 1
 
@@ -144,13 +147,13 @@
 #define PACKAGE_NAME "Unikey X Input Method"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Unikey X Input Method 1.0.3b"
+#define PACKAGE_STRING "Unikey X Input Method 1.0.4"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "x-unikey"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.0.3b"
+#define PACKAGE_VERSION "1.0.4"
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #define PROTOTYPES 1
@@ -167,7 +170,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "1.0.3b"
+#define VERSION "1.0.4"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
@@ -194,6 +197,9 @@
 
 /* Define to `int' if <sys/types.h> does not define. */
 /* #undef pid_t */
+
+/* Define to `unsigned' if <sys/types.h> does not define. */
+/* #undef size_t */
 
 /* Define as `fork' if `vfork' does not work. */
 /* #undef vfork */

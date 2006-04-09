@@ -63,9 +63,10 @@ Clean up:
 #if defined(__cplusplus)
 extern "C" {
 #endif
-  extern unsigned char UnikeyBuf[];
-  extern int UnikeyBackspaces;
-  extern int UnikeyBufChars;
+    extern unsigned char UnikeyBuf[];
+    extern int UnikeyBackspaces;
+    extern int UnikeyBufChars;
+    extern UkOutputType UnikeyOutput;
 
   void UnikeySetup(); // always call this first
   void UnikeyCleanup(); // call this when unloading unikey module

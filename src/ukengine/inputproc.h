@@ -109,11 +109,11 @@ protected:
 void UkResetKeyMap(int keyMap[256]);
 void SetupInputClassifierTable();
 
-DllInterface UkKeyMapping TelexMethodMapping[];
-DllInterface UkKeyMapping SimpleTelexMethodMapping[];
-DllInterface UkKeyMapping VniMethodMapping[];
-DllInterface UkKeyMapping VIQRMethodMapping[];
-DllInterface UkKeyMapping MsViMethodMapping[];
+DllInterface extern UkKeyMapping TelexMethodMapping[];
+DllInterface extern UkKeyMapping SimpleTelexMethodMapping[];
+DllInterface extern UkKeyMapping VniMethodMapping[];
+DllInterface extern UkKeyMapping VIQRMethodMapping[];
+DllInterface extern UkKeyMapping MsViMethodMapping[];
 
 extern VnLexiName IsoVnLexiMap[];
 inline VnLexiName IsoToVnLexi(int keyCode)
