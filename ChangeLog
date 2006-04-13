@@ -1,8 +1,9 @@
-9.4.2006: 1.0.4, merged from Windows version
+9.4.2006: 1.0.4, merged from Window29~s version
   + Fixed lots of bugs found in Windows version
   + Fixed: not possible to type double decorated characters like o^', a^` 
     in GTK applications
   + Merged enhancements from Windows version: smart typing u+o+, auto-restore
+  + Allowed typing dd (d-) even in non-Vn sequence if d is not preceeded by a vowel
   + New options:
      - EnableSpellCheck: Default Yes
      - AutoRestoreNonVn: Default No

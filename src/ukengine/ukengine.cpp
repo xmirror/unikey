@@ -616,6 +616,7 @@ int UkEngine::processRoof(UkKeyEvent & ev)
     }
 
     if (roofRemoved) {
+        m_singleMode = false;
         processAppend(ev);
         m_reverted = true;
     }
@@ -769,6 +770,7 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
     }
 
     if (hookRemoved && removeWithUndo) {
+        m_singleMode = false;
         processAppend(ev);
         m_reverted = true;
     }
@@ -915,6 +917,7 @@ int UkEngine::processHook(UkKeyEvent & ev)
     }
 
     if (hookRemoved) {
+        m_singleMode = false;
         processAppend(ev);
         m_reverted = true;
     }
@@ -961,6 +964,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
         markChange(p);
         if (m_buffer[p].tone == ev.tone) {
             m_buffer[p].tone = 0;
+            m_singleMode = false;
             processAppend(ev);
             m_reverted = true;
             return 1;
@@ -996,6 +1000,7 @@ int UkEngine::processTone(UkKeyEvent & ev)
     if (m_buffer[tonePos].tone == ev.tone) {
         markChange(tonePos);
         m_buffer[tonePos].tone = 0;
+        m_singleMode = false;
         processAppend(ev);
         m_reverted = true;
         return 1;
@@ -1009,10 +1014,34 @@ int UkEngine::processTone(UkKeyEvent & ev)
 //----------------------------------------------------------
 int UkEngine::processDd(UkKeyEvent & ev)
 {
-    if (!m_pCtrl->vietKey || m_current < 0 || m_buffer[m_current].c1Offset < 0)
+    if (!m_pCtrl->vietKey || m_current < 0)
         return processAppend(ev);
+    
+    int pos;
 
-    int pos = m_current - m_buffer[m_current].c1Offset;
+    // we want to allow dd even in non-vn sequence, because dd is used a lot in abbreviation
+    // we allow dd only if preceding character is not a vowel
+    if (m_buffer[m_current].form == vnw_nonVn && 
+        m_buffer[m_current].vnSym == vnl_d &&
+        (m_buffer[m_current-1].vnSym == vnl_nonVnChar ||!IsVnVowel[m_buffer[m_current-1].vnSym]))
+    {
+        m_singleMode = true;
+        pos = m_current;
+        markChange(pos);
+        m_buffer[pos].cseq = cs_dd;
+        m_buffer[pos].vnSym = vnl_dd;
+        m_buffer[pos].form = vnw_c;
+        m_buffer[pos].c1Offset = 0;
+        m_buffer[pos].c2Offset = -1;
+        m_buffer[pos].vOffset = -1;
+        return 1;
+    }
+
+    if (m_buffer[m_current].c1Offset < 0) {
+        return processAppend(ev);
+    }
+
+    pos = m_current - m_buffer[m_current].c1Offset;
     if (!m_pCtrl->options.freeMarking && pos != m_current)
         return processAppend(ev);
 
@@ -1028,6 +1057,7 @@ int UkEngine::processDd(UkKeyEvent & ev)
         markChange(pos);
         m_buffer[pos].cseq = cs_d;
         m_buffer[pos].vnSym = vnl_d;
+        m_singleMode = false;
         processAppend(ev);
         m_reverted = true;
         return 1;
@@ -1129,6 +1159,7 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
     ev.vnSym = IsoToVnLexi(ev.keyCode);
     ret = processAppend(ev);
     if (undo) {
+        m_singleMode = false;
         m_reverted = true;
         return 1;
     }
@@ -1732,19 +1763,22 @@ int UkEngine::process(unsigned int keyCode, int & backs, unsigned char *outBuf, 
     }
 
     if ( m_pCtrl->vietKey &&
-         (!m_pCtrl->options.spellCheckEnabled || m_singleMode) &&
          m_current >= 0 && m_buffer[m_current].form == vnw_nonVn &&
-         ev.chType == ukcVn ) 
+         ev.chType == ukcVn &&
+         (!m_pCtrl->options.spellCheckEnabled || m_singleMode) )
     {
 
         //The spell check has failed, but because we are in non-spellcheck mode,
         //we consider the new character as the beginning of a new word
+        ret = processNoSpellCheck(ev);
+        /*
         if ((!m_pCtrl->options.spellCheckEnabled || m_singleMode) || 
             ( !m_reverted && 
               (m_current < 1 || m_buffer[m_current-1].form != vnw_nonVn)) ) {
 
             ret = processNoSpellCheck(ev);
         }
+        */
     }
 
     //we add key to key buffer only if that key has not caused a reset
