@@ -67,6 +67,7 @@ struct _UnikeySysInfo
 {
   int switchKey;
   HHOOK keyHook;
+  HHOOK mouseHook;
   HWND hMainDlg;
   UINT iconMsgId;
   HICON hVietIcon,hEnIcon;
