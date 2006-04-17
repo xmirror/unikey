@@ -42,39 +42,63 @@ void CMacroTable::init()
 //---------------------------------------------------------------
 char *MacCompareStartMem;
 
+#define STD_TO_LOWER(x) (((x) >= VnStdCharOffset && \
+                          (x) < (VnStdCharOffset + TOTAL_ALPHA_VNCHARS) && \
+                          !((x) & 1)) ? \
+                          (x+1) : (x))
+
 int macCompare(const void *p1, const void *p2)
 {
-  StdVnChar *s1 = (StdVnChar *) ((char *)MacCompareStartMem + ((MacroDef *)p1)->keyOffset);
-  StdVnChar *s2 = (StdVnChar *) ((char *)MacCompareStartMem + ((MacroDef *)p2)->keyOffset);
+    StdVnChar *s1 = (StdVnChar *) ((char *)MacCompareStartMem + ((MacroDef *)p1)->keyOffset);
+    StdVnChar *s2 = (StdVnChar *) ((char *)MacCompareStartMem + ((MacroDef *)p2)->keyOffset);
 
-  int i;
-  for (i=0; s1[i] != 0 && s2[i] != 0; i++) {
-    if (s1[i] > s2[i])
-      return 1;
-    if (s1[i] < s2[i])
-      return -1;
-  }
-  if (s1[i] == 0)
-    return (s2[i] == 0)? 0 : -1;
-  return 1;
+    int i;
+    StdVnChar ls1, ls2;
+
+    for (i=0; s1[i] != 0 && s2[i] != 0; i++) {
+        ls1 = STD_TO_LOWER(s1[i]);
+        ls2 = STD_TO_LOWER(s2[i]);
+        if (ls1 > ls2)
+            return 1;
+        if (ls1 < ls2)
+            return -1;
+        /*
+        if (s1[i] > s2[i])
+            return 1;
+        if (s1[i] < s2[i])
+            return -1;
+        */
+    }
+    if (s1[i] == 0)
+        return (s2[i] == 0)? 0 : -1;
+    return 1;
 }
 
 //---------------------------------------------------------------
 int macKeyCompare(const void *key, const void *ele)
 {
-  StdVnChar *s1 = (StdVnChar *)key;
-  StdVnChar *s2 = (StdVnChar *) ((char *)MacCompareStartMem + ((MacroDef *)ele)->keyOffset);
+    StdVnChar *s1 = (StdVnChar *)key;
+    StdVnChar *s2 = (StdVnChar *) ((char *)MacCompareStartMem + ((MacroDef *)ele)->keyOffset);
 
-  int i;
-  for (i=0; s1[i] != 0 && s2[i] != 0; i++) {
-    if (s1[i] > s2[i])
-      return 1;
-    if (s1[i] < s2[i])
-      return -1;
-  }
-  if (s1[i] == 0)
-    return (s2[i] == 0)? 0 : -1;
-  return 1;
+    StdVnChar ls1, ls2;
+    int i;
+    for (i=0; s1[i] != 0 && s2[i] != 0; i++) {
+        ls1 = STD_TO_LOWER(s1[i]);
+        ls2 = STD_TO_LOWER(s2[i]);
+        if (ls1 > ls2)
+            return 1;
+        if (ls1 < ls2)
+            return -1;
+        /*
+        if (s1[i] > s2[i])
+            return 1;
+        if (s1[i] < s2[i])
+            return -1;
+        */
+    }
+    if (s1[i] == 0)
+        return (s2[i] == 0)? 0 : -1;
+    return 1;
 }
 
 //---------------------------------------------------------------
