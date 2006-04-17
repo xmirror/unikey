@@ -40,6 +40,11 @@
 using namespace std;
 
 #define ENTER_CHAR 13
+#define IS_ODD(x) (x & 1)
+#define IS_EVEN(x) (!(x & 1))
+
+#define IS_STD_VN_LOWER(x) ((x) >= VnStdCharOffset && (x) < (VnStdCharOffset + TOTAL_ALPHA_VNCHARS) && IS_ODD(x))
+#define IS_STD_VN_UPPER(x) ((x) >= VnStdCharOffset && (x) < (VnStdCharOffset + TOTAL_ALPHA_VNCHARS) && IS_EVEN(x))
 
 bool IsVnVowel[vnl_lastChar];
 
@@ -1049,6 +1054,8 @@ int UkEngine::processDd(UkKeyEvent & ev)
         markChange(pos);
         m_buffer[pos].cseq = cs_dd;
         m_buffer[pos].vnSym = vnl_dd;
+        //never spellcheck a word which starts with dd, because it's used alot in abbreviation
+        m_singleMode = true;
         return 1;
     }
 
@@ -2041,6 +2048,7 @@ void UkEngine::prepareBuffer()
 }
 
 #define ENTER_CHAR 13
+enum VnCaseType {VnCaseNoChange, VnCaseAllCapital, VnCaseAllSmall};
 
 //----------------------------------------------------
 int UkEngine::macroMatch(UkKeyEvent & ev)
@@ -2055,6 +2063,12 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
 
     const StdVnChar *pMacText = NULL;
     StdVnChar key[MAX_MACRO_KEY_LEN+1];
+    StdVnChar *pKeyStart;
+
+    // Use static macro text so we can gain a bit of performance
+    // by avoiding memory allocation each time this function is called
+    static StdVnChar macroText[MAX_MACRO_TEXT_LEN+1];
+
     int i, j;
 
     i = m_current;
@@ -2090,12 +2104,15 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
         pMacText = m_pCtrl->macStore.lookup(key+1);
         if (pMacText) {
             i++; //mark the position where change is needed
+            pKeyStart = key + 1;
             break;
         }
         if (i>=0) {
             pMacText = m_pCtrl->macStore.lookup(key);
-            if (pMacText)
+            if (pMacText) {
+                pKeyStart = key;
                 break;
+            }
         }
         i--;
     }
@@ -2105,15 +2122,43 @@ int UkEngine::macroMatch(UkKeyEvent & ev)
     }
 
     markChange(i);
-    int inLen = 0;
-    while (pMacText[inLen] != 0)
-        inLen++;
-    inLen = inLen * sizeof(StdVnChar);
 
+    // determine the form of macro replacements: ALL CAPITALS, First Character Capital, or no change
+    VnCaseType macroCase;
+    if (IS_STD_VN_LOWER(*pKeyStart)) {
+        macroCase = VnCaseAllSmall;
+    }
+    else if (IS_STD_VN_UPPER(*pKeyStart)) {
+        macroCase = VnCaseAllCapital;
+        for (i=1; pKeyStart[i]; i++) {
+            if (IS_STD_VN_LOWER(pKeyStart[i])) {
+                macroCase = VnCaseNoChange;
+            }
+        }
+    }
+    else macroCase = VnCaseNoChange;
+
+    // Convert case of macro text according to macroCase
+    int charCount = 0;
+    while (pMacText[charCount] != 0)
+        charCount++;
+
+    for (i = 0; i < charCount; i++)
+    {
+        if (macroCase == VnCaseAllCapital)
+            macroText[i] = StdVnToUpper(pMacText[i]);
+        else if (macroCase == VnCaseAllSmall)
+            macroText[i] = StdVnToLower(pMacText[i]);
+        else
+            macroText[i] = pMacText[i];
+    }
+
+    // Convert to target output charset
     int outSize;
     int maxOutSize = *m_pOutSize;
+    int inLen = charCount * sizeof(StdVnChar);
     VnConvert(CONV_CHARSET_VNSTANDARD, m_pCtrl->charsetId,
-	        (UKBYTE *) pMacText, (UKBYTE *)m_pOutBuf,
+	        (UKBYTE *) macroText, (UKBYTE *)m_pOutBuf,
 	        &inLen, &maxOutSize);
     outSize = maxOutSize;
 
