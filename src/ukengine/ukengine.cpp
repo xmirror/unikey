@@ -169,6 +169,7 @@ ConSeqInfo CSeqList[] = {
     {2, {vnl_g, vnl_h, vnl_nonVnChar}, false},
     {2, {vnl_g, vnl_i, vnl_nonVnChar}, false},
     {3, {vnl_g, vnl_i, vnl_n}, false},
+    {1, {vnl_h, vnl_nonVnChar, vnl_nonVnChar}, false},
     {1, {vnl_k, vnl_nonVnChar, vnl_nonVnChar}, false},
     {2, {vnl_k, vnl_h, vnl_nonVnChar}, false},
     {1, {vnl_l, vnl_nonVnChar, vnl_nonVnChar}, false},

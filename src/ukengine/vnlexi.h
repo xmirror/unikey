@@ -135,6 +135,7 @@ enum ConSeq {
   cs_gh,
   cs_gi,
   cs_gin,
+  cs_h,
   cs_k,
   cs_kh,
   cs_l,
