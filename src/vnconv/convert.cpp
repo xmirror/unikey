@@ -152,7 +152,7 @@ DllExport int VnFileConvert(int inCharset, int outCharset, const char *inFile, c
 		else
 			*p = 0;
 
-		tmpName = tempnam(outDir, NULL);
+		tmpName = _tempnam(outDir, NULL);
 
 		if (tmpName == NULL) {
 			fclose(inf);
