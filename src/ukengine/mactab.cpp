@@ -311,7 +311,7 @@ int CMacroTable::addItem(const char *item, int charset)
   char key[MAX_MACRO_KEY_LEN];
   
   // Parse the input item
-  char * pos = strchr(item, ':');
+  const char * pos = strchr(item, ':');
   if (pos == NULL)
     return -1;
   int keyLen = (int)(pos - item);
