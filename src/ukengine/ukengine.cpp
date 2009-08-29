@@ -711,9 +711,10 @@ int UkEngine::processHookWithUO(UkKeyEvent & ev)
     default:  //vneHookAll, vneHookUO:
         if (v[0] == vnl_u) {
             if (v[1] == vnl_o || v[1] == vnl_or) { 
-                //uo -> uo+ if prefixed by "th"
+                //uo -> uo+ if prefixed by "th" or "h"
                 if ((vs == vs_uo || vs == vs_uor) && vEnd == m_current && 
-                    m_buffer[m_current].form == vnw_cv && m_buffer[m_current-2].cseq == cs_th) 
+                    m_buffer[m_current].form == vnw_cv && 
+                    (m_buffer[m_current-2].cseq == cs_th || m_buffer[m_current-2].cseq == cs_h)) 
                 {
                     newVs = vs_uoh;
                     markChange(vStart+1);
@@ -1102,8 +1103,9 @@ int UkEngine::processMapChar(UkKeyEvent & ev)
     if (m_keyCheckFunc)
         m_keyCheckFunc(&shiftPressed, &capsLockOn);
 
-    if (capsLockOn)
+    if (capsLockOn && !isalpha(ev.keyCode)) {
         ev.vnSym = changeCase(ev.vnSym);
+    }
 
     int ret = processAppend(ev);
     if (!m_pCtrl->vietKey)
