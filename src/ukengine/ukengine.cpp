@@ -1184,16 +1184,10 @@ int UkEngine::processTelexW(UkKeyEvent & ev)
 
     int ret;
     static bool usedAsMapChar = false;
-    int capsLockOn = 0;
-    int shiftPressed = 0;
-    if (m_keyCheckFunc)
-        m_keyCheckFunc(&shiftPressed, &capsLockOn);
 
     if (usedAsMapChar) {
         ev.evType = vneMapChar;
         ev.vnSym = isupper(ev.keyCode)? vnl_Uh : vnl_uh;
-        if (capsLockOn)
-            ev.vnSym = changeCase(ev.vnSym);
         ev.chType = ukcVn;
         ret = processMapChar(ev);
         if (ret == 0) {
@@ -1214,8 +1208,6 @@ int UkEngine::processTelexW(UkKeyEvent & ev)
             m_current--;
         ev.evType = vneMapChar;
         ev.vnSym = isupper(ev.keyCode)? vnl_Uh : vnl_uh;
-        if (capsLockOn)
-            ev.vnSym = changeCase(ev.vnSym);
         ev.chType = ukcVn;
         usedAsMapChar = true;
         return processMapChar(ev);
